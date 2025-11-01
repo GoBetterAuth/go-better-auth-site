@@ -1,16 +1,26 @@
-import { RootProvider } from 'fumadocs-ui/provider/next';
-import './global.css';
-import { Inter } from 'next/font/google';
+import { DM_Sans } from "next/font/google";
 
-const inter = Inter({
-  subsets: ['latin'],
+import { RootProvider } from "fumadocs-ui/provider/next";
+
+import "./global.css";
+
+const primaryFont = DM_Sans({
+  subsets: ["latin"],
 });
 
-export default function Layout({ children }: LayoutProps<'/'>) {
+export default function Layout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={inter.className} suppressHydrationWarning>
+    <html lang="en" className={primaryFont.className} suppressHydrationWarning>
       <body className="flex flex-col min-h-screen">
-        <RootProvider>{children}</RootProvider>
+        <RootProvider
+          theme={{
+            enabled: true,
+            enableSystem: false,
+            defaultTheme: "dark",
+          }}
+        >
+          {children}
+        </RootProvider>
       </body>
     </html>
   );
