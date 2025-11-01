@@ -1,6 +1,8 @@
-export default function GitHubIcon() {
+import { cn } from "@/lib/utils";
+
+export default function GitHubIcon({ className }: { className?: string }) {
   return (
-    <span className="">
+    <span className={cn("w-5 h-5", className)}>
       <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <title>GitHub</title>
         <path

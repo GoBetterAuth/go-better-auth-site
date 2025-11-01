@@ -19,7 +19,9 @@ import { BorderBeam } from "@/components/ui/border-beam";
 import { Button } from "@/components/ui/button";
 import { AnimatedGridPattern } from "@/components/ui/animated-grid-pattern";
 import { cn } from "@/lib/utils";
-import GitHubIcon from "@/components/shared/icons/github";
+import GitHubIcon from "@/components/shared/icons/GitHubIcon";
+import GolangIcon from "@/components/shared/icons/GolangIcon";
+import { ShineBorder } from "@/components/ui/shine-border";
 
 const codeSnippets = [
   `import (
@@ -129,7 +131,7 @@ export default function HomePage() {
               Secure Auth
             </h2>
             <h2 className="text-4xl mb-4 font-bold">Made Simple for Go</h2>
-            <p className="text-base max-w-xl text-center mx-auto">
+            <p className="text-base w-full max-w-xl text-center">
               A comprehensive, framework-independent authentication and
               authorization library that brings enterprise-grade security to
               your Go applications.
@@ -137,7 +139,8 @@ export default function HomePage() {
             <div className="mt-5 flex flex-row gap-2 justify-center items-center">
               <Button
                 variant="outline"
-                className="bg-linear-to-r from-green-500 via-emerald-500 to-sky-700"
+                className="bg-linear-to-r from-green-700 to-sky-700"
+                asChild
               >
                 <Link href="/docs" className="flex flex-row items-center gap-1">
                   <span>Get Started</span>
@@ -166,7 +169,12 @@ export default function HomePage() {
       </section>
 
       {/* FEATURES SECTION */}
-      <section id="features" className="relative py-20 px-10">
+      <section
+        id="features"
+        className="relative p-20 px-10 border-t border-solid border-sky-950/50"
+      >
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-teal-500/10 blur-3xl rounded-full -z-10"></div>
+
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <p className="bg-linear-to-r from-green-500 to-sky-500 bg-clip-text text-transparent font-semibold">
@@ -198,15 +206,20 @@ export default function HomePage() {
       </section>
 
       {/* SOLUTION SECTION */}
-      <section id="solution" className="relative py-20 px-10">
+      <section
+        id="solution"
+        className="relative p-20 px-10 border-t border-solid border-sky-950/50"
+      >
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-teal-500/10 blur-3xl rounded-full -z-10"></div>
+
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <p className="bg-linear-to-r from-green-500 to-sky-500 bg-clip-text text-transparent font-semibold">
-              Tools
+              Solution
             </p>
-            <h2 className="text-4xl font-bold mt-2">Complete Auth Solution</h2>
+            <h2 className="text-4xl font-bold mt-2">Complete Auth</h2>
             <p className="text-lg text-gray-400 mt-4 max-w-3xl mx-auto">
-              All the tools you need, built-in and ready to use
+              All the things you need, built-in and ready to use
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -215,7 +228,8 @@ export default function HomePage() {
                 key={index}
                 className="bg-white/5 backdrop-blur-sm rounded-lg p-6 flex items-center gap-3 border border-teal-500/10 border-solid"
               >
-                <CircleCheck className="w-5 h-5 text-teal-500" />
+                <ShineBorder shineColor={["#14b8a6", "#06b6d4"]} />
+                <CircleCheck className="w-6 h-6 text-teal-500" />
                 <span className="text-sm">{item}</span>
               </div>
             ))}
@@ -224,7 +238,55 @@ export default function HomePage() {
       </section>
 
       {/* COMMUNITY SECTION */}
-      <section id="community"></section>
+      <section
+        id="community"
+        className="relative p-20 px-10 border-t border-solid border-sky-950/50"
+      >
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-teal-500/10 blur-3xl rounded-full -z-10"></div>
+
+        <div className="relative max-w-5xl mx-auto bg-[#0A1A2A] rounded-2xl p-10 md:p-20 text-center overflow-hidden border border-sky-900/50">
+          <div className="absolute -top-10 -left-10 w-40 h-40 bg-sky-500/20 blur-3xl rounded-full"></div>
+          <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-green-500/20 blur-3xl rounded-full"></div>
+          <ShineBorder shineColor={["#14b8a6", "#06b6d4"]} />
+
+          <div className="relative z-10">
+            <div className="flex justify-center mb-6">
+              <div className="w-16 h-16 bg-gray-900/50 rounded-lg flex items-center justify-center border border-gray-700">
+                <GolangIcon />
+              </div>
+            </div>
+            <h2 className="text-2xl md:text-4xl font-bold mt-2 mb-4">
+              Open Source & Community Driven
+            </h2>
+            <p className="text-base text-gray-400 mt-4 max-w-2xl mx-auto">
+              Go Better Auth is fully open source and maintained by the
+              community. Contribute, report issues, or star us on GitHub.
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Button
+                variant="outline"
+                className="bg-linear-to-r from-green-700 to-sky-700"
+                asChild
+              >
+                <Link
+                  href="https://github.com/GoBetterAuth/go-better-auth"
+                  target="_blank"
+                >
+                  <GitHubIcon className="mr-2" />
+                  View on GitHub
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/docs">Read Documentation</Link>
+              </Button>
+            </div>
+
+            <p className="text-sm text-gray-500 mt-8">
+              Released under the Apache 2.0 License
+            </p>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
