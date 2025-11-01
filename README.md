@@ -1,4 +1,6 @@
-# GoBetterAuth Site & Docs
+<p align="center">
+  <img src="./project-logo.png" alt="GoBetterAuth Logo" width="150"/>
+</p>
 
 All-in-one landing page and docs site for the GoBetterAuth library.
 
