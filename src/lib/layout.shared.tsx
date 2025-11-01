@@ -5,7 +5,7 @@ import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 function LogoImage() {
   return (
     <div className="h-full w-full flex flex-row items-center justify-start">
-      <Image src="/app-logo.png" alt="App Logo" width={150} height={50} />
+      <Image src="/app-logo.png" alt="App Logo" width={50} height={50} />
     </div>
   );
 }

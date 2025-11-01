@@ -32,11 +32,11 @@ export default function FeaturesSection() {
       id="features"
       className="relative p-20 px-10 border-t border-solid border-sky-950/50"
     >
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-teal-500/10 blur-3xl rounded-full -z-10"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-500/10 blur-3xl rounded-full -z-10"></div>
 
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
-          <p className="bg-linear-to-r from-green-500 to-sky-500 bg-clip-text text-transparent font-semibold">
+          <p className="bg-linear-to-r from-blue-500 to-sky-500 bg-clip-text text-transparent font-semibold">
             Everything you need
           </p>
           <h2 className="text-4xl font-bold mt-2">Powerful Features</h2>
@@ -48,8 +48,8 @@ export default function FeaturesSection() {
           {featuresItems.map((feature, index: number) => (
             <div key={index} className="flex gap-6">
               <div className="shrink-0">
-                <div className="w-14 h-14 bg-linear-to-r from-green-500/10 to-sky-500/30 border border-emerald-400/20 rounded-lg flex items-center justify-center">
-                  <feature.icon className="w-7 h-7 text-emerald-400" />
+                <div className="w-14 h-14 bg-linear-to-r from-blue-500/10 to-sky-500/30 border border-blue-400/20 rounded-lg flex items-center justify-center">
+                  <feature.icon className="w-7 h-7 text-blue-400" />
                 </div>
               </div>
               <div>

@@ -19,11 +19,11 @@ export default function SolutionSection() {
       id="solution"
       className="relative p-20 px-10 border-t border-solid border-sky-950/50"
     >
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-teal-500/10 blur-3xl rounded-full -z-10"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-500/10 blur-3xl rounded-full -z-10"></div>
 
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
-          <p className="bg-linear-to-r from-green-500 to-sky-500 bg-clip-text text-transparent font-semibold">
+          <p className="bg-linear-to-r from-blue-500 to-sky-500 bg-clip-text text-transparent font-semibold">
             Solution
           </p>
           <h2 className="text-4xl font-bold mt-2">Complete Auth</h2>
@@ -35,10 +35,10 @@ export default function SolutionSection() {
           {solutionItems.map((item, index) => (
             <div
               key={index}
-              className="bg-white/5 backdrop-blur-sm rounded-lg p-6 flex items-center gap-3 border border-teal-500/10 border-solid"
+              className="bg-white/5 backdrop-blur-sm rounded-lg p-6 flex items-center gap-3 border border-blue-500/10 border-solid"
             >
-              <ShineBorder shineColor={["#14b8a6", "#06b6d4"]} />
-              <CircleCheck className="w-6 h-6 text-teal-500" />
+              <ShineBorder shineColor={["#2b7fff", "#00a6f4"]} />
+              <CircleCheck className="w-6 h-6 text-blue-500" />
               <span className="text-sm">{item}</span>
             </div>
           ))}

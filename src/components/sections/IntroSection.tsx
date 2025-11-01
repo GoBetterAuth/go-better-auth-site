@@ -60,18 +60,18 @@ export default function IntroSection() {
       <Meteors />
 
       <div className="relative z-10 p-10 flex flex-col justify-center items-center text-center">
-        <Badge variant="outline" className="relative bg-gray-950 mb-5">
+        <Badge variant="outline" className="relative bg-slate-950 mb-5">
           ✨ Framework-independent Authentication
           <BorderBeam
             duration={8}
             size={35}
-            colorFrom="#87CEEB"
-            colorTo="#4682B4"
+            colorFrom="#2b7fff"
+            colorTo="#00a6f4"
           />
         </Badge>
 
         <div className="mb-5">
-          <h2 className="mb-2 text-4xl font-bold bg-linear-to-r from-green-500 to-sky-500 bg-clip-text text-transparent">
+          <h2 className="mb-2 text-4xl font-bold bg-linear-to-r from-blue-500 to-sky-500 bg-clip-text text-transparent">
             Secure Auth
           </h2>
           <h2 className="text-4xl mb-4 font-bold">Made Simple for Go</h2>
@@ -83,7 +83,7 @@ export default function IntroSection() {
           <div className="mt-5 flex flex-row gap-2 justify-center items-center">
             <Button
               variant="outline"
-              className="bg-linear-to-r from-green-700 to-sky-700"
+              className="bg-linear-to-r from-blue-700 to-sky-700"
               asChild
             >
               <Link href="/docs" className="flex flex-row items-center gap-1">

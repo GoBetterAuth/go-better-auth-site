@@ -14,9 +14,8 @@ export default function Footer() {
           <Image
             src="/app-logo.png"
             alt="Go Better Auth Logo"
-            width={150}
-            height={150}
-            className="rounded-full"
+            width={50}
+            height={50}
           />
         </div>
 
