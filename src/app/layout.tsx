@@ -17,6 +17,7 @@ export default function Layout({ children }: LayoutProps<"/">) {
             enabled: true,
             enableSystem: false,
             defaultTheme: "dark",
+            forcedTheme: "dark",
           }}
         >
           {children}
