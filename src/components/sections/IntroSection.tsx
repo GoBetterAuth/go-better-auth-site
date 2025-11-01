@@ -10,10 +10,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { Button } from "@/components/ui/button";
-import { AnimatedGridPattern } from "@/components/ui/animated-grid-pattern";
-import { cn } from "@/lib/utils";
 import GitHubIcon from "@/components/shared/icons/GitHubIcon";
 import { CONSTANTS } from "@/constants/constants";
+import { Meteors } from "@/components/ui/meteors";
 
 const codeSnippets = [
   `import (
@@ -46,7 +45,7 @@ func main() {
       Google: &gobetterauthdomain.GoogleProviderConfig{
         ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
         ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
-        RedirectURI:  "http://localhost:8081/auth/oauth/google/callback",
+        RedirectURI:  "http://localhost:8080/auth/oauth/google/callback",
       },
       // ...other providers
     },
@@ -58,15 +57,7 @@ func main() {
 export default function IntroSection() {
   return (
     <section className="relative h-full w-full flex items-center justify-center overflow-hidden">
-      <AnimatedGridPattern
-        numSquares={30}
-        maxOpacity={0.5}
-        duration={3}
-        className={cn(
-          "mask-[radial-gradient(500px_circle_at_center,white,transparent)]",
-          "inset-x-0 inset-y-[-30%] h-full skew-y-12"
-        )}
-      />
+      <Meteors />
 
       <div className="relative z-10 p-10 flex flex-col justify-center items-center text-center">
         <Badge variant="outline" className="relative bg-gray-950 mb-5">
