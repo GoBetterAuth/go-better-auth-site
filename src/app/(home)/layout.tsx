@@ -8,14 +8,6 @@ export default function Layout({ children }: LayoutProps<"/">) {
       {...baseOptions()}
       links={[
         {
-          text: "Features",
-          url: "/#features",
-        },
-        {
-          text: "Solution",
-          url: "/#solution",
-        },
-        {
           text: "Docs",
           url: "/docs",
         },

@@ -1,19 +1,20 @@
-# go-better-auth-docs
+# Go Better Auth Site & Docs
 
-This is a Next.js application generated with
-[Create Fumadocs](https://github.com/fuma-nama/fumadocs).
+All-in-one landing page and docs site for Go Better Auth library.
+
+## Development
 
 Run development server:
 
 ```bash
-npm run dev
-# or
-pnpm dev
-# or
-yarn dev
-```
+# Install npm packages
+$ pnpm i
 
-Open http://localhost:3000 with your browser to see the result.
+# Run development server
+$ pnpm dev
+
+# Open http://localhost:3000 with your browser to see the result.
+```
 
 ## Explore
 

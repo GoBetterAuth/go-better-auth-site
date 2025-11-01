@@ -1,4 +1,4 @@
-export default function GolangIcon() {
+export default function GolangIcon({ className }: { className?: string }) {
   return (
     <span>
       <svg
@@ -7,7 +7,9 @@ export default function GolangIcon() {
         xmlns="http://www.w3.org/2000/svg"
         width="45"
         height="45"
-        className="inline-block align-middle text-black dark:text-white"
+        className={
+          className || "inline-block align-middle text-black dark:text-white"
+        }
       >
         <title>Go</title>
         <path
