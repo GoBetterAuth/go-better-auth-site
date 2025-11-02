@@ -8,7 +8,7 @@ import { CONSTANTS } from "@/constants/constants";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-sky-950/50 text-gray-400 py-6">
+    <footer className="border-t border-dashed border-sky-950 text-gray-400 py-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="flex items-center gap-3">
           <Image
@@ -38,7 +38,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <p className="mt-5 text-sm text-center">
+      <p className="mt-5 text-sm text-center border-t border-dashed border-sky-950 pt-4">
         &copy; {new Date().getFullYear()} All rights reserved.
       </p>
     </footer>

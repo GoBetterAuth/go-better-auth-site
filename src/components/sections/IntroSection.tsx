@@ -105,8 +105,8 @@ export default function IntroSection() {
           </div>
         </div>
 
-        <div className="w-full flex flex-row justify-center items-center">
-          <Terminal className="w-max max-w-max! text-left max-h-max bg-transparent border border-solid border-sky-950">
+        <div className="w-full max-w-full overflow-hidden flex justify-center items-center">
+          <Terminal className="w-full max-w-4xl text-left max-h-max bg-transparent border border-dashed border-sky-950">
             {codeSnippets.map((line: string, index: number) =>
               index === 0 ? (
                 <TypingAnimation key={index}>{line}</TypingAnimation>

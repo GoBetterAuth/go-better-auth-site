@@ -17,11 +17,17 @@ export default function SolutionSection() {
   return (
     <section
       id="solution"
-      className="relative p-20 px-10 border-t border-solid border-sky-950/50"
+      className="relative border-t border-dashed border-sky-950"
     >
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-500/10 blur-3xl rounded-full -z-10"></div>
 
-      <div className="max-w-5xl mx-auto">
+      <div className="relative max-w-7xl mx-auto border-x border-dashed border-sky-950 p-20 px-10">
+        {/* Border Indicators */}
+        <div className="absolute z-10 -top-1 -left-1 w-2 h-2 rounded-full bg-sky-500 border border-solid border-sky-500" />
+        <div className="absolute z-10 -top-1 -right-1 w-2 h-2 rounded-full bg-sky-500 border border-solid border-sky-500" />
+        <div className="absolute z-10 -bottom-1 -left-1 w-2 h-2 rounded-full bg-sky-500 border border-solid border-sky-500" />
+        <div className="absolute z-10 -bottom-1 -right-1 w-2 h-2 rounded-full bg-sky-500 border border-solid border-sky-500" />
+
         <div className="text-center mb-16">
           <p className="bg-linear-to-r from-blue-500 to-sky-500 bg-clip-text text-transparent font-semibold">
             Solution
