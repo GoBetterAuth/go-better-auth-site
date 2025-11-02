@@ -114,7 +114,7 @@ export default function IntroSection() {
                 <TypingAnimation key={index}>{line}</TypingAnimation>
               ) : (
                 <AnimatedSpan key={index}>{line}</AnimatedSpan>
-              )
+              ),
             )}
           </Terminal>
         </div>
