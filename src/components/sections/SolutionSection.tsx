@@ -1,6 +1,7 @@
 import { CircleCheck } from "lucide-react";
 
 import { ShineBorder } from "../ui/shine-border";
+import BorderIndicators from "../shared/BorderIndicators";
 
 const solutionItems = [
   "Email/Password authentication",
@@ -21,12 +22,8 @@ export default function SolutionSection() {
     >
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-500/10 blur-3xl rounded-full -z-10"></div>
 
-      <div className="relative max-w-7xl mx-auto border-x border-dashed border-sky-950 p-20 px-10">
-        {/* Border Indicators */}
-        <div className="absolute z-10 -top-1 -left-1 w-2 h-2 rounded-full bg-sky-500 border border-solid border-sky-500" />
-        <div className="absolute z-10 -top-1 -right-1 w-2 h-2 rounded-full bg-sky-500 border border-solid border-sky-500" />
-        <div className="absolute z-10 -bottom-1 -left-1 w-2 h-2 rounded-full bg-sky-500 border border-solid border-sky-500" />
-        <div className="absolute z-10 -bottom-1 -right-1 w-2 h-2 rounded-full bg-sky-500 border border-solid border-sky-500" />
+      <div className="relative max-w-7xl mx-auto border-x border-dashed border-sky-950 p-10">
+        <BorderIndicators />
 
         <div className="text-center mb-16">
           <p className="bg-linear-to-r from-blue-500 to-sky-500 bg-clip-text text-transparent font-semibold">

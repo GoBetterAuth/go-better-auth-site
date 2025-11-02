@@ -59,49 +59,51 @@ export default function IntroSection() {
     <section className="relative h-full w-full flex items-center justify-center overflow-hidden">
       <Meteors />
 
-      <div className="relative z-10 p-10 flex flex-col justify-center items-center text-center">
-        <Badge variant="outline" className="relative bg-slate-950 mb-5">
-          ✨ Framework-independent Authentication
-          <BorderBeam
-            duration={8}
-            size={35}
-            colorFrom="#2b7fff"
-            colorTo="#00a6f4"
-          />
-        </Badge>
+      <div className="w-full max-w-7xl p-6 relative z-10 grid grid-cols-1 lg:grid-cols-2 border-x border-dashed border-sky-950">
+        <div className="p-10 flex flex-col justify-center items-center text-center">
+          <div className="mb-5">
+            <Badge variant="outline" className="bg-slate-950 mb-5">
+              ✨ Framework-independent Authentication
+              <BorderBeam
+                duration={8}
+                size={35}
+                colorFrom="#2b7fff"
+                colorTo="#00a6f4"
+              />
+            </Badge>
 
-        <div className="mb-5">
-          <h2 className="mb-2 text-4xl font-bold bg-linear-to-r from-blue-500 to-sky-500 bg-clip-text text-transparent">
-            Secure Auth
-          </h2>
-          <h2 className="text-4xl mb-4 font-bold">Made Simple for Go</h2>
-          <p className="text-base w-full max-w-xl text-center">
-            A comprehensive, framework-independent authentication and
-            authorization library that brings enterprise-grade security to your
-            Go applications.
-          </p>
-          <div className="mt-5 flex flex-row gap-2 justify-center items-center">
-            <Button
-              variant="outline"
-              className="bg-linear-to-r from-blue-700 to-sky-700"
-              asChild
-            >
-              <Link href="/docs" className="flex flex-row items-center gap-1">
-                <span>Get Started</span>
-                <MoveRight />
-              </Link>
-            </Button>
-
-            <Button variant="default" asChild>
-              <Link
-                href={CONSTANTS.githubRepoUrl}
-                target="_blank"
-                className="flex flex-row items-center gap-1"
+            <h2 className="mb-2 text-4xl font-bold bg-linear-to-r from-blue-500 to-sky-500 bg-clip-text text-transparent">
+              Secure Auth
+            </h2>
+            <h2 className="text-4xl mb-4 font-bold">Made Simple for Go</h2>
+            <p className="text-base w-full max-w-xl text-center">
+              A comprehensive, framework-independent authentication and
+              authorization library that brings enterprise-grade security to
+              your Go applications.
+            </p>
+            <div className="mt-5 flex flex-row gap-2 justify-center items-center">
+              <Button
+                variant="outline"
+                className="bg-linear-to-r from-blue-700 to-sky-700"
+                asChild
               >
-                <GitHubIcon />
-                <span>View on GitHub</span>
-              </Link>
-            </Button>
+                <Link href="/docs" className="flex flex-row items-center gap-1">
+                  <span>Get Started</span>
+                  <MoveRight />
+                </Link>
+              </Button>
+
+              <Button variant="default" asChild>
+                <Link
+                  href={CONSTANTS.githubRepoUrl}
+                  target="_blank"
+                  className="flex flex-row items-center gap-1"
+                >
+                  <GitHubIcon />
+                  <span>View on GitHub</span>
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
 
