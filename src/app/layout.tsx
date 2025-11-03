@@ -1,4 +1,5 @@
 import { DM_Sans } from "next/font/google";
+import type { Metadata } from "next";
 
 import { RootProvider } from "fumadocs-ui/provider/next";
 
@@ -7,6 +8,12 @@ import "./global.css";
 const primaryFont = DM_Sans({
   subsets: ["latin"],
 });
+
+export const metadata: Metadata = {
+  title: "Go Better Auth",
+  description:
+    "A comprehensive, framework-agnostic authentication and authorization library for Go.",
+};
 
 export default function Layout({ children }: LayoutProps<"/">) {
   return (
