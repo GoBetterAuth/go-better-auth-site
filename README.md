@@ -2,7 +2,11 @@
   <img src="./project-logo.png" alt="GoBetterAuth Logo" width="150"/>
 </p>
 
+<p align="center">
 All-in-one landing page and docs site for the GoBetterAuth library.
+</p>
+
+---
 
 ## Development
 
@@ -15,7 +19,7 @@ $ pnpm i
 # Run development server
 $ pnpm dev
 
-# Open http://localhost:3000 with your browser to see the result.
+# Navigate to http://localhost:3000 to see the webapp.
 ```
 
 ## Explore
