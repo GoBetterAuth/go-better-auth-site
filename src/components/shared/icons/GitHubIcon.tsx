@@ -1,6 +1,10 @@
 import { cn } from "@/lib/utils";
 
-export default function GitHubIcon({ className }: { className?: string }) {
+type Props = {
+  className?: string;
+};
+
+export default function GitHubIcon({ className }: Props) {
   return (
     <span className={cn("w-5 h-5", className)}>
       <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

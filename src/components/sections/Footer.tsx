@@ -5,6 +5,33 @@ import { BookOpen } from "lucide-react";
 
 import GitHubIcon from "@/components/shared/icons/GitHubIcon";
 import { CONSTANTS } from "@/constants/constants";
+import DiscordIcon from "../shared/icons/DiscordIcon";
+
+type LinkItem = {
+  href: string;
+  label: string;
+  icon: React.ReactNode;
+  externalLink?: boolean;
+};
+const linkItems: LinkItem[] = [
+  {
+    href: CONSTANTS.githubRepoUrl,
+    label: "GitHub",
+    icon: <GitHubIcon className="w-4 h-4" />,
+    externalLink: true,
+  },
+  {
+    href: CONSTANTS.discordInviteUrl,
+    label: "Discord",
+    icon: <DiscordIcon className="w-4 h-4" />,
+    externalLink: true,
+  },
+  {
+    href: "/docs",
+    label: "Docs",
+    icon: <BookOpen className="w-4 h-4" />,
+  },
+];
 
 export default function Footer() {
   return (
@@ -20,21 +47,17 @@ export default function Footer() {
         </div>
 
         <div className="flex items-center gap-6">
-          <Link
-            href={CONSTANTS.githubRepoUrl}
-            target="_blank"
-            className="flex items-center gap-2 text-sm hover:text-white transition-colors"
-          >
-            <GitHubIcon className="w-4 h-4" />
-            GitHub
-          </Link>
-          <Link
-            href="/docs"
-            className="flex items-center gap-2 text-sm hover:text-white transition-colors"
-          >
-            <BookOpen className="w-4 h-4" />
-            Docs
-          </Link>
+          {linkItems.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              target="_blank"
+              className="flex items-center gap-2 text-sm hover:text-white transition-colors"
+            >
+              {link.icon}
+              {link.label}
+            </Link>
+          ))}
         </div>
       </div>
 
