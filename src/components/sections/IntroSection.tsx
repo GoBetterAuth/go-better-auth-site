@@ -62,14 +62,14 @@ export default function IntroSection() {
       <div className="w-full max-w-7xl p-6 relative z-10 grid grid-cols-1 lg:grid-cols-2 border-x border-dashed border-sky-950">
         <div className="p-10 flex flex-col justify-center items-center text-center">
           <div className="mb-5">
-            <Badge variant="outline" className="bg-slate-950 mb-5">
-              ✨ Framework-independent Authentication
+            <Badge variant="outline" className="relative bg-slate-950 mb-5">
               <BorderBeam
-                duration={8}
+                duration={5}
                 size={35}
                 colorFrom="#2b7fff"
                 colorTo="#00a6f4"
               />
+              <span>✨ Framework-independent Authentication</span>
             </Badge>
 
             <h2 className="mb-2 text-4xl font-bold bg-linear-to-r from-blue-500 to-sky-500 bg-clip-text text-transparent">
@@ -114,7 +114,7 @@ export default function IntroSection() {
                 <TypingAnimation key={index}>{line}</TypingAnimation>
               ) : (
                 <AnimatedSpan key={index}>{line}</AnimatedSpan>
-              ),
+              )
             )}
           </Terminal>
         </div>
