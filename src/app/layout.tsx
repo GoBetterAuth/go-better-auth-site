@@ -1,4 +1,3 @@
-import { DM_Sans } from "next/font/google";
 import type { Metadata } from "next";
 import Script from "next/script";
 
@@ -6,10 +5,7 @@ import { RootProvider } from "fumadocs-ui/provider/next";
 
 import "./global.css";
 import { ENV_CONFIG } from "@/constants/env-config";
-
-const primaryFont = DM_Sans({
-  subsets: ["latin"],
-});
+import { primaryFont } from "@/constants/fonts";
 
 export const metadata: Metadata = {
   title: "Go Better Auth",
