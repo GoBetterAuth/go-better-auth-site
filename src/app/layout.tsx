@@ -1,9 +1,11 @@
 import { DM_Sans } from "next/font/google";
 import type { Metadata } from "next";
+import Script from "next/script";
 
 import { RootProvider } from "fumadocs-ui/provider/next";
 
 import "./global.css";
+import { ENV_CONFIG } from "@/constants/env-config";
 
 const primaryFont = DM_Sans({
   subsets: ["latin"],
@@ -30,6 +32,11 @@ export default function Layout({ children }: LayoutProps<"/">) {
           {children}
         </RootProvider>
       </body>
+      <Script
+        defer
+        src="https://cloud.umami.is/script.js"
+        data-website-id={ENV_CONFIG.umami.websiteId}
+      />
     </html>
   );
 }
