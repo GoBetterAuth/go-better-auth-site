@@ -1,0 +1,10 @@
+{
+  "pages": [
+    "---Basic---",
+    "email-and-password",
+    "---Social Sign On---",
+    "discord",
+    "github",
+    "google"
+  ]
+}

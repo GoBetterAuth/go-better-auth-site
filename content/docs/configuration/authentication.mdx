@@ -1,0 +1,84 @@
+---
+title: Authentication Methods
+description: Configure email/password and OAuth authentication
+---
+
+## Email and Password
+
+Enable email and password authentication:
+
+```go
+EmailAndPassword: &domain.EmailPasswordConfig{
+    Enabled:                  true,
+    DisableSignUp:            false,
+    RequireEmailVerification: true,
+    MinPasswordLength:        8,
+    MaxPasswordLength:        128,
+    AutoSignIn:               true,
+    SendResetPassword: func(ctx context.Context, user *user.User, url string, token string) error {
+        // Implement email sending logic
+        return nil
+    },
+    ResetPasswordTokenExpiresIn: 1 * time.Hour,  // 1 hour
+    Password: &domain.PasswordConfig{  // Optional custom password hashing
+        Hash: func(password string) (string, error) {
+            // Custom hash implementation
+            return password, nil
+        },
+        Verify: func(password, hash string) bool {
+            // Custom verification implementation
+            return password == hash
+        },
+    },
+}
+```
+
+## Email Verification
+
+Configure email verification workflow:
+
+```go
+EmailVerification: &domain.EmailVerificationConfig{
+    Enabled: true,
+    SendVerificationEmail: func(ctx context.Context, user *user.User, url string, token string) error {
+        // Implement email sending logic
+        return nil
+    },
+    SendOnSignUp:                true,
+    SendOnSignIn:                false,
+    AutoSignInAfterVerification: true,
+    ExpiresIn:                   1 * time.Hour,  // 1 hour
+}
+```
+
+## Social Providers
+
+Configure OAuth providers:
+
+```go
+SocialProviders: &domain.SocialProvidersConfig{
+    Google: &domain.GoogleProviderConfig{
+        ClientID:     "google-client-id",
+        ClientSecret: "google-client-secret",
+        RedirectURI:  "https://example.com/api/auth/callback/google",
+    },
+    GitHub: &domain.GitHubProviderConfig{
+        ClientID:     "github-client-id",
+        ClientSecret: "github-client-secret",
+        RedirectURI:  "https://example.com/api/auth/callback/github",
+    },
+    Discord: &domain.DiscordProviderConfig{
+        ClientID:     "discord-client-id",
+        ClientSecret: "discord-client-secret",
+        RedirectURI:  "https://example.com/api/auth/callback/discord",
+    },
+    // For multi-instance deployments, configure OAuthStateStorage (see dedicated page)
+    OAuthStateStorage: &domain.OAuthStateStorageConfig{
+        Type:            "database",       // "memory", "database", or "secondary"
+        CleanupInterval: 5 * time.Minute,  // default: 5m
+        TTL:             10 * time.Minute, // default: 10m
+        // KeyPrefix used only with secondary storage backends like Redis
+        // KeyPrefix: "oauth_state:",
+    },
+}
+```

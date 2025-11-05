@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
+import { CONSTANTS } from "@/constants/constants";
 
 function LogoImage() {
   return (
@@ -12,6 +13,7 @@ function LogoImage() {
 
 export function baseOptions(): BaseLayoutProps {
   return {
+    githubUrl: CONSTANTS.githubRepoUrl,
     nav: {
       enabled: true,
       children: <LogoImage />,

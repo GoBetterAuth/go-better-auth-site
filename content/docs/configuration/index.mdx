@@ -1,0 +1,58 @@
+---
+title: Configuration Overview
+description: Learn how to configure Go Better Auth for your application
+---
+
+Go Better Auth provides a flexible, comprehensive configuration system. Configuration is done via the `domain.Config` struct with sensible defaults applied automatically.
+
+## Quick Start
+
+The simplest configuration requires only a database:
+
+```go
+auth, err := gobetterauth.New(&domain.Config{
+    Database: domain.DatabaseConfig{
+        Provider:          "sqlite",
+        ConnectionString: "./auth.db",
+    },
+})
+```
+
+## Configuration Structure
+
+The main configuration struct includes:
+
+- **Core Settings**: Base URL, paths, secrets
+- **Database**: Connection and adapter settings
+- **Authentication Methods**: Email/password, OAuth providers
+- **Session Management**: Expiration, refresh behavior
+- **User & Account**: Custom fields, lifecycle hooks
+- **Security**: Rate limiting, CSRF, cookies
+- **Advanced**: Plugins, custom hooks, logging
+
+## Environment Variables
+
+Go Better Auth automatically reads from environment variables:
+
+- `GO_BETTER_AUTH_URL` - Base URL
+- `GO_BETTER_AUTH_SECRET` - Secret key (required in production)
+- `DATABASE_URL` - Database connection string
+
+## Default Values
+
+Sensible defaults are applied:
+
+- **BaseURL**: `http://localhost:8080`
+- **BasePath**: `/api/auth`
+- **Session**: `ExpiresIn: 7 days`
+- **RateLimit**: `Window: 10 seconds, Max: 100 requests`
+
+## Next Steps
+
+Explore specific configuration areas:
+
+<Cards>
+  <Card title="Core Configuration" href="/docs/configuration/core" />
+  <Card title="Database Setup" href="/docs/configuration/database" />
+  <Card title="Authentication" href="/docs/configuration/authentication" />
+</Cards>

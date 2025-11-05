@@ -1,0 +1,55 @@
+---
+title: Database Configuration
+description: Set up database connections and adapters
+---
+
+## DatabaseConfig
+
+Configure database connection and settings:
+
+```go
+Database: domain.DatabaseConfig{
+    Provider:          "postgres",  // "sqlite" or "postgres"
+    ConnectionString:  "postgres://user:pass@localhost:port/dbname?sslmode=disable",
+    LogQueries:        false, // Enable to log SQL queries for debugging
+    MaxOpenConns:      25,    // Max open connections (default: 25)
+    MaxIdleConns:      5,     // Max idle connections (default: 5)
+    ConnMaxLifetime:   3600,  // Seconds a connection may be reused (default: 3600)
+}
+```
+
+## Supported Databases
+
+### SQLite
+
+```go
+Database: domain.DatabaseConfig{
+    Provider:         "sqlite",
+    ConnectionString: "/path/to/database.db", // or ":memory:" for in-memory
+}
+```
+
+### PostgreSQL
+
+```go
+Database: domain.DatabaseConfig{
+    Provider:         "postgres",
+    ConnectionString: "postgres://user:password@localhost:port/dbname?sslmode=disable",
+}
+```
+
+## Schema Migration
+
+Database schemas are provided in the `migrations/` folder of the Go Better Auth repository. You can run migrations via the CLI or programmatically via the library.
+
+## Advanced Database Options
+
+```go
+Advanced: &domain.AdvancedConfig{
+    Database: &domain.DatabaseAdvancedConfig{
+        UseNumberId:           false,
+        GenerateId:            nil,  // Custom ID generator function (func(model string, size int) string) or false
+        DefaultFindManyLimit:  100,
+    },
+}
+```

@@ -1,0 +1,86 @@
+---
+title: Rate Limiting
+description: Configure rate limiting to prevent abuse
+---
+
+## Rate Limit Configuration
+
+Configure rate limiting to prevent abuse:
+
+```go
+RateLimit: &domain.RateLimitOptions{
+    Enabled:   true,
+    Window:    10,   // 10 seconds
+    Max:       100,  // 100 requests per window
+    Algorithm: "fixed-window", // "fixed-window" or "sliding-window"
+    Storage:   "memory",  // "memory", "database", or "secondary-storage"
+
+    CustomRules: map[string]domain.RateLimitRule{
+        "/api/auth/sign-in": {
+            Window: 300,  // 5 minutes
+            Max:    5,    // 5 attempts
+        },
+        "/api/auth/sign-up": {
+            Window: 3600, // 1 hour
+            Max:    3,    // 3 attempts
+        },
+    },
+
+    ModelName: "rateLimit",
+}
+```
+
+## Storage Options
+
+Rate limiting supports multiple storage backends:
+
+- **"memory"**: In-memory storage (default, single instance only)
+- **"database"**: Database-backed storage (recommended for production)
+- **"secondary-storage"**: Custom storage implementation
+
+## Rate Limiting Algorithms
+
+### Fixed Window
+
+Simple counter that resets at window boundaries. Fast and memory-efficient, but can allow bursts of traffic at window boundaries:
+
+```go
+RateLimit: &domain.RateLimitOptions{
+    Algorithm: "fixed-window",
+    Window:    60,   // 1 minute
+    Max:       100,  // 100 requests per minute
+}
+```
+
+### Sliding Window
+
+Uses weighted counts from current and previous windows for smoother rate limiting. Prevents boundary bursts by gradually transitioning between windows:
+
+```go
+RateLimit: &domain.RateLimitOptions{
+    Algorithm: "sliding-window",
+    Window:    60,   // 1 minute
+    Max:       100,  // 100 requests per minute (smoothly distributed)
+}
+```
+
+## Custom Rules
+
+Apply different rate limits to specific endpoints:
+
+```go
+CustomRules: map[string]domain.RateLimitRule{
+    "/api/auth/sign-in": {
+        Window: 300,  // 5 minutes
+        Max:    5,    // 5 sign-in attempts
+    },
+    "/api/auth/sign-up": {
+        Window: 3600, // 1 hour
+        Max:    3,    // 3 sign-up attempts
+    },
+    "/api/auth/reset-password": {
+        Window: 600,  // 10 minutes
+        Max:    3,    // 3 reset attempts
+    },
+}
+```

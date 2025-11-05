@@ -1,0 +1,30 @@
+---
+title: Comparison
+description: Comparing GoBetterAuth with other solutions
+---
+
+## Why GoBetterAuth Stands Out
+
+GoBetterAuth is a comprehensive, flexible authentication library for Go that addresses the significant gaps in the ecosystem. Unlike many existing solutions, which are often rigid or limited in scope, GoBetterAuth offers unparalleled configurability across all aspects of authentication, making it a superior choice for developers building secure, scalable applications.
+
+### Comparison with Other Solutions
+
+- **Flexibility and Customization**: While libraries like `goth` or `oauth2` provide basic OAuth support, they lack deep integration for email/password authentication, custom plugins, and hooks. GoBetterAuth allows full customization of authentication flows, from user registration to session management, enabling developers to tailor it to specific needs without rewriting core logic.
+
+- **Comprehensive Feature Set**: Solutions such as `jwt-go` or `gin-contrib/sessions` focus on narrow areas like JWT handling or session storage. GoBetterAuth integrates everything—email/password auth, social OAuth (e.g., Google, GitHub), plugins for extensions, and hooks for lifecycle events—into a single, cohesive library, reducing dependency overhead and complexity.
+
+- **Security and Best Practices**: Many Go auth libraries are outdated or lack modern security features like rate limiting, MFA, or secure token storage. GoBetterAuth incorporates industry standards (e.g., OAuth 2.0, PKCE) with built-in protections against common vulnerabilities, outperforming simpler alternatives that leave developers to implement security manually.
+
+- **Ecosystem Fit**: The Go ecosystem has historically lacked a "batteries-included" auth library, forcing developers to cobble together multiple packages, leading to inconsistencies and maintenance issues. GoBetterAuth fills this void by providing a unified, well-documented solution that aligns with Go's philosophy of simplicity and performance.
+
+### Benefits in the Go Ecosystem
+
+The Go community has long struggled with fragmented auth tools, often requiring integrations with external services or custom code that increases technical debt. A library like GoBetterAuth is invaluable because:
+
+- **Rapid Development**: Its configurability accelerates prototyping and production deployment, allowing teams to focus on business logic rather than auth boilerplate.
+
+- **Scalability and Performance**: Built with Go's concurrency in mind, it handles high-load scenarios efficiently, unlike some heavier frameworks that introduce unnecessary overhead.
+
+- **Community and Extensibility**: With support for plugins and hooks, it fosters a vibrant ecosystem where developers can extend functionality (e.g., adding custom providers or audit logging) without forking the library.
+
+In summary, GoBetterAuth isn't just another auth library—it's a game-changer for Go developers, offering the flexibility and robustness that the ecosystem desperately needs to build secure, user-friendly applications.

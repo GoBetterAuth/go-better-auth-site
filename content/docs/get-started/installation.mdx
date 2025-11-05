@@ -1,0 +1,177 @@
+---
+title: Installation
+description: Configure Go Better Auth in your project.
+---
+
+import { Step, Steps } from "fumadocs-ui/components/steps";
+
+<Steps>
+<Step>
+
+### Install the Package
+
+```bash
+$ go get "github.com/GoBetterAuth/go-better-auth"
+```
+
+</Step>
+
+<Step>
+
+### Set environment variables
+
+Create a `.env` file in the root of your project and add the following environment variables:
+
+```txt title=".env"
+# Used for encryption
+GO_BETTER_AUTH_SECRET=
+
+# The base URL of your API
+GO_BETTER_AUTH_URL=http://localhost:8080
+```
+
+</Step>
+
+<Step>
+
+### Create auth config
+
+```go
+import (
+	gobetterauth "github.com/GoBetterAuth/go-better-auth"
+	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/domain"
+)
+
+auth, err := gobetterauth.New(&gobetterauthdomain.Config{
+  // ...
+})
+```
+
+</Step>
+
+<Step>
+
+### Configure database
+
+Go Better Auth supports multiple database providers such as SQLite, Postgres and more coming soon. You can select a database provider by supplying it in the config.
+
+<CodeBlockTabs defaultValue="sqlite" groupId="database-provider" persist>
+    <CodeBlockTabsList>
+      <CodeBlockTabsTrigger value="sqlite">
+        SQLite
+      </CodeBlockTabsTrigger>
+
+      <CodeBlockTabsTrigger value="postgres">
+        Postgres
+      </CodeBlockTabsTrigger>
+    </CodeBlockTabsList>
+
+    <CodeBlockTab value="sqlite">
+      ```go
+      Database: gobetterauthdomain.DatabaseConfig{
+    		Provider:          "sqlite",
+    		ConnectionString:  "./auth.db",
+    	},
+      ```
+    </CodeBlockTab>
+
+    <CodeBlockTab value="postgres">
+      ```go
+      Database: gobetterauthdomain.DatabaseConfig{
+    		Provider:         "postgres",
+    		ConnectionString: os.Getenv("DATABASE_URL"), // Add this ENV variable to your .env
+    	},
+      ```
+    </CodeBlockTab>
+
+  </CodeBlockTabs>
+
+</Step>
+
+<Step>
+
+### Run database migrations
+
+Go Better Auth provides both a CLI tool and also programmatic access to running database migrations against your chosen database provider.
+
+#### CLI
+
+Make sure to clone the repo locally and then follow these steps:
+
+1. Build the cli from the library project: `make build-cli`.
+
+1. Create a `bin` folder in your project.
+
+1. Then copy the executable file from the library over into your project's `bin` folder.
+
+1. Also copy the migrations folder from the library repo into your project root too.
+
+1. Then run this command in your project to run the migrations against the database: `./bin/go-better-auth-cli migrate up --provider=sqlite --conn=./auth.db`
+
+---
+
+#### Code
+
+You will need to do step 4 from above only for this section.
+
+```go
+// Create the config
+config := &gobetterauthdomain.Config{
+  // ...
+}
+// Run the migrations using the config
+gobetterauth.RunMigrations(ctx, config)
+```
+
+---
+
+> [!NOTE]
+> We will look into improving this process to make it much easier to do all this.
+
+</Step>
+
+<Step>
+
+### Authentication Methods
+
+Configure the authentication methods you want to use in your config struct. Go Better Auth supports the basic Email/Password authentication method as well as social sign-on providers such as Google, GitHub, Discord etc.
+
+```go
+&gobetterauthdomain.Config{
+  // ...other options
+  EmailAndPassword: &gobetterauthdomain.EmailPasswordConfig{
+		Enabled: true,
+	},
+}
+```
+
+</Step>
+
+<Step>
+
+### Mount Handlers
+
+To handle API requests, you need to integrate the Go Better Auth handlers in your API.
+
+This is an example of how it can be done with the standard library server:
+
+```go
+// Initialise auth
+auth, err := gobetterauth.New(config)
+if err != nil {
+  log.Fatal(err)
+}
+
+// Mount auth routes
+http.Handle("/api/auth/", auth.Handler())
+
+// Start the server
+log.Println("Server running on http://localhost:8080")
+log.Fatal(http.ListenAndServe(":8080", nil))
+```
+
+Take a look at the [Examples](/docs/examples/routers) section to see how to integrate it with other frameworks.
+
+</Step>
+
+</Steps>

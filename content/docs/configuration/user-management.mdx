@@ -1,0 +1,85 @@
+---
+title: User Management
+description: Configure user models and account operations
+---
+
+## User Configuration
+
+Configure user model customization:
+
+```go
+User: &domain.UserConfig{
+    ModelName: "user",
+    Fields: map[string]string{
+        "email": "email_address",  // Custom field mapping
+    },
+    AdditionalFields: map[string]domain.AdditionalField{
+        "phone": {Type: "string"},
+        "company": {Type: "string"},
+    },
+    ChangeEmail: &domain.ChangeEmailConfig{
+        Enabled: true,
+        SendChangeEmailVerification: func(ctx context.Context, user *user.User, newEmail string, url string, token string) error {
+            // Implement email sending logic
+            return nil
+        },
+    },
+    DeleteUser: &domain.DeleteUserConfig{
+        Enabled: true,
+        SendDeleteAccountVerification: func(ctx context.Context, user *user.User, url string, token string) error {
+            // Implement email sending logic
+            return nil
+        },
+        BeforeDelete: func(ctx context.Context, user *user.User) error {
+            // Pre-deletion logic
+            return nil
+        },
+        AfterDelete: func(ctx context.Context, user *user.User) error {
+            // Post-deletion logic
+            return nil
+        },
+    },
+}
+```
+
+## Account Management
+
+Configure account linking and OAuth settings:
+
+```go
+Account: &domain.AccountConfig{
+    ModelName: "account",
+    Fields: map[string]string{
+        "userId": "user_id",
+    },
+    EncryptOAuthTokens:   true,
+    UpdateAccountOnSignIn: true,
+    AccountLinking: &domain.AccountLinkingConfig{
+        Enabled:             true,
+        TrustedProviders:    []string{"google", "github"},
+        AllowDifferentEmails: false,
+        AllowUnlinkingAll:    false,
+    },
+}
+```
+
+## User Lifecycle Hooks
+
+Add custom logic for user operations:
+
+```go
+DatabaseHooks: &domain.DatabaseHooksConfig{
+    User: &domain.ModelHooks{
+        Create: &domain.CRUDHooks{
+            Before: func(ctx context.Context, data interface{}) (interface{}, error) {
+                // Pre-create validation/modification
+                return data, nil
+            },
+            After: func(ctx context.Context, result interface{}) error {
+                // Post-create actions (notifications, etc.)
+                return nil
+            },
+        },
+    },
+}
+```

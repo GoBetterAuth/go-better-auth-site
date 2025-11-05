@@ -1,0 +1,10 @@
+{
+  "pages": [
+    "index",
+    "introduction",
+    "get-started",
+    "authentication",
+    "integrations",
+    "reference"
+  ]
+}

@@ -18,7 +18,7 @@ const codeSnippets = [
   `import (
   "os"
 
-  gobetterauth "github.com/GoBetterAuth/go-better-auth"
+  "github.com/GoBetterAuth/go-better-auth"
   gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/domain"
 )
 `,

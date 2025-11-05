@@ -1,0 +1,95 @@
+---
+title: Advanced Configuration
+description: Security, cookies, and advanced options
+---
+
+## Advanced Config
+
+Configure advanced security and cookie settings:
+
+```go
+Advanced: &domain.AdvancedConfig{
+    IPAddress: &domain.IPAddressConfig{
+        IPAddressHeaders:  []string{"X-Forwarded-For", "X-Real-IP"},
+        DisableIpTracking: false,
+    },
+    UseSecureCookies: true,
+    DisableCSRFCheck: false,  // ⚠️ Security risk if enabled
+    CrossSubDomainCookies: &domain.CrossSubDomainCookiesConfig{
+        Enabled: true,
+        AdditionalCookies: []string{"customCookie"},
+        Domain:  ".example.com",
+    },
+    Cookies: map[string]domain.CookieConfig{
+        "session": {
+            Name: "custom_session",
+            Attributes: domain.CookieAttributes{
+                HTTPOnly: true,
+                Secure:   true,
+                SameSite: "Lax",
+                Path:     "/",
+                Domain:   ".example.com",
+                MaxAge:   604800,
+            },
+        },
+    },
+    DefaultCookieAttributes: &domain.CookieAttributes{
+        HTTPOnly: true,
+        Secure:   true,
+        SameSite: "Lax",
+        Path:     "/",
+        MaxAge:   604800,
+    },
+    CookiePrefix: "gba",
+    Database: &domain.DatabaseAdvancedConfig{
+        UseNumberId:           false,
+        GenerateId:            nil,  // Custom ID generator function
+        DefaultFindManyLimit:  100,
+    },
+}
+```
+
+## Security Features
+
+### CSRF Protection
+
+Automatic CSRF token validation for state-changing operations:
+
+```go
+DisableCSRFCheck: false  // Keep enabled for security
+```
+
+### Secure Cookies
+
+Configure secure cookie attributes:
+
+```go
+UseSecureCookies: true  // HTTPS only in production
+DefaultCookieAttributes: &domain.CookieAttributes{
+    HTTPOnly: true,  // Prevent XSS access
+    Secure:   true,  // HTTPS only
+    SameSite: "Lax", // CSRF protection
+}
+```
+
+### IP Address Tracking
+
+Track IP addresses for security and analytics:
+
+```go
+IPAddress: &domain.IPAddressConfig{
+    IPAddressHeaders: []string{"X-Forwarded-For", "X-Real-IP"},
+    DisableIpTracking: false,
+}
+```
+
+## Cross-Subdomain Cookies
+
+Share authentication cookies across subdomains:
+
+```go
+CrossSubDomainCookies: &domain.CrossSubDomainCookiesConfig{
+    Enabled: true,
+    Domain:  ".example.com",  // Works for *.example.com
+}
+```

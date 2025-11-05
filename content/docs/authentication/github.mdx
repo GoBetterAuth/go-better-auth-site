@@ -1,0 +1,53 @@
+---
+title: GitHub
+---
+
+import { Step, Steps } from "fumadocs-ui/components/steps";
+
+Follow these steps to integrate GitHub OAuth 2.0 authentication into your application using the `GitHubProviderConfig`.
+
+<Steps>
+<Step>
+
+### Register Your Application on GitHub
+
+- Go to the [GitHub Developer Portal](https://github.com/settings/developers).
+- Create a new OAuth App.
+- Under "Authorization callback URL", add your redirect URI (e.g., `http://localhost:8080/api/auth/github/callback`).
+- Make sure to include the `user:email` scope.
+
+</Step>
+
+<Step>
+
+### Obtain Your Credentials
+
+In the app settings, copy the **Client ID** and **Client Secret**.
+Use these values to configure your `GitHubProviderConfig`.
+
+</Step>
+
+<Step>
+
+### Configure the Provider
+
+Add the provider to the auth config:
+
+```go
+auth, err := gobetterauth.New(&gobetterauthdomain.Config{
+  // ...other options
+  SocialProviders: &gobetterauthdomain.SocialProvidersConfig{
+    Google: gobetterauthdomain.GitHubProviderConfig{
+      ClientID:               os.Getenv("GITHUB_CLIENT_ID"),
+      ClientSecret:           os.Getenv("GITHUB_CLIENT_SECRET"),
+      SocialProviderOptions:  gobetterauthdomain.SocialProviderOptions{
+        RedirectURI: "http://localhost:8080/api/auth/github/callback",
+      },
+    },
+  },
+})
+```
+
+</Step>
+
+</Steps>

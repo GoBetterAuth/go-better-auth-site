@@ -1,0 +1,56 @@
+---
+title: Account Management
+description: Configure OAuth account linking and management
+---
+
+## Account Configuration
+
+Configure account linking and OAuth settings:
+
+```go
+Account: &domain.AccountConfig{
+    ModelName: "account",
+    Fields: map[string]string{
+        "userId": "user_id",
+    },
+
+    EncryptOAuthTokens:   true,
+    UpdateAccountOnSignIn: true,
+
+    AccountLinking: &domain.AccountLinkingConfig{
+        Enabled:             true,
+        TrustedProviders:    []string{"google", "github"},
+        AllowDifferentEmails: false,
+        AllowUnlinkingAll:    false,
+    },
+}
+```
+
+## OAuth Token Security
+
+OAuth tokens are encrypted by default:
+
+```go
+EncryptOAuthTokens: true  // Recommended for production
+```
+
+## Account Linking
+
+Allow users to link multiple OAuth providers to their account:
+
+```go
+AccountLinking: &domain.AccountLinkingConfig{
+    Enabled:             true,
+    TrustedProviders:    []string{"google", "github", "discord"},
+    AllowDifferentEmails: false,  // Prevent linking accounts with different emails
+    AllowUnlinkingAll:    false,  // Require at least one linked account
+}
+```
+
+## Provider Updates
+
+Control whether OAuth account information is updated on each sign-in:
+
+```go
+UpdateAccountOnSignIn: true  // Update profile info from OAuth provider
+```

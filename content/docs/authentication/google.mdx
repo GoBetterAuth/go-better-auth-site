@@ -1,0 +1,55 @@
+---
+title: Google
+---
+
+import { Step, Steps } from "fumadocs-ui/components/steps";
+
+Follow these steps to integrate Google OAuth 2.0 authentication into your application using the `GoogleProviderConfig`.
+
+<Steps>
+<Step>
+
+### Register Your Application on Google
+
+- Go to the [Google Cloud Console](https://console.cloud.google.com/).
+- Create a new project or select an existing one.
+- Navigate to the "Credentials" section.
+- Create an OAuth 2.0 Client ID.
+- Under "Authorized redirect URIs", add your redirect URI (e.g., `http://localhost:8080/api/auth/google/callback`).
+
+</Step>
+
+<Step>
+
+### Obtain Your Credentials
+
+In the Credentials section, copy the **Client ID** and **Client Secret**.
+Use these values to configure your `GoogleProviderConfig`.
+
+</Step>
+
+<Step>
+
+### Configure the Provider
+
+Add the provider to the auth config:
+
+```go
+auth, err := gobetterauth.New(&gobetterauthdomain.Config{
+  // ...other options
+  SocialProviders: &gobetterauthdomain.SocialProvidersConfig{
+    Google: gobetterauthdomain.GoogleProviderConfig{
+      ClientID:               os.Getenv("GOOGLE_CLIENT_ID"),
+      ClientSecret:           os.Getenv("GOOGLE_CLIENT_SECRET"),
+      SocialProviderOptions:  gobetterauthdomain.SocialProviderOptions{
+        RedirectURI: "http://localhost:8080/api/auth/google/callback",
+        Scope:       []string{"email", "profile"},
+      },
+		},
+  },
+})
+```
+
+</Step>
+
+</Steps>
