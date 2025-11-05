@@ -37,7 +37,7 @@ Add the provider to the auth config:
 auth, err := gobetterauth.New(&gobetterauthdomain.Config{
   // ...other options
   SocialProviders: &gobetterauthdomain.SocialProvidersConfig{
-    Google: gobetterauthdomain.GitHubProviderConfig{
+    Google: &gobetterauthdomain.GitHubProviderConfig{
       ClientID:               os.Getenv("GITHUB_CLIENT_ID"),
       ClientSecret:           os.Getenv("GITHUB_CLIENT_SECRET"),
       SocialProviderOptions:  gobetterauthdomain.SocialProviderOptions{

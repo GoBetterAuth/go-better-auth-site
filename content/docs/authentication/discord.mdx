@@ -37,7 +37,7 @@ Use the following Go struct to hold your Discord OAuth configuration:
 auth, err := gobetterauth.New(&gobetterauthdomain.Config{
   // ...other options
   SocialProviders: &gobetterauthdomain.SocialProvidersConfig{
-    Discord: gobetterauthdomain.DiscordProviderConfig{
+    Discord: &gobetterauthdomain.DiscordProviderConfig{
       ClientID:               os.Getenv("DISCORD_CLIENT_ID"),
       ClientSecret:           os.Getenv("DISCORD_CLIENT_SECRET"),
       SocialProviderOptions:  gobetterauthdomain.SocialProviderOptions{
