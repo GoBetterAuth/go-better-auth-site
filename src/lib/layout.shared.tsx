@@ -16,5 +16,8 @@ export function baseOptions(): BaseLayoutProps {
       enabled: true,
       children: <LogoImage />,
     },
+    themeSwitch: {
+      enabled: false,
+    },
   };
 }
