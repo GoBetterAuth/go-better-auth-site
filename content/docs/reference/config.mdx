@@ -444,7 +444,7 @@ type DeleteUserConfig struct {
 ```go
 // UserConfig holds user configuration options
 type UserConfig struct {
-	// ModelName is the model name for the user (default: "user")
+	// ModelName is the model name for the user
 	ModelName string
 
 	// Fields maps field names to different column names
@@ -469,8 +469,8 @@ type CookieCacheConfig struct {
 	// Enabled enables caching session in cookie (default: false)
 	Enabled bool
 
-	// MaxAge is the cache duration in seconds (default: 300 - 5 minutes)
-	MaxAge int
+	// MaxAge is the cache duration
+	MaxAge time.Duration
 }
 ```
 
@@ -479,7 +479,7 @@ type CookieCacheConfig struct {
 ```go
 // SessionConfig holds session configuration
 type SessionConfig struct {
-	// ModelName is the model name for the session (default: "session")
+	// ModelName is the model name for the session
 	ModelName string
 
 	// Fields maps field names to different column names
@@ -591,7 +591,7 @@ type RateLimitOptions struct {
 	// Storage defines the storage type ("memory", "database", "secondary-storage")
 	Storage string
 
-	// ModelName is the name of the table for rate limiting if database is used (default: "rateLimit")
+	// ModelName is the name of the table for rate limiting if database is used
 	ModelName string
 }
 ```
