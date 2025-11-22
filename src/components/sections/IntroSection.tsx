@@ -24,7 +24,6 @@ const codeSnippets = [
 `,
   `
 func main() {
-  // Builder pattern
   config := gobetterauthdomain.NewConfig().
 		WithAppName("YourAppName").
 		WithDatabase(gobetterauthdomain.DatabaseConfig{
