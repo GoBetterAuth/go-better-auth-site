@@ -7,21 +7,18 @@ Go Better Auth follows **Clean Architecture** principles with built-in HTTP hand
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                  Go Better Auth Library                     │
+│ Go Better Auth Library                                      │
 ├─────────────────────────────────────────────────────────────┤
-│  Standalone HTTP Handlers                                   │
-│    • Built-in http.Handler implementation                   │
-│    • auth.Handler() returns ready-to-use handler            │
-│    • Mount on any standard HTTP server                      │
+│ Standalone HTTP Handlers                                    │
+│ • Built-in http.Handler implementation                      │
+│ • auth.Handler() returns ready-to-use handler               │
+│ • Mount on any standard HTTP server                         │
 ├─────────────────────────────────────────────────────────────┤
-│  Core Components                                            │
-│    • Domain Models (User, Session, Account, etc.)           │
-│    • Handlers (entry point for API endpoints)               │
-│    • Use Cases (handlers delegate to these services)        │
-│    • Repositories (business logic behind interfaces)        │
-├─────────────────────────────────────────────────────────────┤
-│  Database Adapters                                          │
-│    • PostgreSQL   • SQLite   • Extensible                   │
+│ Database Adapters                                           │
+│ • PostgreSQL                                                │
+│ • SQLite                                                    │
+│ • MySQL                                                     │
+│ • Extensible                                                │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -29,7 +26,6 @@ Go Better Auth follows **Clean Architecture** principles with built-in HTTP hand
 
 1. **Framework-Agnostic Core**: Clean separation between business logic and HTTP concerns
 2. **Standard Library First**: Handlers implement `net/http.Handler` interface
-3. **Clean Separation**: Business logic separate from HTTP delivery
 
 ## Component Layers
 
@@ -37,27 +33,9 @@ Go Better Auth follows **Clean Architecture** principles with built-in HTTP hand
 
 Contains enterprise business rules and entities:
 
-- **Entities**: User, Session, Account, Verification
+- **Entities**: User, Account, Session, Verification
 
 ### Handler Layer
 
-- Entrypoint for API endpoints, delegates logic to use cases
+- Entrypoint for API endpoints, delegates logic to services
 - Integrated with middleware
-
-### Use Case Layer
-
-Application-specific business logic:
-
-- **Authentication flows**
-- **User management**
-- **Session handling**
-- **OAuth integration**
-
-## Security Architecture
-
-- **CSRF Protection**: Automatic token validation
-- **Rate Limiting**: Configurable request throttling
-- **Secure Cookies**: HTTPOnly, Secure, SameSite attributes
-- **Input Validation**: Comprehensive request sanitization
-- **SQL Injection Prevention**: Using GORM ORM
-- **XSS Protection**: Output encoding and validation

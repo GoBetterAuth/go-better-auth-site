@@ -11,28 +11,30 @@ import (
 	"net/http"
 
 	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/domain"
+	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
 )
 
 func main() {
-	auth, err := gobetterauth.New(&gobetterauthdomain.Config{
-		AppName:  "My Application",
-		BaseURL:  "http://localhost:8080"
-		BasePath: "/api/auth",
-		Database: gobetterauthdomain.DatabaseConfig{
-			Provider:          "sqlite",
-			ConnectionString: "./auth.db",
-		},
-		EmailAndPassword: &gobetterauthdomain.EmailPasswordConfig{
-			Enabled:    true,
-		},
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
+	config := gobetterauthdomain.NewConfig(
+		gobetterauthdomain.WithAppName("YourAppName"),
+		gobetterauthdomain.WithDatabase(gobetterauthdomain.DatabaseConfig{
+			Provider:         "postgres",
+			ConnectionString: os.Getenv("DATABASE_URL"),
+		}),
+		gobetterauthdomain.WithEmailPassword(gobetterauthdomain.EmailPasswordConfig{
+			Enabled:                  true,
+		}),
+		gobetterauthdomain.WithTrustedOrigins(gobetterauthdomain.TrustedOriginsConfig{
+			Origins: []string{
+				"http://localhost:3000",
+			},
+		}),
+	)
+	auth := gobetterauth.New(config, nil)
+	auth.RunMigrations()
 
 	// Mount auth routes
-	http.Handle("/api/auth/", auth.Handler())
+	http.Handle("/auth/", auth.Handler())
 
 	// Add your application routes
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -50,15 +52,15 @@ func main() {
 ### Sign Up
 
 ```bash
-curl -X POST http://localhost:8080/api/auth/sign-up/email \
+curl -X POST http://localhost:8080/auth/sign-up/email \
   -H "Content-Type: application/json" \
-  -d '{"email": "john.doe@example.com", "password": "password123", "name": "John Doe"}'
+  -d '{"name": "John Doe", "email": "john.doe@example.com", "password": "password123"}'
 ```
 
 ### Sign In
 
 ```bash
-curl -X POST http://localhost:8080/api/auth/sign-in/email \
+curl -X POST http://localhost:8080/auth/sign-in/email \
   -H "Content-Type: application/json" \
   -d '{"email": "john.doe@example.com", "password": "password123"}'
 ```
@@ -66,6 +68,6 @@ curl -X POST http://localhost:8080/api/auth/sign-in/email \
 ### Get Session
 
 ```bash
-curl -X GET http://localhost:8080/api/auth/me \
+curl -X GET http://localhost:8080/auth/me \
   -H "Cookie: go-better-auth.session_token=your-session-token"
 ```

@@ -18,38 +18,37 @@ const codeSnippets = [
   `import (
   "os"
 
-  "github.com/GoBetterAuth/go-better-auth"
-  gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/domain"
+  gobetterauth "github.com/GoBetterAuth/go-better-auth"
+  gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
 )
 `,
   `
 func main() {
-  auth, _ := gobetterauth.New(&gobetterauthdomain.Config{
-    BaseURL:  "http://localhost:8080",
-    BasePath: "/api/auth",
-    Database: gobetterauthdomain.DatabaseConfig{
-      Provider:         "postgres",
-      ConnectionString: os.Getenv("DATABASE_URL"),
-    },
-    EmailAndPassword: &gobetterauthdomain.EmailPasswordConfig{
-      Enabled: true,
-      // ...more options
-    },
-    EmailVerification: &gobetterauthdomain.EmailVerificationConfig{
-      Enabled:                     true,
-      SendOnSignUp:                true,
-      AutoSignInAfterVerification: true,
-      // ...more options
-    },
-    SocialProviders: &gobetterauthdomain.SocialProvidersConfig{
-      Google: &gobetterauthdomain.GoogleProviderConfig{
-        ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
-        ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
-        RedirectURI:  "http://localhost:8080/auth/oauth/google/callback",
-      },
-      // ...other providers
-    },
-  })
+  // Builder pattern
+  config := gobetterauthdomain.NewConfig().
+		WithAppName("YourAppName").
+		WithDatabase(gobetterauthdomain.DatabaseConfig{
+			Provider:         "postgres",
+			ConnectionString: os.Getenv("DATABASE_URL"),
+		}).
+		WithEmailPassword(gobetterauthdomain.EmailPasswordConfig{
+			Enabled:                  true,
+			RequireEmailVerification: true,
+			AutoSignIn:               true,
+		}).
+		WithEmailVerification(gobetterauthdomain.EmailVerificationConfig{
+			SendOnSignUp: true,
+			SendVerificationEmail: func(user *gobetterauthdomain.User, url string, token string) error {
+				... // Implement your email sending logic here
+			},
+		}).
+		WithTrustedOrigins(gobetterauthdomain.TrustedOriginsConfig{
+			Origins: []string{
+				"http://localhost:3000",
+			},
+		})
+
+	auth := gobetterauth.New(config, nil)
 }
 `,
 ];
@@ -60,7 +59,7 @@ export default function IntroSection() {
       <Meteors />
 
       <div className="w-full max-w-7xl p-6 relative z-10 grid grid-cols-1 lg:grid-cols-2 border-x border-dashed border-sky-950">
-        <div className="p-10 flex flex-col justify-center items-center text-center">
+        <div className="p-10 flex flex-col justify-center items-center text-center lg:text-left">
           <div className="mb-5">
             <Badge variant="outline" className="relative bg-slate-950 mb-5">
               <BorderBeam
@@ -76,12 +75,12 @@ export default function IntroSection() {
               Secure Auth
             </h2>
             <h2 className="text-4xl mb-4 font-bold">Made Simple for Go</h2>
-            <p className="text-base w-full max-w-xl text-center">
+            <p className="text-base w-full max-w-xl">
               A comprehensive, framework-independent authentication and
               authorization library that brings enterprise-grade security to
               your Go applications.
             </p>
-            <div className="mt-5 flex flex-row gap-2 justify-center items-center">
+            <div className="mt-5 flex flex-row gap-2 items-center justify-center lg:justify-start">
               <Button
                 variant="outline"
                 className="bg-linear-to-r from-blue-700 to-sky-700"

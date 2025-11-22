@@ -13,21 +13,21 @@ import (
 	"net/http"
 
 	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/domain"
+	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
 )
 
 func main() {
-	auth, err := gobetterauth.New(&gobetterauthdomain.Config{
-		BaseURL: "http://localhost:8080",
-		BasePath: "/api/auth",
-		Database: gobetterauthdomain.DatabaseConfig{
+	config := gobetterauthdomain.NewConfig(
+		gobetterauthdomain.WithAppName("MyApp"),
+		gobetterauthdomain.WithBaseURL("http://localhost:8080"),
+		gobetterauthdomain.WithBasePath("/api/auth"),
+		gobetterauthdomain.WithDatabase(gobetterauthdomain.DatabaseConfig{
 			Provider:         "sqlite",
 			ConnectionString: "./auth.db",
-		},
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
+		}),
+	)
+	auth := gobetterauth.New(config, nil)
+	auth.RunMigrations()
 
 	// Mount auth routes
 	http.Handle("/api/auth/", auth.Handler())
@@ -51,21 +51,21 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/domain"
+	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
 )
 
 func main() {
-	auth, err := gobetterauth.New(&gobetterauthdomain.Config{
-		BaseURL: "http://localhost:8080",
-		BasePath: "/api/auth",
-		Database: gobetterauthdomain.DatabaseConfig{
+	config := gobetterauthdomain.NewConfig(
+		gobetterauthdomain.WithAppName("MyApp"),
+		gobetterauthdomain.WithBaseURL("http://localhost:8080"),
+		gobetterauthdomain.WithBasePath("/api/auth"),
+		gobetterauthdomain.WithDatabase(gobetterauthdomain.DatabaseConfig{
 			Provider:         "sqlite",
 			ConnectionString: "./auth.db",
-		},
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
+		}),
+	)
+	auth := gobetterauth.New(config, nil)
+	auth.RunMigrations()
 
 	r := chi.NewRouter()
 
@@ -95,21 +95,21 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/domain"
+	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
 )
 
 func main() {
-	auth, err := gobetterauth.New(&gobetterauthdomain.Config{
-		BaseURL: "http://localhost:8080",
-		BasePath: "/api/auth",
-		Database: gobetterauthdomain.DatabaseConfig{
+	config := gobetterauthdomain.NewConfig(
+		gobetterauthdomain.WithAppName("MyApp"),
+		gobetterauthdomain.WithBaseURL("http://localhost:8080"),
+		gobetterauthdomain.WithBasePath("/api/auth"),
+		gobetterauthdomain.WithDatabase(gobetterauthdomain.DatabaseConfig{
 			Provider:         "sqlite",
 			ConnectionString: "./auth.db",
-		},
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
+		}),
+	)
+	auth := gobetterauth.New(config, nil)
+	auth.RunMigrations()
 
 	e := echo.New()
 
@@ -137,21 +137,21 @@ import (
 
 	"github.com/gin-gonic/gin"
 	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/domain"
+	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
 )
 
 func main() {
-	auth, err := gobetterauth.New(&gobetterauthdomain.Config{
-		BaseURL: "http://localhost:8080",
-		BasePath: "/api/auth",
-		Database: gobetterauthdomain.DatabaseConfig{
+	config := gobetterauthdomain.NewConfig(
+		gobetterauthdomain.WithAppName("MyApp"),
+		gobetterauthdomain.WithBaseURL("http://localhost:8080"),
+		gobetterauthdomain.WithBasePath("/api/auth"),
+		gobetterauthdomain.WithDatabase(gobetterauthdomain.DatabaseConfig{
 			Provider:         "sqlite",
 			ConnectionString: "./auth.db",
-		},
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
+		}),
+	)
+	auth := gobetterauth.New(config, nil)
+	auth.RunMigrations()
 
 	r := gin.Default()
 
@@ -175,21 +175,21 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/domain"
+	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
 )
 
 func main() {
-	auth, err := gobetterauth.New(&gobetterauthdomain.Config{
-		BaseURL: "http://localhost:8080",
-		BasePath: "/api/auth",
-		Database: gobetterauthdomain.DatabaseConfig{
+	config := gobetterauthdomain.NewConfig(
+		gobetterauthdomain.WithAppName("MyApp"),
+		gobetterauthdomain.WithBaseURL("http://localhost:8080"),
+		gobetterauthdomain.WithBasePath("/api/auth"),
+		gobetterauthdomain.WithDatabase(gobetterauthdomain.DatabaseConfig{
 			Provider:         "sqlite",
 			ConnectionString: "./auth.db",
-		},
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
+		}),
+	)
+	auth := gobetterauth.New(config, nil)
+	auth.RunMigrations()
 
 	app := fiber.New()
 
@@ -216,21 +216,21 @@ import (
 
 	"github.com/gorilla/mux"
 	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/domain"
+	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
 )
 
 func main() {
-	auth, err := gobetterauth.New(&gobetterauthdomain.Config{
-		BaseURL: "http://localhost:8080",
-		BasePath: "/api/auth",
-		Database: gobetterauthdomain.DatabaseConfig{
+	config := gobetterauthdomain.NewConfig(
+		gobetterauthdomain.WithAppName("MyApp"),
+		gobetterauthdomain.WithBaseURL("http://localhost:8080"),
+		gobetterauthdomain.WithBasePath("/api/auth"),
+		gobetterauthdomain.WithDatabase(gobetterauthdomain.DatabaseConfig{
 			Provider:         "sqlite",
 			ConnectionString: "./auth.db",
-		},
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
+		}),
+	)
+	auth := gobetterauth.New(config, nil)
+	auth.RunMigrations()
 
 	r := mux.NewRouter()
 
@@ -247,6 +247,8 @@ func main() {
 ## Middleware configuration
 
 Coming soon...
+
+---
 
 ## CORS Configuration
 
@@ -269,9 +271,10 @@ r.Use(cors.Handler(cors.Options{
 Configure custom base paths:
 
 ```go
-&gobetterauthdomain.Config{
-  BasePath: "/api/v1/auth", // Instead of default "/api/auth"
-}
+config := gobetterauthdomain.NewConfig(
+	...,
+	gobetterauthdomain.WithBasePath("/api/v1/auth"),
+)
 ```
 
 Then mount accordingly:
