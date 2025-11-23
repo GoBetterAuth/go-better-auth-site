@@ -2,11 +2,7 @@ import Link from "next/link";
 
 import { MoveRight } from "lucide-react";
 
-import {
-  AnimatedSpan,
-  Terminal,
-  TypingAnimation,
-} from "@/components/ui/terminal";
+import { Terminal } from "@/components/ui/terminal";
 import { Badge } from "@/components/ui/badge";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { Button } from "@/components/ui/button";
@@ -14,43 +10,41 @@ import GitHubIcon from "@/components/shared/icons/GitHubIcon";
 import { CONSTANTS } from "@/constants/constants";
 import { Meteors } from "@/components/ui/meteors";
 
-const codeSnippets = [
-  `import (
+const codeSnippet = `
+import (
   "os"
 
   gobetterauth "github.com/GoBetterAuth/go-better-auth"
   gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
 )
-`,
-  `
-func main() {
-  config := gobetterauthdomain.NewConfig().
-		WithAppName("YourAppName").
-		WithDatabase(gobetterauthdomain.DatabaseConfig{
-			Provider:         "postgres",
-			ConnectionString: os.Getenv("DATABASE_URL"),
-		}).
-		WithEmailPassword(gobetterauthdomain.EmailPasswordConfig{
-			Enabled:                  true,
-			RequireEmailVerification: true,
-			AutoSignIn:               true,
-		}).
-		WithEmailVerification(gobetterauthdomain.EmailVerificationConfig{
-			SendOnSignUp: true,
-			SendVerificationEmail: func(user *gobetterauthdomain.User, url string, token string) error {
-				... // Implement your email sending logic here
-			},
-		}).
-		WithTrustedOrigins(gobetterauthdomain.TrustedOriginsConfig{
-			Origins: []string{
-				"http://localhost:3000",
-			},
-		})
 
-	auth := gobetterauth.New(config, nil)
+func main() {
+  config := gobetterauthdomain.NewConfig(
+    gobetterauthdomain.WithAppName("YourAppName"),
+    gobetterauthdomain.WithDatabase(gobetterauthdomain.DatabaseConfig{
+      Provider:         "postgres",
+      ConnectionString: os.Getenv("DATABASE_URL"),
+    }),
+    gobetterauthdomain.WithEmailPassword(gobetterauthdomain.EmailPasswordConfig{
+      Enabled:                  true,
+    }),
+  )
+  auth := gobetterauth.New(config, nil)
+  // Run database migrations programmatically (optional)
+  auth.RunMigrations()
+
+  // Mount auth routes
+  http.Handle("/auth/", auth.Handler())
+
+  // Add your application routes
+  http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+    w.Write([]byte("Welcome to GoBetterAuth!"))
+  })
+
+  // Start the server
+  log.Fatal(http.ListenAndServe(":8080", nil))
 }
-`,
-];
+`.trim();
 
 export default function IntroSection() {
   return (
@@ -105,15 +99,9 @@ export default function IntroSection() {
           </div>
         </div>
 
-        <div className="w-full max-w-full overflow-hidden flex justify-center items-center">
-          <Terminal className="w-full max-w-4xl text-left max-h-max bg-transparent border border-dashed border-sky-950">
-            {codeSnippets.map((line: string, index: number) =>
-              index === 0 ? (
-                <TypingAnimation key={index}>{line}</TypingAnimation>
-              ) : (
-                <AnimatedSpan key={index}>{line}</AnimatedSpan>
-              )
-            )}
+        <div className="w-full overflow-hidden flex justify-center items-center">
+          <Terminal className="w-full text-sm max-w-4xl text-left max-h-max bg-transparent">
+            {codeSnippet}
           </Terminal>
         </div>
       </div>
