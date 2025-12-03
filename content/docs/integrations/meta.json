@@ -1,3 +1,3 @@
 {
-  "pages": ["routers"]
+  "pages": ["routers", "database-hooks"]
 }
