@@ -1,0 +1,58 @@
+---
+title: Event Hooks
+description: Configure event hooks to trigger custom actions on specific authentication events.
+---
+
+Event hooks in GoBetterAuth allow you to trigger custom actions when specific authentication-related events occur. This enables you to integrate with external systems, send notifications, or perform additional logic in response to user activity.
+
+## Available Event Hooks
+
+You can configure the following event hooks:
+
+```go
+type EventHooksConfig struct {
+  OnUserSignedUp    func(user User) error
+  OnUserLoggedIn    func(user User) error
+  OnEmailVerified   func(user User) error
+  OnPasswordChanged func(user User) error
+  OnEmailChanged    func(user User) error
+}
+```
+
+- **OnUserSignedUp**: Triggered when a new user signs up.
+- **OnUserLoggedIn**: Triggered when a user successfully logs in.
+- **OnEmailVerified**: Triggered when a user's email is verified.
+- **OnPasswordChanged**: Triggered when a user changes their password.
+- **OnEmailChanged**: Triggered when a user changes their email address.
+
+## How to Use Event Hooks
+
+To use event hooks, provide your own functions for the events you want to handle. These functions receive the relevant `User` object and can perform any custom logic you need.
+
+## Examples
+
+Below are some event hook examples that reflect real-world workflows. These patterns emphasise non-blocking behaviour, idempotency, and security considerations.
+
+```go
+import (
+  gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
+)
+
+func doSomething(user gobetterauthdomain.User) error {
+  // Do something here...
+  return nil
+}
+
+config := gobetterauthdomain.NewConfig(
+  gobetterauthdomain.WithEventHooks(gobetterauthdomain.EventHooksConfig{
+    OnUserSignedUp: func (user gobetterauthdomain.User) error {
+      // You can perform more actions here...
+      return doSomething(user)
+    },
+  }),
+)
+```
+
+## Summary
+
+Event hooks execute asynchronously in goroutines, preventing any disruption to the core authentication process. They offer a flexible way to extend GoBetterAuth by responding to key authentication events. By defining custom functions, you can adapt the authentication experience to your application's specific needs, integrating seamlessly with analytics, notifications, logging, or additional business logic.
