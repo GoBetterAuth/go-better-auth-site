@@ -31,11 +31,13 @@ Go Better Auth follows **Clean Architecture** principles with built-in HTTP hand
 
 ### Domain Layer
 
-Contains enterprise business rules and entities:
-
-- **Entities**: User, Account, Session, Verification
+- **Entities**: User, Account, Session, Verification and more
 
 ### Handler Layer
 
 - Entrypoint for API endpoints, delegates logic to services
 - Integrated with middleware
+
+### Services Layer
+
+- Business logic for authentication workflows

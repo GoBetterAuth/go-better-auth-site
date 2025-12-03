@@ -24,11 +24,6 @@ func main() {
 		gobetterauthdomain.WithEmailPassword(gobetterauthdomain.EmailPasswordConfig{
 			Enabled:                  true,
 		}),
-		gobetterauthdomain.WithTrustedOrigins(gobetterauthdomain.TrustedOriginsConfig{
-			Origins: []string{
-				"http://localhost:3000",
-			},
-		}),
 	)
 	auth := gobetterauth.New(config, nil)
 	auth.RunMigrations()
