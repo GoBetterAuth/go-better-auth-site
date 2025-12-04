@@ -1,0 +1,108 @@
+---
+title: Endpoint Hooks
+description: Configure endpoint hooks to run custom logic before and after HTTP requests.
+---
+
+## Overview
+
+Endpoint hooks let you run custom logic immediately before a request is handled by the auth endpoints, and immediately after the request has been processed. Use them to implement cross-cutting concerns such as request validation, feature gating, auditing or custom authorization checks.
+
+## Hook Context
+
+Each hook receives an `EndpointHookContext` providing details about the request and, when available, the authenticated user. A typical context includes:
+
+- `Path` — the endpoint path being called (e.g. `/auth/sign-in/email`).
+- `Method` — HTTP method (e.g. `POST`).
+- `Body` — parsed request body as a `map[string]any` for JSON payloads.
+- `Headers` — request headers.
+- `Query` — query parameters.
+- `Request` — the raw `*http.Request`.
+- `User` — the currently authenticated user (when present).
+
+See the reference docs for the full Go type definitions.
+
+## Before Hook
+
+The `Before` hook runs before the endpoint handler executes. It can be used to:
+
+- Validate or normalise incoming payloads.
+- Block or short-circuit requests based on custom rules.
+- Enforce rate limits or feature flags.
+
+If `Before` returns a non-nil error, request processing is aborted and the error is returned to the caller (the framework will convert it to an appropriate HTTP response). Keep `Before` fast and non-blocking.
+
+Example:
+
+```go
+import (
+  gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
+)
+
+config := gobetterauthdomain.NewConfig(
+  // ...other options
+  gobetterauthdomain.WithEndpointHooks(
+    gobetterauthdomain.EndpointHooksConfig{
+      Before: func(ctx *gobetterauthdomain.EndpointHookContext) error {
+        if ctx.Path == "/auth/sign-up/email" {
+          // Enforce a custom domain restriction on sign-ups
+          email, ok := ctx.Body["email"].(string)
+          if !ok || !strings.HasSuffix(email, "@example.com") {
+            return fmt.Errorf("sign-ups are restricted to @example.com emails")
+          }
+        }
+        return nil
+      },
+    },
+  ),
+)
+```
+
+## After Hook
+
+The `After` hook runs asynchronously in a separate goroutine after the endpoint handler begins returning its response. Because it runs in the background, the hook doesn't affect the HTTP response sent to the client — treat it as fire-and-forget side-effects.
+
+Typical uses:
+
+- Auditing and audit logs (who did what, when).
+- Post-processing side effects (metrics, notifications).
+- Cleanup tasks that must run regardless of handler outcome.
+
+Example:
+
+```go
+import (
+  "slog"
+
+  gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
+)
+
+config := gobetterauthdomain.NewConfig(
+  // ...other options
+  gobetterauthdomain.WithEndpointHooks(
+    gobetterauthdomain.EndpointHooksConfig{
+      After: func(ctx *gobetterauthdomain.EndpointHookContext) error {
+        userID := "unknown"
+        if ctx.User != nil {
+          userID = ctx.User.ID
+        }
+
+        if ctx.Path == "/auth/change-password" {
+          if err := auditLog("change-password", userID, ctx.Method, ctx.Path); err != nil {
+            slog.Error("audit error: %v", err)
+          }
+        }
+
+        return nil
+      },
+    },
+  ),
+)
+```
+
+## Best Practices
+
+- Keep hooks lightweight and fast; they run on every matching request.
+- Avoid blocking I/O in `Before` hooks that would delay request handling; prefer short checks or delegate heavy work to background jobs.
+- Treat `Before` as authoritative for rejecting or altering control flow; treat `After` as non-authoritative side-effects.
+- Validate input carefully in `Before` and return helpful error messages.
+- Handle errors inside `After` gracefully; log them rather than returning them if they are non-critical.

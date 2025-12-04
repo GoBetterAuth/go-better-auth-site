@@ -83,6 +83,25 @@ type TrustedOriginsConfig struct {
 }
 ```
 
+## Endpoint Hooks Config
+
+```go
+type EndpointHookContext struct {
+	Path    string
+	Method  string
+	Body    map[string]any
+	Headers map[string]string
+	Query   map[string]string
+	Request *http.Request
+	User    *User
+}
+
+type EndpointHooksConfig struct {
+	Before func(ctx *EndpointHookContext) error
+	After  func(ctx *EndpointHookContext) error
+}
+```
+
 ## Database Hooks Config
 
 ```go
@@ -145,8 +164,9 @@ type Config struct {
 	User              UserConfig
 	Session           SessionConfig
 	TrustedOrigins    TrustedOriginsConfig
+	EndpointHooks     EndpointHooksConfig
 	DatabaseHooks     DatabaseHooksConfig
-	Hooks             HooksConfig
+	EventHooks        EventHooksConfig
 }
 ```
 
