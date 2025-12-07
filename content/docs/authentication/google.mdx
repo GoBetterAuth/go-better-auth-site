@@ -1,5 +1,74 @@
 ---
 title: Google
+description: Guide on how to set up Google authentication using Go Better Auth.
 ---
 
-Coming soon...
+import { Step, Steps } from "fumadocs-ui/components/steps";
+
+<Steps>
+<Step>
+
+### Obtain Google credentials
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
+1. Create a new project or select an existing one.
+1. Search for "APIs & Services", then go to "Credentials" in the left menu, click "Create Credentials" > "OAuth client ID".
+1. Choose "Web application", give it a name.
+1. Add authorized redirect URIs:
+   ```bash
+   # Assuming base path is /api/auth
+   http://localhost:8080/api/auth/oauth2/google/callback
+   ```
+   For production, replace localhost with the base URL of your Go Better Auth server (e.g. `https://api.yourdomain.com`).
+1. Note the Client ID and Client Secret.
+
+</Step>
+
+<Step>
+
+### Configure the provider
+
+```go
+import (
+  "os"
+  "fmt"
+  
+  gobetterauth "github.com/GoBetterAuth/go-better-auth"
+  gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
+)
+
+config := gobetterauthdomain.NewConfig(
+  // Other config options...
+  gobetterauthdomain.WithSocialProviders(
+    gobetterauthdomain.SocialProvidersConfig{
+      Default: gobetterauthdomain.DefaultOAuth2ProvidersConfig{
+        Google: &gobetterauthdomain.OAuth2Config{
+          ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
+          ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
+          RedirectURL:  fmt.Sprintf("%s/auth/oauth2/google/callback", os.Getenv("GO_BETTER_AUTH_BASE_URL")),
+        },
+      },
+    },
+  ),
+)
+```
+
+</Step>
+
+<Step>
+
+### Test the integration
+
+1. Start your Go Better Auth server.
+1. In your webapp, create a button when clicked on, it navigates the user to:
+    ```bash
+    # (replace localhost with your Go Better Auth server URL in production).
+    http://localhost:8080/api/auth/oauth2/google/login?redirect_to=<YOUR_REDIRECT_URL>
+    ```
+1. You should be redirected to Google's authorization page. After authorizing, you will be redirected back to your application.
+
+</Step>
+
+</Steps>
+
+

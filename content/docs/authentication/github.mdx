@@ -1,5 +1,82 @@
 ---
 title: GitHub
+description: Guide on how to set up GitHub authentication using Go Better Auth.
 ---
 
-Coming soon....
+**Note:** This guide uses GitHub Apps for user sign-in, which is recommended by GitHub for new integrations.
+
+import { Step, Steps } from "fumadocs-ui/components/steps";
+
+<Steps>
+<Step>
+
+### Obtain GitHub credentials
+
+1. Go to [GitHub Apps](https://github.com/settings/apps).
+1. Click on "New GitHub App".
+1. Fill in the GitHub App name, Homepage URL, and Description.
+1. On the app page, generate a Client secret under "Client secrets".
+1. Note the Client ID and the generated Client Secret.
+1. Under the "Identifying and authorizing users" section, set the Callback URL to:
+   ```bash
+   # Assuming base path is /api/auth
+   http://localhost:8080/api/auth/oauth2/github/callback
+   ```
+   For production, replace localhost with the base URL of your Go Better Auth server (e.g. `https://api.yourdomain.com`).
+1. Make sure to check the following checkboxes:
+    - Request user authorization (OAuth) during installation
+    - Enable Device Flow
+1. Then save the changes and click on the "Permissions & events" tab on the left, under the "Account permissions", set the "Email addresses" to "Read-only" to access the user's email.
+
+
+</Step>
+
+<Step>
+
+### Configure the provider
+
+```go
+import (
+  "os"
+  "fmt"
+  
+  gobetterauth "github.com/GoBetterAuth/go-better-auth"
+  gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
+)
+
+config := gobetterauthdomain.NewConfig(
+  // Other config options...
+  gobetterauthdomain.WithSocialProviders(
+    gobetterauthdomain.SocialProvidersConfig{
+      Default: gobetterauthdomain.DefaultOAuth2ProvidersConfig{
+        GitHub: &gobetterauthdomain.OAuth2Config{
+          ClientID:     os.Getenv("GITHUB_CLIENT_ID"),
+          ClientSecret: os.Getenv("GITHUB_CLIENT_SECRET"),
+          RedirectURL:  fmt.Sprintf("%s/auth/oauth2/github/callback", os.Getenv("GO_BETTER_AUTH_BASE_URL")),
+        },
+      },
+    },
+  ),
+)
+```
+
+</Step>
+
+<Step>
+
+### Test the integration
+
+1. Start your Go Better Auth server.
+2. In your webapp, create a button when clicked on, it navigates the user to:
+    ```bash
+    # (replace localhost with your Go Better Auth server URL in production).
+    http://localhost:8080/api/auth/oauth2/github/login?redirect_to=<YOUR_REDIRECT_URL>
+    ```
+3. You should be redirected to GitHub's authorization page. After authorizing, you will be redirected back to your application.
+
+</Step>
+
+</Steps>
+
+
+

@@ -1,5 +1,72 @@
 ---
 title: Discord
+description: Guide on how to set up Discord authentication using Go Better Auth.
 ---
 
-Coming soon...
+import { Step, Steps } from "fumadocs-ui/components/steps";
+
+<Steps>
+<Step>
+
+### Obtain Discord credentials
+
+1. Go to the [Discord Developer Portal](https://discord.com/developers/applications).
+1. Click on "New Application" and provide a name for your application.
+1. Fill in all the general information required for your application.
+1. Navigate to the "OAuth2" section and then you will see your "Client ID" and "Client Secret". Make a note of the "Client ID" and "Client Secret". Bear in mind you will only be shown the "Client Secret" once.
+1. Under "OAuth2", go to the "Redirects" section and add the following redirect URI:
+   ```bash
+   # Assuming base path is /api/auth
+   http://localhost:8080/api/auth/oauth2/discord/callback
+   ```
+   For production, replace localhost with the base URL of your Go Better Auth server (e.g. `https://api.yourdomain.com`).
+
+</Step>
+
+<Step>
+
+### Configure the provider
+
+```go
+import (
+  "os"
+  "fmt"
+  
+  gobetterauth "github.com/GoBetterAuth/go-better-auth"
+  gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
+)
+
+config := gobetterauthdomain.NewConfig(
+  // Other config options...
+  gobetterauthdomain.WithSocialProviders(
+    gobetterauthdomain.SocialProvidersConfig{
+      Default: gobetterauthdomain.DefaultOAuth2ProvidersConfig{
+        Discord: &gobetterauthdomain.OAuth2Config{
+          ClientID:     os.Getenv("DISCORD_CLIENT_ID"),
+          ClientSecret: os.Getenv("DISCORD_CLIENT_SECRET"),
+          RedirectURL:  fmt.Sprintf("%s/auth/oauth2/discord/callback", os.Getenv("GO_BETTER_AUTH_BASE_URL")),
+        },
+      },
+    },
+  ),
+)
+```
+
+</Step>
+
+<Step>
+
+### Test the integration
+
+1. Start your Go Better Auth server.
+1. In your webapp, create a button when clicked on, it navigates the user to:
+    ```bash
+    # (replace localhost with your Go Better Auth server URL in production).
+    http://localhost:8080/api/auth/oauth2/discord/login?redirect_to=<YOUR_REDIRECT_URL>
+    ```
+1. You should be redirected to Discord's authorization page. After authorizing, you will be redirected back to your application.
+
+</Step>
+
+</Steps>
+

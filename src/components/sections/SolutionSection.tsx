@@ -7,11 +7,11 @@ const solutionItems = [
   "Email/Password authentication",
   "Session management",
   "Password hashing & validation",
+  "Custom hooks into auth flows, database operations and events",
   "Middleware support",
-  "OAuth 2.0 support (coming soon)",
-  "Custom hooks into auth flows",
-  "Rate limiting (coming soon)",
+  "OAuth 2.0 support",
   "CSRF protection (coming soon)",
+  "Rate limiting (coming soon)",
 ];
 
 export default function SolutionSection() {
