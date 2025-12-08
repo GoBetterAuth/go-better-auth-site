@@ -50,6 +50,12 @@ config := gobetterauthdomain.NewConfig(
       },
     },
   ),
+  // Set the trusted origins so that redirects to your webapp are allowed and adds an extra layer of security.
+  gobetterauthdomain.WithTrustedOrigins(
+    gobetterauthdomain.TrustedOriginsConfig{
+      Origins: []string{"YOUR_FRONTEND_URL e.g. http://localhost:3000"},
+    },
+  ),
 )
 ```
 
