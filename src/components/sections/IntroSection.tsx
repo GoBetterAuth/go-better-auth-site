@@ -92,7 +92,7 @@ export default function IntroSection() {
                   className="flex flex-row items-center gap-1"
                 >
                   <GitHubIcon />
-                  <span>View on GitHub</span>
+                  <span>GitHub</span>
                 </Link>
               </Button>
             </div>
