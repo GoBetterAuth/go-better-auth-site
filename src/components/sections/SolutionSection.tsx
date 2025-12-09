@@ -5,13 +5,13 @@ import BorderIndicators from "../shared/BorderIndicators";
 
 const solutionItems = [
   "Email/Password authentication",
-  "Session management",
   "Password hashing & validation",
   "Custom hooks into auth flows, database operations and events",
   "Middleware support",
   "OAuth 2.0 support",
-  "CSRF protection (coming soon)",
+  "CSRF protection",
   "Rate limiting (coming soon)",
+  "Custom Plugins (coming soon)",
 ];
 
 export default function SolutionSection() {
