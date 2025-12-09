@@ -15,6 +15,14 @@ type DatabaseConfig struct {
 }
 ```
 
+## Secondary Storage Config
+
+```go
+type SecondaryStorageConfig struct {
+	Storage SecondaryStorage
+}
+```
+
 ## Email/Password Auth Config
 
 ```go
@@ -170,6 +178,7 @@ type Config struct {
 	BasePath          string
 	Secret            string
 	Database          DatabaseConfig
+	SecondaryStorage  SecondaryStorageConfig
 	EmailPassword     EmailPasswordConfig
 	EmailVerification EmailVerificationConfig
 	User              UserConfig

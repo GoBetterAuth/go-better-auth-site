@@ -1,0 +1,73 @@
+---
+title: Secondary Storage
+description: Integrate Go Better Auth with secondary storage
+---
+
+Secondary storage allows you to use various key-value store options such as in-memory, database and custom implementations (e.g. Redis) for managing session data, rate limiting counters, and other high-frequency records. This is useful for offloading intensive operations from your main database to a fast storage layer.
+
+## Why Use Secondary Storage?
+
+- **Performance:** Store session and rate limit data in RAM or fast key-value stores.
+- **Scalability:** Offload high-churn data from your main database.
+- **Flexibility:** Implement your own storage adapter for Redis, Valkey or any key-value store.
+
+## Configuration
+
+By default, Go Better Auth uses an in-memory secondary storage.
+
+To customise secondary storage, you have a few options:
+
+1. Use the built-in database secondary storage adapter:
+
+```go
+import (
+  gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
+)
+
+config := gobetterauthdomain.NewConfig(
+  // ...other config options
+  gobetterauthdomain.WithSecondaryStorage(
+    gobetterauthdomain.SecondaryStorageConfig{
+      Storage: gobetterauthdomain.NewDatabaseSecondaryStorage(db, nil),
+    },
+  ),
+)
+```
+
+2. Build your own custom adapter by implementing the `SecondaryStorage` interface:
+
+```go
+type SecondaryStorage interface {
+  Get(ctx context.Context, key string) (any, error)
+  Set(ctx context.Context, key string, value any, ttl *time.Duration) error
+  Delete(ctx context.Context, key string) error
+}
+```
+
+```go
+type MyCustomSecondaryStorage struct {
+  // ...your fields
+}
+
+// Implement the required methods for the SecondaryStorage interface...
+func (storage *MyCustomSecondaryStorage) Get(ctx context.Context, key string) (any, error) {
+  // ...implementation
+}
+// ...rest of the methods
+```
+
+```go
+// Then use your custom storage in the config:
+config := gobetterauthdomain.NewConfig(
+  gobetterauthdomain.WithSecondaryStorage(
+    gobetterauthdomain.SecondaryStorageConfig{
+      Storage: &MyCustomSecondaryStorage{/* ... */},
+    },
+  ),
+)
+```
+
+## Use Cases
+
+- **Session Storage:** Used to store session tokens for fast access. (to be implemented)
+- **Rate Limiting:** Used for counters for rate limiting. (to be implemented)
