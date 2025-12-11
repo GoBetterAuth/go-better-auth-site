@@ -10,7 +10,7 @@ const solutionItems = [
   "Middleware support",
   "OAuth 2.0 support",
   "CSRF protection",
-  "Rate limiting (coming soon)",
+  "Rate limiting",
   "Custom Plugins (coming soon)",
 ];
 

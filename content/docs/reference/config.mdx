@@ -102,6 +102,32 @@ type TrustedOriginsConfig struct {
 }
 ```
 
+## Rate Limit Config
+
+```go
+type RateLimitCustomRule struct {
+	Disabled bool
+	Window   time.Duration
+	Max      int
+}
+
+type RateLimitCustomRuleFunc func(req *http.Request) RateLimitCustomRule
+
+type IPConfig struct {
+	Headers []string
+}
+
+type RateLimitConfig struct {
+	Enabled     bool
+	Window      time.Duration
+	Max         int
+	Algorithm   string
+	Prefix      string
+	CustomRules map[string]RateLimitCustomRuleFunc
+	IP          IPConfig
+}
+```
+
 ## Endpoint Hooks Config
 
 ```go
@@ -173,20 +199,21 @@ type EventHooksConfig struct {
 ```go
 // Config holds all configurable options for the GoBetterAuth library.
 type Config struct {
-	AppName           string
-	BaseURL           string
-	BasePath          string
-	Secret            string
-	Database          DatabaseConfig
-	SecondaryStorage  SecondaryStorageConfig
-	EmailPassword     EmailPasswordConfig
-	EmailVerification EmailVerificationConfig
-	User              UserConfig
-	Session           SessionConfig
-	CSRF              CSRFConfig
-	TrustedOrigins    TrustedOriginsConfig
-	EndpointHooks     EndpointHooksConfig
-	DatabaseHooks     DatabaseHooksConfig
-	EventHooks        EventHooksConfig
+	AppName           	string
+	BaseURL           	string
+	BasePath          	string
+	Secret            	string
+	Database          	DatabaseConfig
+	SecondaryStorage  	SecondaryStorageConfig
+	EmailPassword     	EmailPasswordConfig
+	EmailVerification 	EmailVerificationConfig
+	User              	UserConfig
+	Session           	SessionConfig
+	CSRF              	CSRFConfig
+	TrustedOrigins    	TrustedOriginsConfig
+	RateLimit 					RateLimitConfig
+	EndpointHooks     	EndpointHooksConfig
+	DatabaseHooks     	DatabaseHooksConfig
+	EventHooks        	EventHooksConfig
 }
 ```

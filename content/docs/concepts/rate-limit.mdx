@@ -1,0 +1,100 @@
+---
+title: Rate Limit
+description: Rate Limiting in Go Better Auth
+---
+
+Rate limiting is a crucial mechanism to protect your application from abuse, such as brute-force attacks or excessive API requests. Go Better Auth provides built-in support for rate limiting to help you manage and control the flow of requests to your authentication endpoints.
+
+## How Rate Limiting Works
+
+Rate limiting restricts the number of requests a user or client can make to your authentication endpoints within a specified time window. This helps prevent abuse, brute-force attacks, and ensures fair usage.
+
+Go Better Auth uses a configurable rate limiting system that can be tailored to your needs.
+
+## Configuration
+
+You can configure rate limiting in Go Better Auth using the `RateLimitConfig` struct in your main config:
+
+```go
+type RateLimitConfig struct {
+  Enabled       bool
+  Window        time.Duration
+  Max           int
+  Algorithm     string
+  Prefix        string
+  CustomRules   map[string]RateLimitCustomRuleFunc
+  IP            IPConfig
+}
+```
+
+- **Enabled**: Turn rate limiting on or off.
+- **Window**: The time window for rate limiting (e.g., 1 minute).
+- **Max**: Maximum number of requests allowed in the window.
+- **Algorithm**: The algorithm used (e.g. "fixed-window", more may be added...).
+- **Prefix**: Key prefix for storage.
+- **CustomRules**: Define custom rules per endpoint.
+- **IP**: Configure which headers to use for client IP detection.
+
+## Basic Example
+
+Here’s a simple example to enable rate limiting for all authentication endpoints:
+
+```go
+config := gobetterauthdomain.NewConfig(
+  // Other config options...
+  gobetterauthdomain.WithRateLimit(
+    gobetterauthdomain.RateLimitConfig{
+      Enabled:    true,
+    },
+  ),
+)
+```
+
+## Custom Rules Example
+
+You can set custom rate limits for specific endpoints using `CustomRules`:
+
+```go
+config := gobetterauthdomain.NewConfig(
+  // Other config options...
+  gobetterauthdomain.WithRateLimit(
+    gobetterauthdomain.RateLimitConfig{
+      Enabled:    true,
+      CustomRules: map[string]gobetterauthdomain.RateLimitCustomRuleFunc{
+        "/auth/sign-up/email": func(req *http.Request) gobetterauthdomain.RateLimitCustomRule {
+          return gobetterauthdomain.RateLimitCustomRule{
+            Window: 1 * time.Hour,
+            Max:    5,
+          }
+        },
+      },
+    },
+  ),
+)
+```
+
+## Disabling Rate Limiting for Specific Endpoints
+
+You can disable rate limiting for certain endpoints:
+
+```go
+config := gobetterauthdomain.NewConfig(
+  // Other config options...
+  gobetterauthdomain.WithRateLimit(
+    gobetterauthdomain.RateLimitConfig{
+      Enabled:    true,
+      CustomRules: map[string]gobetterauthdomain.RateLimitCustomRuleFunc{
+        "/auth/me": func(req *http.Request) gobetterauthdomain.RateLimitCustomRule {
+          return gobetterauthdomain.RateLimitCustomRule{
+            Disabled: true,
+          }
+        },
+      },
+    },
+  ),
+)
+```
+
+## Best Practices
+
+- Set stricter limits for sensitive endpoints like sign-in and sign-up.
