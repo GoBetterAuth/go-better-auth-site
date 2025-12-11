@@ -13,34 +13,36 @@ Secondary storage allows you to use various key-value store options such as in-m
 
 ## Configuration
 
-By default, Go Better Auth uses an in-memory secondary storage.
-
-To customise secondary storage, you have a few options:
-
-1. Use the built-in database secondary storage adapter:
+By default, Go Better Auth uses an in-memory secondary storage. But you can configure it to use any of the available built-in providers:
 
 ```go
-import (
-  gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
-)
-
+// In-Memory Secondary Storage
 config := gobetterauthdomain.NewConfig(
   // ...other config options
   gobetterauthdomain.WithSecondaryStorage(
     gobetterauthdomain.SecondaryStorageConfig{
-      Storage: gobetterauthdomain.NewDatabaseSecondaryStorage(db, nil),
+      // in-memory storage
+      Type: gobetterauthdomain.SecondaryStorageTypeMemory,
+      MemoryOptions: &SecondaryStorageMemoryOptions{}
+
+      // or Database storage
+      Type: gobetterauthdomain.SecondaryStorageTypeDatabase,
+      DatabaseOptions: &SecondaryStorageDatabaseOptions{}
     },
   ),
 )
 ```
 
-2. Build your own custom adapter by implementing the `SecondaryStorage` interface:
+To customise secondary storage, you can supply a custom implementation by following these steps:
+
+Build your own custom adapter by implementing the `SecondaryStorage` interface:
 
 ```go
 type SecondaryStorage interface {
   Get(ctx context.Context, key string) (any, error)
   Set(ctx context.Context, key string, value any, ttl *time.Duration) error
   Delete(ctx context.Context, key string) error
+  Incr(ctx context.Context, key string, ttl *time.Duration) (int, error)
 }
 ```
 
@@ -61,13 +63,9 @@ func (storage *MyCustomSecondaryStorage) Get(ctx context.Context, key string) (a
 config := gobetterauthdomain.NewConfig(
   gobetterauthdomain.WithSecondaryStorage(
     gobetterauthdomain.SecondaryStorageConfig{
+      Type:   gobetterauthdomain.SecondaryStorageTypeCustom,
       Storage: &MyCustomSecondaryStorage{/* ... */},
     },
   ),
 )
 ```
-
-## Use Cases
-
-- **Session Storage:** Used to store session tokens for fast access. (to be implemented)
-- **Rate Limiting:** Used for counters for rate limiting. (to be implemented)

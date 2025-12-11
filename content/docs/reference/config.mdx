@@ -19,7 +19,10 @@ type DatabaseConfig struct {
 
 ```go
 type SecondaryStorageConfig struct {
-	Storage SecondaryStorage
+	Type            SecondaryStorageType
+	MemoryOptions   *SecondaryStorageMemoryOptions
+	DatabaseOptions *SecondaryStorageDatabaseOptions
+	Storage         SecondaryStorage
 }
 ```
 
