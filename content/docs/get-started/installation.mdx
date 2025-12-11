@@ -45,7 +45,8 @@ import (
 config := gobetterauthdomain.NewConfig(
   // Add your config options here
 )
-auth, err := gobetterauth.New(config)
+// You can pass in an existing *gorm.DB instance as the second argument to use that instead of having the library create a new one
+auth, err := gobetterauth.New(config, nil)
 ```
 
 </Step>
@@ -102,7 +103,7 @@ Go Better Auth provides migration files which you can run directly against your 
 ```go
 // Create the config
 config := gobetterauthdomain.NewConfig()
-auth, err := gobetterauth.New(config)
+auth, err := gobetterauth.New(config, nil)
 
 // Run the migrations using the config
 auth.RunMigrations(ctx, config)
@@ -139,7 +140,7 @@ This is an example of how it can be done with the standard library server:
 ```go
 // Initialise auth
 config := gobetterauthdomain.NewConfig()
-auth, err := gobetterauth.New(config)
+auth, err := gobetterauth.New(config, nil)
 if err != nil {
   log.Fatal(err)
 }
