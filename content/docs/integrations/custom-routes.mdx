@@ -1,0 +1,112 @@
+---
+title: Custom Routes
+description: Configure custom routes in your application to extend the library's auth endpoints.
+---
+
+## Extending Default Auth Routes with Custom Endpoints
+
+Go Better Auth allows you to add custom API endpoints to the default authentication routes. This is useful for adding features or handling custom logic within your authentication flow.
+
+### How It Works
+
+You can register custom routes using the `RegisterRoute` method. Each route is defined by a `CustomRoute` struct:
+
+```go
+type CustomRouteMiddleware func(http.Handler) http.Handler
+
+type CustomRouteHandler func(config *Config) http.Handler
+
+type CustomRoute struct {
+	Method     string
+	Path       string
+	Middleware []CustomRouteMiddleware
+	Handler    CustomRouteHandler
+}
+```
+
+- **Method**: The HTTP method (e.g., `GET`, `POST`).
+- **Path**: The endpoint path (relative to `/api/auth/`).
+- **Handler**: A function that returns an `http.Handler`, with access to your auth config.
+
+### Example: Adding Custom Endpoints
+
+#### 1. GET `/api/auth/example`
+
+Returns a message containing your app name.
+
+```go
+config := gobetterauthdomain.NewConfig(...)
+
+goBetterAuth := gobetterauth.New(config, nil)
+
+goBetterAuth.RegisterRoute(gobetterauthdomain.CustomRoute{
+  Method: "GET",
+  Path:   "example",
+  Middleware: []gobetterauthdomain.CustomRouteMiddleware{
+    goBetterAuth.AuthMiddleware(),
+  },
+  Handler: func(config *gobetterauthdomain.Config) http.Handler {
+    handler := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+      w.Header().Set("Content-Type", "application/json")
+      w.WriteHeader(200)
+      json.NewEncoder(w).Encode(map[string]any{
+        "message": fmt.Sprintf("App name: %s", config.AppName),
+      })
+    })
+    // Apply authentication middleware
+    return handler
+  },
+})
+```
+
+#### 2. POST `/api/auth/send-message`
+
+Accepts a JSON body and returns it in the response.
+
+```go
+config := gobetterauthdomain.NewConfig(...)
+
+goBetterAuth := gobetterauth.New(config, nil)
+
+goBetterAuth.RegisterRoute(gobetterauthdomain.CustomRoute{
+  Method: "POST",
+  Path:   "send-message",
+  Middleware: []gobetterauthdomain.CustomRouteMiddleware{
+    goBetterAuth.AuthMiddleware(),
+  },
+  Handler: func(config *gobetterauthdomain.Config) http.Handler {
+    handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+      var body map[string]any
+      if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+        w.Header().Set("Content-Type", "application/json")
+        w.WriteHeader(http.StatusBadRequest)
+        json.NewEncoder(w).Encode(map[string]any{
+          "error": "Invalid JSON body",
+        })
+        return
+      }
+
+      w.Header().Set("Content-Type", "application/json")
+      w.WriteHeader(200)
+      json.NewEncoder(w).Encode(map[string]any{
+        "message": fmt.Sprintf("%s: data received", config.AppName),
+        "data":    body,
+      })
+    })
+    return handler
+  },
+})
+```
+
+### Step-by-Step Guide
+
+1. **Define your custom route** using the `CustomRoute` struct.
+2. **Implement the handler** function. You can access the auth config and use any middleware (e.g., `AuthMiddleware`).
+3. **Register the route** with `goBetterAuth.RegisterRoute(...)`.
+4. Your endpoint will be available at `/api/auth/{path}` (e.g., `/api/auth/get-message`).
+
+### Notes
+
+- All custom routes are protected by the authentication middleware by default.
+- You can add as many custom routes as needed.
+- Use the config object to access app-specific settings or secrets.
