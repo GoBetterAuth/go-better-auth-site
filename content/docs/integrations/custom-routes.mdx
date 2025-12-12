@@ -17,10 +17,10 @@ type CustomRouteMiddleware func(http.Handler) http.Handler
 type CustomRouteHandler func(config *Config) http.Handler
 
 type CustomRoute struct {
-	Method     string
-	Path       string
-	Middleware []CustomRouteMiddleware
-	Handler    CustomRouteHandler
+  Method     string
+  Path       string
+  Middleware []CustomRouteMiddleware
+  Handler    CustomRouteHandler
 }
 ```
 
@@ -101,9 +101,9 @@ goBetterAuth.RegisterRoute(gobetterauthdomain.CustomRoute{
 ### Step-by-Step Guide
 
 1. **Define your custom route** using the `CustomRoute` struct.
-2. **Implement the handler** function. You can access the auth config and use any middleware (e.g., `AuthMiddleware`).
+2. **Implement the handler** function. You can access the auth config and use any middleware (e.g. `AuthMiddleware`).
 3. **Register the route** with `goBetterAuth.RegisterRoute(...)`.
-4. Your endpoint will be available at `/api/auth/{path}` (e.g., `/api/auth/get-message`).
+4. Your endpoint will be available at `/api/auth/{path}` (e.g. `/api/auth/get-message`).
 
 ### Notes
 
