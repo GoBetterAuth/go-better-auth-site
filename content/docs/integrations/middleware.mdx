@@ -1,0 +1,146 @@
+---
+title: Middleware
+description: Learn how to use middleware in your application to handle requests and responses.
+---
+
+GoBetterAuth provides a set of built-in middleware for authentication, security, and request handling. This page explains each middleware and demonstrates how to use them when registering routes in your application.
+
+**Overview**
+
+- **Auth middleware**: enforces that the request is authenticated.
+- **Optional auth**: parses authentication if present but doesn't require it.
+- **CORS**: restricts cross-origin requests to configured origins.
+- **CSRF**: protects state-changing endpoints with CSRF tokens.
+- **Rate limiting**: prevents abusive request rates.
+- **Endpoint hooks**: runs configured hooks around the request/response lifecycle.
+
+### Available middleware and usage
+
+Below are the helper methods provided on the `Auth` instance and how to use them.
+
+```go
+func (auth *Auth) AuthMiddleware() func(http.Handler) http.Handler {
+	return middleware.AuthMiddleware(
+		auth.authService,
+		auth.Config.Session.CookieName,
+	)
+}
+
+func (auth *Auth) OptionalAuthMiddleware() func(http.Handler) http.Handler {
+	return middleware.OptionalAuthMiddleware(
+		auth.authService,
+		auth.Config.Session.CookieName,
+	)
+}
+
+func (auth *Auth) CorsAuthMiddleware() func(http.Handler) http.Handler {
+	return middleware.CorsMiddleware(
+		auth.Config.TrustedOrigins.Origins,
+	)
+}
+
+func (auth *Auth) CSRFMiddleware() func(http.Handler) http.Handler {
+	return middleware.CSRFMiddleware(auth.Config.CSRF)
+}
+
+func (auth *Auth) RateLimitMiddleware() func(http.Handler) http.Handler {
+	return middleware.RateLimitMiddleware(auth.authService.RateLimitService)
+}
+
+func (auth *Auth) EndpointHooksMiddleware() func(http.Handler) http.Handler {
+	return middleware.EndpointHooksMiddleware(auth.Config, auth.authService)
+}
+```
+
+Each helper returns a standard Go HTTP middleware: a function that accepts and returns an `http.Handler`. Use them to wrap specific routes or the whole router.
+
+**Extracting the authenticated user**
+
+The `Auth` instance exposes helpers for getting the current user id from a request or context:
+
+```go
+func (auth *Auth) GetUserIDFromContext(ctx context.Context) (string, bool) {
+	value := ctx.Value(middleware.ContextUserID)
+	if value == nil {
+		return "", false
+	}
+	id, ok := value.(string)
+
+	return id, ok
+}
+
+func (auth *Auth) GetUserIDFromRequest(r *http.Request) (string, bool) {
+	return auth.GetUserIDFromContext(r.Context())
+}
+```
+
+Call either of the two functions above inside handlers to get the currently authenticated user.
+
+**Common patterns**
+
+- Per-route protection: wrap only the handlers that must be authenticated with `AuthMiddleware()`.
+- Optional parsing: use `OptionalAuthMiddleware()` when endpoints can accept both authenticated and anonymous requests.
+- Global concerns: apply `RateLimitMiddleware()` and `EndpointHooksMiddleware()` to the final router so they run for every request.
+
+Example route registration and middleware chaining:
+
+```go
+config := gobetterauthdomain.NewConfig(/* ... */)
+goBetterAuth := gobetterauth.New(config)
+
+// Using Echo framework
+echoInstance := echo.New()
+if err != nil {
+  echoInstance.Logger.Fatal(err)
+}
+
+api := echoInstance.Group("/api")
+
+protected := api.Group(
+  "/protected",
+  echo.WrapMiddleware(goBetterAuth.AuthMiddleware()),
+)
+
+protected.GET("", func(c echo.Context) error {
+  userId, ok := goBetterAuth.GetUserIDFromContext(c.Request().Context())
+  if !ok {
+    return c.JSON(http.StatusInternalServerError, map[string]any{
+      "error": "Failed to get user ID from context",
+    })
+  }
+  
+  return c.JSON(http.StatusOK, map[string]any{
+    "userId":  userId,
+    "message": "Protected Route!",
+  })
+})
+```
+
+Order matters: middleware applied closest to the handler runs first (inner). For example, `auth.AuthMiddleware()(auth.CSRFMiddleware()(h))` runs CSRF first, then Auth, then `h`.
+
+**CORS**
+
+If your API is consumed from browsers on other origins, enable the CORS middleware with the configured trusted origins. Example:
+
+```go
+// Apply CORS globally (wrap final handler) or per-route as needed
+finalHandler = auth.CorsAuthMiddleware()(finalHandler)
+```
+
+**CSRF**
+
+Apply `CSRFMiddleware()` to any state-changing endpoint that is invoked by a browser (POST/PUT/PATCH/DELETE). When used together with `AuthMiddleware()`, the middleware ensures a valid session and a matching CSRF token.
+
+**Rate limiting**
+
+Rate limiting is typically enabled globally so it protects all endpoints. Use `RateLimitMiddleware()` to throttle requests per user or IP.
+
+**Endpoint hooks**
+
+`EndpointHooksMiddleware()` runs configured hooks around the lifecycle of every request — useful for telemetry, audit events and more. This should be applied early (around the final router) so it captures all requests.
+
+**Tips and best practices**
+
+- Prefer composition: wrap only what each route needs rather than applying everything globally.
+- Keep middleware order intentional: authentication/CSRF before handler logic; rate limiting and hooks around the whole router.
+- Use `OptionalAuthMiddleware()` for endpoints that expose additional data when the user is logged in but must remain accessible anonymously.

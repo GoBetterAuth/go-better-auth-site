@@ -211,6 +211,7 @@ type Config struct {
 	BaseURL           	string
 	BasePath          	string
 	Secret            	string
+	DB									*gorm.DB
 	Database          	DatabaseConfig
 	SecondaryStorage  	SecondaryStorageConfig
 	EmailPassword     	EmailPasswordConfig
