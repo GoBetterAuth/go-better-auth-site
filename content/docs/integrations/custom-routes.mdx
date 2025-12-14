@@ -37,7 +37,7 @@ Returns a message containing your app name.
 ```go
 config := gobetterauthdomain.NewConfig(...)
 
-goBetterAuth := gobetterauth.New(config, nil)
+goBetterAuth := gobetterauth.New(config)
 
 goBetterAuth.RegisterRoute(gobetterauthdomain.CustomRoute{
   Method: "GET",
@@ -66,7 +66,7 @@ Accepts a JSON body and returns it in the response.
 ```go
 config := gobetterauthdomain.NewConfig(...)
 
-goBetterAuth := gobetterauth.New(config, nil)
+goBetterAuth := gobetterauth.New(config)
 
 goBetterAuth.RegisterRoute(gobetterauthdomain.CustomRoute{
   Method: "POST",

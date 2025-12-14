@@ -29,7 +29,7 @@ func main() {
       Enabled:                  true,
     }),
   )
-  auth := gobetterauth.New(config, nil)
+  auth := gobetterauth.New(config)
   // Run database migrations programmatically (optional)
   auth.RunMigrations()
 
