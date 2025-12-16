@@ -29,7 +29,7 @@ Go Better Auth follows **Clean Architecture** principles with built-in HTTP hand
 
 ## Component Layers
 
-### Domain Layer
+### Models Layer
 
 - **Entities**: User, Account, Session, Verification and more
 
@@ -41,3 +41,12 @@ Go Better Auth follows **Clean Architecture** principles with built-in HTTP hand
 ### Services Layer
 
 - Business logic for authentication workflows
+
+### Database Layer
+
+- GORM based adapters for multiple databases
+
+### Extensibility
+
+- Plugin system for custom logic
+- Event Bus for event-driven architecture

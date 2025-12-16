@@ -11,7 +11,8 @@ const solutionItems = [
   "OAuth 2.0 support",
   "CSRF protection",
   "Rate limiting",
-  "Custom Plugins (coming soon)",
+  "Event driven architecture",
+  "Custom Plugins",
 ];
 
 export default function SolutionSection() {
