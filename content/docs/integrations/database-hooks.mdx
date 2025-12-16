@@ -16,17 +16,18 @@ import (
 	"log"
 
 	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
+	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
 )
 
-func logUserCreation(user gobetterauthdomain.User) error {
+func logUserCreation(user gobetterauthmodels.User) error {
 	log.Printf("New user created - ID: %s, Email: %s", user.ID, user.Email)
 	return nil
 }
 
-config := gobetterauthdomain.NewConfig(
-	gobetterauthdomain.WithDatabaseHooks(gobetterauthdomain.DatabaseHooksConfig{
-		Users: &gobetterauthdomain.UserDatabaseHooksConfig{
+config := gobetterauthconfig.NewConfig(
+	gobetterauthconfig.WithDatabaseHooks(gobetterauthmodels.DatabaseHooksConfig{
+		Users: &gobetterauthmodels.UserDatabaseHooksConfig{
 			AfterCreate: logUserCreation,
 		},
 	}),

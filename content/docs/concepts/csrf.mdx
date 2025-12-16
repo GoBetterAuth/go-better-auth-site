@@ -33,10 +33,15 @@ type CSRFConfig struct {
 Below is an example of how you might configure CSRF protection in your GoBetterAuth setup:
 
 ```go
-config := gobetterauthdomain.NewConfig(
+import (
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+)
+
+config := gobetterauthconfig.NewConfig(
   // Other config options...
-  gobetterauthdomain.WithCSRF(
-    gobetterauthdomain.CSRFConfig{
+  gobetterauthconfig.WithCSRF(
+    gobetterauthmodels.CSRFConfig{
       Enabled:    true, // default is set to false
       CookieName: "csrf_token", // default is set to "gobetterauth_csrf"
       HeaderName: "X-CSRF-Token", // default is set to "X-GOBETTERAUTH-CSRF-TOKEN"

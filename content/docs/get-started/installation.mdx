@@ -38,15 +38,12 @@ GO_BETTER_AUTH_SECRET=
 
 ```go
 import (
-	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
 )
 
-config := gobetterauthdomain.NewConfig(
-  // Add your config options here
-)
-// You can pass in an existing *gorm.DB instance as the second argument to use that instead of having the library create a new one
-auth, err := gobetterauth.New(config)
+config := gobetterauthconfig.NewConfig(/*...*/)
+auth := gobetterauth.New(config)
 ```
 
 </Step>
@@ -70,8 +67,8 @@ Go Better Auth supports multiple database providers such as SQLite, Postgres and
 
     <CodeBlockTab value="sqlite">
       ```go
-      gobetterauthdomain.NewConfig(
-        gobetterauthdomain.WithDatabase(gobetterauthdomain.DatabaseConfig{
+      gobetterauthconfig.NewConfig(
+        gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
           Provider:         "sqlite",
           ConnectionString: "./auth.db", // Path to your sqlite database file
         }),
@@ -81,8 +78,8 @@ Go Better Auth supports multiple database providers such as SQLite, Postgres and
 
     <CodeBlockTab value="postgres">
       ```go
-      gobetterauthdomain.NewConfig(
-        gobetterauthdomain.WithDatabase(gobetterauthdomain.DatabaseConfig{
+      gobetterauthconfig.NewConfig(
+        gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
           Provider:         "postgres",
           ConnectionString: os.Getenv("DATABASE_URL"), // Add this ENV variable to your .env
         }),
@@ -102,11 +99,11 @@ Go Better Auth provides migration files which you can run directly against your 
 
 ```go
 // Create the config
-config := gobetterauthdomain.NewConfig()
-auth, err := gobetterauth.New(config)
+config := gobetterauthconfig.NewConfig(/*...*/)
+auth := gobetterauth.New(config)
 
-// Run the migrations using the config
-auth.RunMigrations(ctx, config)
+// Run the migrations
+auth.RunMigrations()
 ```
 
 </Step>
@@ -118,8 +115,8 @@ auth.RunMigrations(ctx, config)
 Configure the authentication methods you want to use in your config struct. Go Better Auth supports the basic Email/Password authentication method and will soon support social sign-on providers such as Google, GitHub, Discord and more.
 
 ```go
-config := gobetterauthdomain.NewConfig(
-  gobetterauthdomain.WithEmailPassword(gobetterauthdomain.EmailPasswordConfig{
+config := gobetterauthconfig.NewConfig(
+  gobetterauthconfig.WithEmailPassword(gobetterauthmodels.EmailPasswordConfig{
     Enabled:                  true,
     RequireEmailVerification: true,
     AutoSignIn:               true,
@@ -139,11 +136,8 @@ This is an example of how it can be done with the standard library server:
 
 ```go
 // Initialise auth
-config := gobetterauthdomain.NewConfig()
-auth, err := gobetterauth.New(config)
-if err != nil {
-  log.Fatal(err)
-}
+config := gobetterauthconfig.NewConfig(/*...*/)
+auth := gobetterauth.New(config)
 
 // Mount auth routes
 http.Handle("/auth/", auth.Handler())

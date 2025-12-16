@@ -5,7 +5,6 @@ import BorderIndicators from "../shared/BorderIndicators";
 
 const solutionItems = [
   "Email/Password authentication",
-  "Password hashing & validation",
   "Custom hooks into auth flows, database operations and events",
   "Middleware support",
   "OAuth 2.0 support",

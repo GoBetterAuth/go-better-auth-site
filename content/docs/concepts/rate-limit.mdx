@@ -40,10 +40,15 @@ type RateLimitConfig struct {
 Here’s a simple example to enable rate limiting for all authentication endpoints:
 
 ```go
-config := gobetterauthdomain.NewConfig(
+import (
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+)
+
+config := gobetterauthconfig.NewConfig(
   // Other config options...
-  gobetterauthdomain.WithRateLimit(
-    gobetterauthdomain.RateLimitConfig{
+  gobetterauthconfig.WithRateLimit(
+    gobetterauthmodels.RateLimitConfig{
       Enabled:    true,
     },
   ),
@@ -55,14 +60,22 @@ config := gobetterauthdomain.NewConfig(
 You can set custom rate limits for specific endpoints using `CustomRules`:
 
 ```go
-config := gobetterauthdomain.NewConfig(
+import (
+  "net/http"
+  "time"
+
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+)
+
+config := gobetterauthconfig.NewConfig(
   // Other config options...
-  gobetterauthdomain.WithRateLimit(
-    gobetterauthdomain.RateLimitConfig{
+  gobetterauthconfig.WithRateLimit(
+    gobetterauthmodels.RateLimitConfig{
       Enabled:    true,
-      CustomRules: map[string]gobetterauthdomain.RateLimitCustomRuleFunc{
-        "/auth/sign-up/email": func(req *http.Request) gobetterauthdomain.RateLimitCustomRule {
-          return gobetterauthdomain.RateLimitCustomRule{
+      CustomRules: map[string]gobetterauthmodels.RateLimitCustomRuleFunc{
+        "/auth/sign-up/email": func(req *http.Request) gobetterauthmodels.RateLimitCustomRule {
+          return gobetterauthmodels.RateLimitCustomRule{
             Window: 1 * time.Hour,
             Max:    5,
           }
@@ -78,14 +91,21 @@ config := gobetterauthdomain.NewConfig(
 You can disable rate limiting for certain endpoints:
 
 ```go
-config := gobetterauthdomain.NewConfig(
+import (
+  "net/http"
+  
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+)
+
+config := gobetterauthconfig.NewConfig(
   // Other config options...
-  gobetterauthdomain.WithRateLimit(
-    gobetterauthdomain.RateLimitConfig{
+  gobetterauthconfig.WithRateLimit(
+    gobetterauthmodels.RateLimitConfig{
       Enabled:    true,
-      CustomRules: map[string]gobetterauthdomain.RateLimitCustomRuleFunc{
-        "/auth/me": func(req *http.Request) gobetterauthdomain.RateLimitCustomRule {
-          return gobetterauthdomain.RateLimitCustomRule{
+      CustomRules: map[string]gobetterauthmodels.RateLimitCustomRuleFunc{
+        "/auth/me": func(req *http.Request) gobetterauthmodels.RateLimitCustomRule {
+          return gobetterauthmodels.RateLimitCustomRule{
             Disabled: true,
           }
         },

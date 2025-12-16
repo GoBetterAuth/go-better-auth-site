@@ -85,7 +85,16 @@ Call either of the two functions above inside handlers to get the currently auth
 Example route registration and middleware chaining:
 
 ```go
-config := gobetterauthdomain.NewConfig(/* ... */)
+import (
+  "net/http"
+  "github.com/labstack/echo/v4"
+	
+  gobetterauth "github.com/GoBetterAuth/go-better-auth"
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+)
+
+config := gobetterauthconfig.NewConfig(/* ... */)
 goBetterAuth := gobetterauth.New(config)
 
 // Using Echo framework

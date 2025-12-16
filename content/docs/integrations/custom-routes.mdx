@@ -12,9 +12,16 @@ Go Better Auth allows you to add custom API endpoints to the default authenticat
 You can register custom routes using the `RegisterRoute` method. Each route is defined by a `CustomRoute` struct:
 
 ```go
+import (
+  "net/http"
+
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+)
+
 type CustomRouteMiddleware func(http.Handler) http.Handler
 
-type CustomRouteHandler func(config *Config) http.Handler
+type CustomRouteHandler func(config *gobetterauthmodels.Config) http.Handler
 
 type CustomRoute struct {
   Method     string
@@ -35,17 +42,27 @@ type CustomRoute struct {
 Returns a message containing your app name.
 
 ```go
-config := gobetterauthdomain.NewConfig(...)
+import (
+  "encoding/json"
+  "fmt"
+  "net/http"
+
+  gobetterauth "github.com/GoBetterAuth/go-better-auth"
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+)
+
+config := gobetterauthconfig.NewConfig(/*...*/)
 
 goBetterAuth := gobetterauth.New(config)
 
-goBetterAuth.RegisterRoute(gobetterauthdomain.CustomRoute{
+goBetterAuth.RegisterRoute(gobetterauthmodels.CustomRoute{
   Method: "GET",
   Path:   "example",
-  Middleware: []gobetterauthdomain.CustomRouteMiddleware{
+  Middleware: []gobetterauthmodels.CustomRouteMiddleware{
     goBetterAuth.AuthMiddleware(),
   },
-  Handler: func(config *gobetterauthdomain.Config) http.Handler {
+  Handler: func(config *gobetterauthmodels.Config) http.Handler {
     handler := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
       w.Header().Set("Content-Type", "application/json")
       w.WriteHeader(200)
@@ -64,17 +81,27 @@ goBetterAuth.RegisterRoute(gobetterauthdomain.CustomRoute{
 Accepts a JSON body and returns it in the response.
 
 ```go
-config := gobetterauthdomain.NewConfig(...)
+import (
+  "encoding/json"
+  "fmt"
+  "net/http"
+
+  gobetterauth "github.com/GoBetterAuth/go-better-auth"
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+)
+
+config := gobetterauthconfig.NewConfig(/*...*/)
 
 goBetterAuth := gobetterauth.New(config)
 
-goBetterAuth.RegisterRoute(gobetterauthdomain.CustomRoute{
+goBetterAuth.RegisterRoute(gobetterauthmodels.CustomRoute{
   Method: "POST",
   Path:   "send-message",
-  Middleware: []gobetterauthdomain.CustomRouteMiddleware{
+  Middleware: []gobetterauthmodels.CustomRouteMiddleware{
     goBetterAuth.AuthMiddleware(),
   },
-  Handler: func(config *gobetterauthdomain.Config) http.Handler {
+  Handler: func(config *gobetterauthmodels.Config) http.Handler {
     handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
       var body map[string]any
       if err := json.NewDecoder(r.Body).Decode(&body); err != nil {

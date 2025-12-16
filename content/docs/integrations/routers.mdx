@@ -13,14 +13,15 @@ import (
 	"net/http"
 
 	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
+	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
 )
 
 func main() {
-	config := gobetterauthdomain.NewConfig(
-		gobetterauthdomain.WithAppName("MyApp"),
-		gobetterauthdomain.WithBasePath("/api/auth"),
-		gobetterauthdomain.WithDatabase(gobetterauthdomain.DatabaseConfig{
+	config := gobetterauthconfig.NewConfig(
+		gobetterauthconfig.WithAppName("MyApp"),
+		gobetterauthconfig.WithBasePath("/api/auth"),
+		gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
 			Provider:         "sqlite",
 			ConnectionString: "./auth.db",
 		}),
@@ -51,14 +52,15 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
+	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
 )
 
 func main() {
-	config := gobetterauthdomain.NewConfig(
-		gobetterauthdomain.WithAppName("MyApp"),
-		gobetterauthdomain.WithBasePath("/api/auth"),
-		gobetterauthdomain.WithDatabase(gobetterauthdomain.DatabaseConfig{
+	config := gobetterauthconfig.NewConfig(
+		gobetterauthconfig.WithAppName("MyApp"),
+		gobetterauthconfig.WithBasePath("/api/auth"),
+		gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
 			Provider:         "sqlite",
 			ConnectionString: "./auth.db",
 		}),
@@ -95,14 +97,15 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 
 	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
+	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
 )
 
 func main() {
-	config := gobetterauthdomain.NewConfig(
-		gobetterauthdomain.WithAppName("MyApp"),
-		gobetterauthdomain.WithBasePath("/api/auth"),
-		gobetterauthdomain.WithDatabase(gobetterauthdomain.DatabaseConfig{
+	config := gobetterauthconfig.NewConfig(
+		gobetterauthconfig.WithAppName("MyApp"),
+		gobetterauthconfig.WithBasePath("/api/auth"),
+		gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
 			Provider:         "sqlite",
 			ConnectionString: "./auth.db",
 		}),
@@ -137,14 +140,15 @@ import (
 	"github.com/gin-gonic/gin"
 
 	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
+	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
 )
 
 func main() {
-	config := gobetterauthdomain.NewConfig(
-		gobetterauthdomain.WithAppName("MyApp"),
-		gobetterauthdomain.WithBasePath("/api/auth"),
-		gobetterauthdomain.WithDatabase(gobetterauthdomain.DatabaseConfig{
+	config := gobetterauthconfig.NewConfig(
+		gobetterauthconfig.WithAppName("MyApp"),
+		gobetterauthconfig.WithBasePath("/api/auth"),
+		gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
 			Provider:         "sqlite",
 			ConnectionString: "./auth.db",
 		}),
@@ -175,14 +179,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
+	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
 )
 
 func main() {
-	config := gobetterauthdomain.NewConfig(
-		gobetterauthdomain.WithAppName("MyApp"),
-		gobetterauthdomain.WithBasePath("/api/auth"),
-		gobetterauthdomain.WithDatabase(gobetterauthdomain.DatabaseConfig{
+	config := gobetterauthconfig.NewConfig(
+		gobetterauthconfig.WithAppName("MyApp"),
+		gobetterauthconfig.WithBasePath("/api/auth"),
+		gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
 			Provider:         "sqlite",
 			ConnectionString: "./auth.db",
 		}),
@@ -216,14 +221,15 @@ import (
 	"github.com/gorilla/mux"
 
 	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
+	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
 )
 
 func main() {
-	config := gobetterauthdomain.NewConfig(
-		gobetterauthdomain.WithAppName("MyApp"),
-		gobetterauthdomain.WithBasePath("/api/auth"),
-		gobetterauthdomain.WithDatabase(gobetterauthdomain.DatabaseConfig{
+	config := gobetterauthconfig.NewConfig(
+		gobetterauthconfig.WithAppName("MyApp"),
+		gobetterauthconfig.WithBasePath("/api/auth"),
+		gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
 			Provider:         "sqlite",
 			ConnectionString: "./auth.db",
 		}),
@@ -270,9 +276,9 @@ r.Use(cors.Handler(cors.Options{
 Configure custom base paths:
 
 ```go
-config := gobetterauthdomain.NewConfig(
+config := gobetterauthconfig.NewConfig(
 	...,
-	gobetterauthdomain.WithBasePath("/api/v1/auth"),
+	gobetterauthconfig.WithBasePath("/api/v1/auth"),
 )
 ```
 

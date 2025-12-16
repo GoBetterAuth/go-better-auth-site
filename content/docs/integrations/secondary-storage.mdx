@@ -16,18 +16,23 @@ Secondary storage allows you to use various key-value store options such as in-m
 By default, Go Better Auth uses an in-memory secondary storage. But you can configure it to use any of the available built-in providers:
 
 ```go
+import (
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+)
+
 // In-Memory Secondary Storage
-config := gobetterauthdomain.NewConfig(
+config := gobetterauthconfig.NewConfig(
   // ...other config options
-  gobetterauthdomain.WithSecondaryStorage(
-    gobetterauthdomain.SecondaryStorageConfig{
+  gobetterauthconfig.WithSecondaryStorage(
+    gobetterauthmodels.SecondaryStorageConfig{
       // in-memory storage
-      Type: gobetterauthdomain.SecondaryStorageTypeMemory,
-      MemoryOptions: &SecondaryStorageMemoryOptions{}
+      Type: gobetterauthmodels.SecondaryStorageTypeMemory,
+      MemoryOptions: &gobetterauthmodels.SecondaryStorageMemoryOptions{},
 
       // or Database storage
-      Type: gobetterauthdomain.SecondaryStorageTypeDatabase,
-      DatabaseOptions: &SecondaryStorageDatabaseOptions{}
+      // Type: gobetterauthmodels.SecondaryStorageTypeDatabase,
+      // DatabaseOptions: &gobetterauthmodels.SecondaryStorageDatabaseOptions{},
     },
   ),
 )
@@ -38,6 +43,13 @@ To customise secondary storage, you can supply a custom implementation by follow
 Build your own custom adapter by implementing the `SecondaryStorage` interface:
 
 ```go
+import (
+  "context"
+  "time"
+  
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+)
+
 type SecondaryStorage interface {
   Get(ctx context.Context, key string) (any, error)
   Set(ctx context.Context, key string, value any, ttl *time.Duration) error
@@ -60,10 +72,15 @@ func (storage *MyCustomSecondaryStorage) Get(ctx context.Context, key string) (a
 
 ```go
 // Then use your custom storage in the config:
-config := gobetterauthdomain.NewConfig(
-  gobetterauthdomain.WithSecondaryStorage(
-    gobetterauthdomain.SecondaryStorageConfig{
-      Type:   gobetterauthdomain.SecondaryStorageTypeCustom,
+import (
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+)
+
+config := gobetterauthconfig.NewConfig(
+  gobetterauthconfig.WithSecondaryStorage(
+    gobetterauthmodels.SecondaryStorageConfig{
+      Type:   gobetterauthmodels.SecondaryStorageTypeCustom,
       Storage: &MyCustomSecondaryStorage{/* ... */},
     },
   ),

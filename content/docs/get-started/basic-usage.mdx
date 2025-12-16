@@ -11,18 +11,19 @@ import (
 	"net/http"
 
 	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
+	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
 )
 
 func main() {
-	config := gobetterauthdomain.NewConfig(
-		gobetterauthdomain.WithAppName("YourAppName"),
-		gobetterauthdomain.WithDatabase(gobetterauthdomain.DatabaseConfig{
+	config := gobetterauthconfig.NewConfig(
+		gobetterauthconfig.WithAppName("YourAppName"),
+		gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
 			Provider:         "postgres",
 			ConnectionString: os.Getenv("DATABASE_URL"),
 		}),
-		gobetterauthdomain.WithEmailPassword(gobetterauthdomain.EmailPasswordConfig{
-			Enabled:                  true,
+		gobetterauthconfig.WithEmailPassword(gobetterauthmodels.EmailPasswordConfig{
+			Enabled: true,
 		}),
 	)
 	auth := gobetterauth.New(config)
@@ -64,5 +65,5 @@ curl -X POST http://localhost:8080/auth/sign-in/email \
 
 ```bash
 curl -X GET http://localhost:8080/auth/me \
-  -H "Cookie: go-better-auth.session_token=your-session-token"
+  -H "Cookie: gobetterauth.session_token=your-session-token"
 ```

@@ -53,10 +53,18 @@ If `Before` returns an error or a custom response, request processing is aborted
 **Example:**
 
 ```go
-config := gobetterauthdomain.NewConfig(
-  gobetterauthdomain.WithEndpointHooks(
-    gobetterauthdomain.EndpointHooksConfig{
-      Before: func(ctx *gobetterauthdomain.EndpointHookContext) error {
+import (
+  "fmt"
+  "strings"
+  
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+)
+
+config := gobetterauthconfig.NewConfig(
+  gobetterauthconfig.WithEndpointHooks(
+    gobetterauthmodels.EndpointHooksConfig{
+      Before: func(ctx *gobetterauthmodels.EndpointHookContext) error {
         if ctx.Path == "/auth/sign-up/email" {
           email, ok := ctx.Body["email"].(string)
           if !ok || !strings.HasSuffix(email, "@example.com") {
@@ -89,10 +97,16 @@ Intercepts and transforms the handler’s response. Use cases include:
 **Example:**
 
 ```go
-config := gobetterauthdomain.NewConfig(
-  gobetterauthdomain.WithEndpointHooks(
-    gobetterauthdomain.EndpointHooksConfig{
-      Response: func(ctx *gobetterauthdomain.EndpointHookContext) error {
+import (
+  "fmt"
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+)
+
+config := gobetterauthconfig.NewConfig(
+  gobetterauthconfig.WithEndpointHooks(
+    gobetterauthmodels.EndpointHooksConfig{
+      Response: func(ctx *gobetterauthmodels.EndpointHookContext) error {
         if ctx.Path == "/auth/me" && ctx.ResponseStatus == 200 {
           // Transform JSON response to HTML
           ctx.ResponseHeaders["Content-Type"] = []string{"text/html"}
@@ -118,10 +132,16 @@ Errors in `After` are logged, not returned to the client.
 **Example:**
 
 ```go
-config := gobetterauthdomain.NewConfig(
-  gobetterauthdomain.WithEndpointHooks(
-    gobetterauthdomain.EndpointHooksConfig{
-      After: func(ctx *gobetterauthdomain.EndpointHookContext) error {
+import (
+  "log/slog"
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+)
+
+config := gobetterauthconfig.NewConfig(
+  gobetterauthconfig.WithEndpointHooks(
+    gobetterauthmodels.EndpointHooksConfig{
+      After: func(ctx *gobetterauthmodels.EndpointHookContext) error {
         userID := "unknown"
         if ctx.User != nil {
           userID = ctx.User.ID

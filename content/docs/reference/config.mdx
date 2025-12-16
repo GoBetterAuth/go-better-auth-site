@@ -36,7 +36,7 @@ type EmailPasswordConfig struct {
 	DisableSignUp            bool
 	RequireEmailVerification bool
 	AutoSignIn               bool
-	SendResetPasswordEmail   func(user *User, url string, token string) error
+	SendResetPasswordEmail   func(user User, url string, token string) error
 	ResetTokenExpiry         time.Duration
 	Password                 *PasswordConfig
 }
@@ -67,8 +67,8 @@ type EmailVerificationConfig struct {
 
 ```go
 type ChangeEmailConfig struct {
-	Enabled                     			bool
-	SendEmailChangeVerificationEmail 	func(user User, newEmail string, url string, token string) error
+	Enabled                          bool
+	SendEmailChangeVerificationEmail func(user User, newEmail string, url string, token string) error
 }
 
 type UserConfig struct {
@@ -94,6 +94,39 @@ type CSRFConfig struct {
 	CookieName string
 	HeaderName string
 	ExpiresIn  time.Duration
+}
+```
+
+## Social Providers Config
+
+```go
+type OAuth2Config struct {
+	ClientID     string
+	ClientSecret string
+	RedirectURL  string
+	Scopes       []string
+}
+
+type DefaultOAuth2ProvidersConfig struct {
+	Google  *OAuth2Config
+	GitHub  *OAuth2Config
+	Discord *OAuth2Config
+}
+
+type GenericOAuth2EndpointConfig struct {
+	AuthURL     string
+	TokenURL    string
+	UserInfoURL string
+}
+
+type GenericOAuth2Config struct {
+	OAuth2Config
+	Endpoint GenericOAuth2EndpointConfig
+}
+
+type SocialProvidersConfig struct {
+	Default DefaultOAuth2ProvidersConfig
+	Generic map[string]GenericOAuth2Config
 }
 ```
 
@@ -202,27 +235,49 @@ type EventHooksConfig struct {
 }
 ```
 
+## Event Bus Config
+
+```go
+type EventBusConfig struct {
+	Enabled               bool
+	Prefix                string
+	MaxConcurrentHandlers int
+	PubSub                PubSub
+}
+```
+
+## Plugins Config
+
+```go
+type PluginsConfig struct {
+	Plugins []Plugin
+}
+```
+
 ## Main Config Structure
 
 ```go
 // Config holds all configurable options for the GoBetterAuth library.
 type Config struct {
-	AppName           	string
-	BaseURL           	string
-	BasePath          	string
-	Secret            	string
-	DB									*gorm.DB
-	Database          	DatabaseConfig
-	SecondaryStorage  	SecondaryStorageConfig
-	EmailPassword     	EmailPasswordConfig
-	EmailVerification 	EmailVerificationConfig
-	User              	UserConfig
-	Session           	SessionConfig
-	CSRF              	CSRFConfig
-	TrustedOrigins    	TrustedOriginsConfig
-	RateLimit 					RateLimitConfig
-	EndpointHooks     	EndpointHooksConfig
-	DatabaseHooks     	DatabaseHooksConfig
-	EventHooks        	EventHooksConfig
+	AppName           string
+	BaseURL           string
+	BasePath          string
+	Secret            string
+	DB                *gorm.DB
+	Database          DatabaseConfig
+	SecondaryStorage  SecondaryStorageConfig
+	EmailPassword     EmailPasswordConfig
+	EmailVerification EmailVerificationConfig
+	User              UserConfig
+	Session           SessionConfig
+	CSRF              CSRFConfig
+	SocialProviders   SocialProvidersConfig
+	TrustedOrigins    TrustedOriginsConfig
+	RateLimit         RateLimitConfig
+	EndpointHooks     EndpointHooksConfig
+	DatabaseHooks     DatabaseHooksConfig
+	EventHooks        EventHooksConfig
+	EventBus          EventBusConfig
+	Plugins           PluginsConfig
 }
 ```

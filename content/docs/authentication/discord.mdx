@@ -33,15 +33,16 @@ import (
   "fmt"
   
   gobetterauth "github.com/GoBetterAuth/go-better-auth"
-  gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
 )
 
-config := gobetterauthdomain.NewConfig(
+config := gobetterauthconfig.NewConfig(
   // Other config options...
-  gobetterauthdomain.WithSocialProviders(
-    gobetterauthdomain.SocialProvidersConfig{
-      Default: gobetterauthdomain.DefaultOAuth2ProvidersConfig{
-        Discord: &gobetterauthdomain.OAuth2Config{
+  gobetterauthconfig.WithSocialProviders(
+    gobetterauthmodels.SocialProvidersConfig{
+      Default: gobetterauthmodels.DefaultOAuth2ProvidersConfig{
+        Discord: &gobetterauthmodels.OAuth2Config{
           ClientID:     os.Getenv("DISCORD_CLIENT_ID"),
           ClientSecret: os.Getenv("DISCORD_CLIENT_SECRET"),
           RedirectURL:  fmt.Sprintf("%s/auth/oauth2/discord/callback", os.Getenv("GO_BETTER_AUTH_BASE_URL")),
@@ -50,8 +51,8 @@ config := gobetterauthdomain.NewConfig(
     },
   ),
   // Set the trusted origins so that redirects to your webapp are allowed and adds an extra layer of security.
-  gobetterauthdomain.WithTrustedOrigins(
-    gobetterauthdomain.TrustedOriginsConfig{
+  gobetterauthconfig.WithTrustedOrigins(
+    gobetterauthmodels.TrustedOriginsConfig{
       Origins: []string{"YOUR_FRONTEND_URL e.g. http://localhost:3000"},
     },
   ),

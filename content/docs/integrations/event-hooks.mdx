@@ -10,12 +10,16 @@ Event hooks in GoBetterAuth allow you to trigger custom actions when specific au
 You can configure the following event hooks:
 
 ```go
+import (
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+)
+
 type EventHooksConfig struct {
-  OnUserSignedUp    func(user User) error
-  OnUserLoggedIn    func(user User) error
-  OnEmailVerified   func(user User) error
-  OnPasswordChanged func(user User) error
-  OnEmailChanged    func(user User) error
+  OnUserSignedUp    func(user gobetterauthmodels.User) error
+  OnUserLoggedIn    func(user gobetterauthmodels.User) error
+  OnEmailVerified   func(user gobetterauthmodels.User) error
+  OnPasswordChanged func(user gobetterauthmodels.User) error
+  OnEmailChanged    func(user gobetterauthmodels.User) error
 }
 ```
 
@@ -35,17 +39,18 @@ Below are some event hook examples that reflect real-world workflows. These patt
 
 ```go
 import (
-  gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
 )
 
-func doSomething(user gobetterauthdomain.User) error {
+func doSomething(user gobetterauthmodels.User) error {
   // Do something here...
   return nil
 }
 
-config := gobetterauthdomain.NewConfig(
-  gobetterauthdomain.WithEventHooks(gobetterauthdomain.EventHooksConfig{
-    OnUserSignedUp: func (user gobetterauthdomain.User) error {
+config := gobetterauthconfig.NewConfig(
+  gobetterauthconfig.WithEventHooks(gobetterauthmodels.EventHooksConfig{
+    OnUserSignedUp: func (user gobetterauthmodels.User) error {
       // You can perform more actions here...
       return doSomething(user)
     },

@@ -15,17 +15,18 @@ import (
   "os"
 
   gobetterauth "github.com/GoBetterAuth/go-better-auth"
-  gobetterauthdomain "github.com/GoBetterAuth/go-better-auth/pkg/domain"
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
 )
 
 func main() {
-  config := gobetterauthdomain.NewConfig(
-    gobetterauthdomain.WithAppName("YourAppName"),
-    gobetterauthdomain.WithDatabase(gobetterauthdomain.DatabaseConfig{
+  config := gobetterauthconfig.NewConfig(
+    gobetterauthconfig.WithAppName("YourAppName"),
+    gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
       Provider:         "postgres",
       ConnectionString: os.Getenv("DATABASE_URL"),
     }),
-    gobetterauthdomain.WithEmailPassword(gobetterauthdomain.EmailPasswordConfig{
+    gobetterauthconfig.WithEmailPassword(gobetterauthmodels.EmailPasswordConfig{
       Enabled:                  true,
     }),
   )
