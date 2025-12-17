@@ -1,0 +1,183 @@
+---
+title: Plugins
+description: Extend GoBetterAuth functionality with custom plugins.
+---
+ 
+Plugins are the most powerful extensibility mechanism in GoBetterAuth — they let you hook into runtime events, extend the HTTP surface, add migrations, intercept database operations, and run your own background logic while reusing the platform's APIs, middleware and event bus.
+
+This guide shows the two recommended plugin styles and explains when to use each: a concise inline option-based approach for small extensions and a full struct-embedding pattern for stateful, production-ready plugins.
+
+**Why use plugins?**
+
+- Extend behavior without forking: ship authentication, auditing, metrics, or integrations as independent modules.
+- Reuse platform primitives: plugins get `PluginContext` with `Api`, `EventBus`, `Middleware`, and DB access.
+- Lifecycle control: `Init`, `Migrations`, `Routes`, and `Close` give you precise startup/shutdown handling.
+- Low friction: the host wires plugins into routing, DB migrations and the event bus.
+
+**Plugin overview (what a plugin can do)**
+
+- Register DB migrations to run alongside the host.
+- Expose HTTP endpoints mounted under the auth prefix and protected by the host middleware.
+- Subscribe to internal events via the `EventBus` and publish or react to them.
+- Register database hooks to intercept CRUD operations.
+- Provide rate-limiting configuration for plugin routes.
+
+Each plugin implements the `Plugin` interface and receives a `*PluginContext` so it can collaborate with the host and other plugins.
+
+**Style A — Inline (functional options)**
+
+Best for: small utilities, prototypes, or when you want minimal functionality. Create a plugin with `config.NewPlugin(...)` and the `WithPlugin*` helpers.
+
+Advantages:
+
+- Fast to write and register.
+- Great for simple routes, tiny event subscribers, or feature flags.
+
+Example — inline plugin that adds a ping route and an init hook:
+
+```go
+package main
+
+import (
+  "log/slog"
+  "encoding/json"
+  "net/http"
+
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+)
+
+func main() {
+  config := gobetterauthconfig.NewConfig(
+    // Other config options...
+    gobetterauthconfig.WithPlugins(
+      gobetterauthmodels.PluginsConfig{
+        Plugins: []gobetterauthmodels.Plugin{
+          gobetterauthconfig.NewPlugin(
+            gobetterauthconfig.WithPluginMetadata(gobetterauthmodels.PluginMetadata{
+              Name: "ping", 
+              Version: "0.1.0", 
+              Description: "A simple ping plugin",
+            }),
+            gobetterauthconfig.WithPluginConfig(gobetterauthmodels.PluginConfig{Enabled: true}),
+            gobetterauthconfig.WithPluginInit(func(ctx *gobetterauthmodels.PluginContext) error {
+              slog.Info("ping-inline initialized")
+              // You can access ctx.Api, ctx.EventBus, ctx.Config.DB, etc. here...
+              return nil
+            }),
+            gobetterauthconfig.WithPluginRoutes([]gobetterauthmodels.PluginRoute{
+              {
+                Method: "GET",
+                Path:   "/ping",
+                Handler: func() http.Handler {
+                  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+                    _ = json.NewEncoder(w).Encode(map[string]any{"pong": true})
+                  })
+                },
+              },
+            }),
+          ),
+        },
+      },
+    ),
+  )
+}
+```
+
+Tip: store plugin-specific settings in `PluginConfig.Options` and validate them in `Init`.
+
+**Style B — Struct-based (embed `BasePlugin`)**
+
+Best for: production plugins that maintain state, use services, need subscriptions, or include migrations. Embed `models.BasePlugin` and implement the methods you need.
+
+Advantages:
+
+- Clear separation between lifecycle, services, and handlers.
+- Easier to maintain across multiple files.
+- Full control over `Init`, `Migrations`, `Routes`, `DatabaseHooks`, `EventHooks`, `RateLimit`, and `Close`.
+
+Example — trimmed `LoggerPlugin` pattern:
+
+```go
+type LoggerPlugin struct {
+	models.BasePlugin
+	service            *LoggerService
+	logCount           int
+	eventSubscriptions map[string]models.SubscriptionID
+}
+
+func NewLoggerPlugin(config models.PluginConfig) models.Plugin {
+	p := &LoggerPlugin{eventSubscriptions: make(map[string]models.SubscriptionID)}
+	p.SetConfig(config)
+	return p
+}
+
+func (p *LoggerPlugin) Init(ctx *models.PluginContext) error {
+	p.SetCtx(ctx)
+	p.service = NewLoggerService(ctx.Config.DB)
+
+	id, err := ctx.EventBus.Subscribe(models.EventUserSignedUp, func(c context.Context, e models.Event) error {
+		// decode payload, load user via p.Ctx().Api.Users, persist log via p.service
+		p.logCount++
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	p.eventSubscriptions[models.EventUserSignedUp] = id
+
+	return nil
+}
+
+func (p *LoggerPlugin) Routes() []models.PluginRoute {
+	return []models.PluginRoute{
+		{
+			Method: "GET",
+			Path:   "/logger/count",
+			Middleware: []models.PluginRouteMiddleware{p.Ctx().Middleware.Auth()},
+			Handler: func() http.Handler {
+				return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.Header().Set("Content-Type", "application/json")
+					_ = json.NewEncoder(w).Encode(map[string]any{
+						"logCount": p.logCount,
+					})
+				})
+			},
+		},
+	}
+}
+
+func (p *LoggerPlugin) Close() error {
+	for event, sub := range p.eventSubscriptions {
+		p.Ctx().EventBus.Unsubscribe(event, sub)
+	}
+	return nil
+}
+```
+
+Practical notes:
+
+- Call `p.SetCtx(ctx)` in `Init` so `p.Ctx()` is available to handlers and other methods.
+- Keep business logic in separate service types attached to the plugin (e.g., `LoggerService`).
+- Return migration structs from `Migrations()` so the host can run them together with its own migrations.
+- Clean up subscriptions and goroutines in `Close()` to avoid leaks.
+
+**How the host wires plugins**
+
+Typical host responsibilities:
+
+- Instantiate plugins and pass a `PluginContext`.
+- Call `Init(ctx)` for each plugin.
+- Collect and run `Migrations()`.
+- Mount `Routes()` under the auth base path.
+- Apply `RateLimit()` and `DatabaseHooks()` where appropriate.
+- Call `Close()` on shutdown.
+
+**Best practices**
+
+- Choose inline for small features, struct-based for anything non-trivial.
+- Validate `PluginConfig.Options` and return clear errors from `Init`.
+- Use the host `Middleware` for auth and CORS rather than reimplementing it.
+- Keep event handlers fast; delegate work to services or background jobs when needed.
+- Protect public plugin routes with `RateLimit()` and the built-in middleware.
