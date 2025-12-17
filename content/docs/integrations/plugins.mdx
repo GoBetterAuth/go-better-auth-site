@@ -2,19 +2,19 @@
 title: Plugins
 description: Extend GoBetterAuth functionality with custom plugins.
 ---
- 
+
 Plugins are the most powerful extensibility mechanism in GoBetterAuth — they let you hook into runtime events, extend the HTTP surface, add migrations, intercept database operations, and run your own background logic while reusing the platform's APIs, middleware and event bus.
 
 This guide shows the two recommended plugin styles and explains when to use each: a concise inline option-based approach for small extensions and a full struct-embedding pattern for stateful, production-ready plugins.
 
-**Why use plugins?**
+## Why use plugins?
 
 - Extend behavior without forking: ship authentication, auditing, metrics, or integrations as independent modules.
 - Reuse platform primitives: plugins get `PluginContext` with `Api`, `EventBus`, `Middleware`, and DB access.
 - Lifecycle control: `Init`, `Migrations`, `Routes`, and `Close` give you precise startup/shutdown handling.
 - Low friction: the host wires plugins into routing, DB migrations and the event bus.
 
-**Plugin overview (what a plugin can do)**
+## Plugin overview (what a plugin can do)
 
 - Register DB migrations to run alongside the host.
 - Expose HTTP endpoints mounted under the auth prefix and protected by the host middleware.
@@ -71,7 +71,9 @@ func main() {
                 Path:   "/ping",
                 Handler: func() http.Handler {
                   return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-                    _ = json.NewEncoder(w).Encode(map[string]any{"pong": true})
+                    w.Header().Set("Content-Type", "application/json")
+                    w.WriteHeader(http.StatusOK)
+                    json.NewEncoder(w).Encode(map[string]any{"pong": true})
                   })
                 },
               },
@@ -139,7 +141,8 @@ func (p *LoggerPlugin) Routes() []models.PluginRoute {
 			Handler: func() http.Handler {
 				return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					w.Header().Set("Content-Type", "application/json")
-					_ = json.NewEncoder(w).Encode(map[string]any{
+          w.WriteHeader(http.StatusOK)
+					json.NewEncoder(w).Encode(map[string]any{
 						"logCount": p.logCount,
 					})
 				})
@@ -173,6 +176,228 @@ Typical host responsibilities:
 - Mount `Routes()` under the auth base path.
 - Apply `RateLimit()` and `DatabaseHooks()` where appropriate.
 - Call `Close()` on shutdown.
+
+
+---
+
+## Hooks
+
+You can deeply customise the behaviour of plugins by providing **DatabaseHooks** and **EventHooks**. These hooks allow you to intercept and extend both database operations and event-driven flows, making your plugin highly flexible and powerful.
+
+### Database Hooks
+
+Database hooks let you run custom logic before or after database operations (such as CRUD or your own custom hooks) on your plugin's models. This is useful for validation, auditing, or side effects.
+
+**Example:**
+
+```go
+type LogEntryDatabaseHooks struct {
+  BeforeCreate func(entry *LogEntry) error
+  AfterCreate  func(entry LogEntry) error
+}
+
+// Usage in plugin config:
+LoggerPluginConfigOptions{
+  DatabaseHooks: &LogEntryDatabaseHooks{
+    BeforeCreate: func(entry *LogEntry) error {
+      // Custom validation or mutation before saving
+      return nil
+    },
+    AfterCreate: func(entry LogEntry) error {
+      // Side effects after saving
+      return nil
+    },
+  },
+}
+```
+
+To register these hooks, pass them in your plugin's config options and call `SetDatabaseHooks()` in your plugin constructor. The host will invoke these hooks at the appropriate points in the model lifecycle.
+
+### Event Hooks
+
+Event hooks allow your plugin to react to internal events which you code yourself within your plugin and run custom logic when those events occur. This is ideal for integrations, notifications, or custom workflows.
+
+**Example:**
+
+```go
+type LogEntryEventHooks struct {
+  OnLogCreated func(entry LogEntry) error
+}
+
+// Usage in plugin config:
+LoggerPluginConfigOptions{
+  EventHooks: &LogEntryEventHooks{
+    OnLogCreated: func(entry LogEntry) error {
+      // Notify, trigger webhooks, etc.
+      return nil
+    },
+  },
+}
+```
+
+Register event hooks by passing them in your plugin's config and calling `SetEventHooks()` in your constructor. In your event handler, you can invoke these hooks after your main logic:
+
+```go
+// your main logic
+logEntry, err := logEntryService.CreateLogEntry(...);
+if err != nil {
+  return err
+}
+
+if plugin.logEntryEventHooks != nil && plugin.logEntryEventHooks.OnLogCreated != nil {
+  if err := plugin.logEntryEventHooks.OnLogCreated(*logEntry); err != nil {
+    return err
+  }
+}
+```
+
+### Practical Example: LoggerPlugin
+
+The following pattern demonstrates how to wire up both DatabaseHooks and EventHooks in a real plugin:
+
+```go
+// plugins/logger/service.go
+
+type LogEntry struct {
+  ID        string    `json:"id" gorm:"primaryKey"`
+  EventType string    `json:"event_type"`
+  Details   string    `json:"details"`
+  CreatedAt time.Time `json:"created_at"`
+}
+
+type LoggerService struct {
+  db *gorm.DB
+  // other dependencies...
+}
+
+// rest of the logic for LoggerService...
+
+// plugins/logger/plugin.go
+
+type LoggerPlugin struct {
+  gobetterauthmodels.BasePlugin
+  service *LoggerService
+  logCount int
+  eventSubscriptions map[string]gobetterauthmodels.SubscriptionID
+  logEntryDatabaseHooks *LogEntryDatabaseHooks
+  logEntryEventHooks *LogEntryEventHooks
+}
+
+func NewLoggerPlugin(options LoggerPluginConfigOptions) gobetterauthmodels.Plugin {
+  plugin := &LoggerPlugin{
+    eventSubscriptions: make(map[string]gobetterauthmodels.SubscriptionID),
+  }
+  plugin.SetConfig(gobetterauthmodels.PluginConfig{
+    Enabled: true,
+    Options: options,
+  })
+
+  databaseHooks := options.DatabaseHooks
+  if databaseHooks == nil {
+    databaseHooks = &LogEntryDatabaseHooks{}
+  }
+  plugin.SetDatabaseHooks(databaseHooks)
+
+  eventHooks := options.EventHooks
+  if eventHooks == nil {
+    eventHooks = &LogEntryEventHooks{}
+  }
+  plugin.SetEventHooks(eventHooks)
+
+  return plugin
+}
+
+func (plugin *LoggerPlugin) Init(ctx *gobetterauthmodels.PluginContext) error {
+  // Store the context for later use
+  plugin.SetCtx(ctx)
+
+  // Initialise your plugin's service (handles business logic for your plugin)
+  plugin.service = NewLoggerService(ctx.Config.DB, ...)
+
+  // Example of subscribing to events from GoBetterAuth's system via the EventBus
+  var eventUserSignedUpSubId gobetterauthmodels.SubscriptionID
+
+  id, err := ctx.EventBus.Subscribe(
+    gobetterauthmodels.EventUserSignedUp,
+    func(ctx context.Context, event gobetterauthmodels.Event) error {
+      var data map[string]any
+      if err := json.Unmarshal(event.Payload, &data); err != nil {
+        slog.Error("failed to unmarshal json", "error", err)
+        return err
+      }
+
+      // Do something with the event data...
+
+      return nil
+    }
+  )
+  if err != nil {
+    return err
+  }
+
+  return nil
+}
+
+// Register database migrations for your plugin's models. The system will handle them alongside the host's migrations automatically.
+func (plugin *LoggerPlugin) Migrations() []any {
+	return []any{&LogEntry{}}
+}
+
+// Define HTTP routes exposed by your plugin.
+func (plugin *LoggerPlugin) Routes() []gobetterauthmodels.PluginRoute {
+	return []gobetterauthmodels.PluginRoute{
+		{
+			Method: "GET",
+			Path:   "/logger/count",
+			Middleware: []gobetterauthmodels.PluginRouteMiddleware{
+				plugin.Ctx().Middleware.Auth(),
+			},
+			Handler: func() http.Handler {
+				return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.Header().Set("Content-Type", "application/json")
+					w.WriteHeader(http.StatusOK)
+					json.NewEncoder(w).Encode(map[string]any{
+						"logCount": plugin.logCount,
+					})
+				})
+			},
+		},
+	}
+}
+
+// Define rate limiting for your plugin's routes.
+func (plugin *LoggerPlugin) RateLimit() *gobetterauthmodels.PluginRateLimit {
+	return &gobetterauthmodels.RateLimitConfig{
+		Enabled: true,
+		Window:  1 * time.Minute,
+		Max:     10,
+	}
+}
+
+// This is where you return the database hooks defined in your plugin config.
+func (plugin *LoggerPlugin) DatabaseHooks() any {
+	return plugin.logEntryDatabaseHooks
+}
+
+// This is where you return the event hooks defined in your plugin config.
+func (plugin *LoggerPlugin) EventHooks() any {
+	return plugin.logEntryEventHooks
+}
+
+// Clean up resources and unsubscribe from events when the plugin is closed.
+func (plugin *LoggerPlugin) Close() error {
+	for eventType, subId := range plugin.eventSubscriptions {
+		plugin.Ctx().EventBus.Unsubscribe(eventType, subId)
+	}
+	slog.Info("LoggerPlugin closed and unsubscribed from events", "count", len(plugin.eventSubscriptions))
+
+	return nil
+}
+```
+
+This example showcases a highly flexible plugin architecture that leverages all aspects of the GoBetterAuth system to provide robust and extensible functionality.
+
+---
 
 **Best practices**
 
