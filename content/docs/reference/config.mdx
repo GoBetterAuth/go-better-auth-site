@@ -179,6 +179,8 @@ type EndpointHookContext struct {
 	ResponseBody    []byte
 	ResponseHeaders map[string][]string
 	ResponseCookies []*http.Cookie
+	Redirect        func(url string, status int)
+	Handled         bool
 }
 
 type EndpointHooksConfig struct {

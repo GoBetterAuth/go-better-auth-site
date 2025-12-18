@@ -125,7 +125,7 @@ protected.GET("", func(c echo.Context) error {
 })
 ```
 
-Order matters: middleware applied closest to the handler runs first (inner). For example, `auth.AuthMiddleware()(auth.CSRFMiddleware()(h))` runs CSRF first, then Auth, then `h`.
+Order matters: the first middleware wrapping runs first. For example, `auth.AuthMiddleware()(auth.CSRFMiddleware()(h))` runs Auth first, then CSRF, then `h`.
 
 **CORS**
 
