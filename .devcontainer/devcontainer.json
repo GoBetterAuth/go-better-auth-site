@@ -5,10 +5,6 @@
     "dockerfile": "Dockerfile"
   },
   "workspaceFolder": "/workspaces/go-better-auth-site",
-  "containerEnv": {
-    "DISPLAY": "host.docker.internal:0.0",
-    "LIBGL_ALWAYS_INDIRECT": "0"
-  },
   "forwardPorts": [3000],
   "customizations": {
     "vscode": {
