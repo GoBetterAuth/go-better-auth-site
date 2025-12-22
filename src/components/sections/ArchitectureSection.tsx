@@ -1,0 +1,107 @@
+import { Check, Code2, Server } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import BorderIndicators from "@/components/shared/BorderIndicators";
+
+const libraryModeFeatures = [
+  "Native http.ServeMux compatibility",
+  "Zero network latency (in-process)",
+  "Full access to internal Go APIs",
+  "Share database connections",
+  "Compile into a single binary",
+];
+
+const standaloneModeFeatures = [
+  "Centralised auth service",
+  "Works with any language",
+  "Live config updates",
+  "Scales independently",
+  "Webhooks for auth events",
+  "Docker & K8s ready",
+];
+
+export default function ArchitectureSection() {
+  return (
+    <section className="relative border-b border-dashed border-sky-950 bg-blue-500/5">
+      <div className="custom-container relative border-x border-dashed border-sky-950">
+        <BorderIndicators />
+
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Two Ways to Build
+          </h2>
+          <p className="text-muted-foreground text-lg">
+            GoBetterAuth is designed to grow with your needs. Start simple as a
+            library, or deploy as a centralised auth service for your entire
+            platform.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          {/* Library Mode */}
+          <Card className="relative overflow-hidden border-2 border-primary/10 hover:border-blue-500/30 bg-background/60 backdrop-blur-sm transition-colors">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <Code2 size={120} />
+            </div>
+            <CardHeader>
+              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                <Code2 className="h-6 w-6 text-primary" />
+              </div>
+              <CardTitle className="text-2xl">Library Mode</CardTitle>
+              <CardDescription className="text-base">
+                Import directly into your Go application. Perfect for monoliths
+                and simple services.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {libraryModeFeatures.map((item, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-primary shrink-0" />
+                    <span className="text-sm text-muted-foreground">
+                      {item}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Standalone Mode */}
+          <Card className="relative overflow-hidden border-2 border-primary/10 bg-background/60 backdrop-blur-sm hover:border-blue-500/30 transition-colors">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <Server size={120} />
+            </div>
+            <CardHeader>
+              <div className="h-12 w-12 rounded-lg bg-sky-500/10 flex items-center justify-center mb-4">
+                <Server className="h-6 w-6 text-sky-500" />
+              </div>
+              <CardTitle className="text-2xl">Standalone Mode</CardTitle>
+              <CardDescription className="text-base">
+                Run as a standalone service. Ideal for microservices and
+                multi-app platforms.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {standaloneModeFeatures.map((item, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-sky-500 shrink-0" />
+                    <span className="text-sm text-muted-foreground">
+                      {item}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </section>
+  );
+}

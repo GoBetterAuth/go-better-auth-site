@@ -1,30 +1,64 @@
-import { Shield, Lock, Zap, Code } from "lucide-react";
+import {
+  Shield,
+  Globe,
+  Database,
+  Key,
+  Server,
+  Box,
+  Webhook,
+} from "lucide-react";
 
-import BorderIndicators from "../shared/BorderIndicators";
+import BorderIndicators from "@/components/shared/BorderIndicators";
 
-const featuresItems = [
+const features = [
   {
-    title: "Framework Independent",
+    title: "Email & Password",
     description:
-      "Works seamlessly with any Go framework or as a standalone library",
+      "Secure authentication with Argon2 hashing, email verification, password reset, and change email flows.",
+    icon: Key,
+    className: "md:col-span-1",
+  },
+  {
+    title: "Social OAuth",
+    description:
+      "Connect with Google, GitHub, Discord, and more. Extensible provider system.",
+    icon: Globe,
+    className: "md:col-span-1",
+  },
+  {
+    title: "Multiple Databases",
+    description:
+      "First-class support for PostgreSQL, MySQL, SQLite, and custom adapters with migration scripts.",
+    icon: Database,
+    className: "md:col-span-1",
+  },
+  {
+    title: "Secondary Storage",
+    description:
+      "Redis/Key-Value support for high-performance sessions and rate limiting.",
+    icon: Server,
+    className: "md:col-span-1",
+  },
+  {
+    title: "Enhanced Security",
+    description:
+      "Built-in CSRF protection, secure session management, and configurable rate limiting.",
     icon: Shield,
+    className: "md:col-span-1",
   },
   {
-    title: "Secure by Default",
-    description: "Built with security best practices and industry standards",
-    icon: Lock,
-  },
-  {
-    title: "High Performance",
+    title: "Minimal Dependencies",
     description:
-      "Optimized for speed with minimal overhead and maximum efficiency",
-    icon: Zap,
+      "Standard library first design. Production-ready and framework-agnostic.",
+    icon: Box,
+    className: "md:col-span-1",
   },
   {
-    title: "Developer Friendly",
+    title: "Webhooks",
     description:
-      "Clean API design with comprehensive documentation and examples",
-    icon: Code,
+      "Trigger external workflows on user signup, login, and other key events with configurable webhooks.",
+    icon: Webhook,
+    className: "md:col-span-3",
   },
 ];
 
@@ -32,36 +66,31 @@ export default function FeaturesSection() {
   return (
     <section
       id="features"
-      className="relative border-t border-dashed border-sky-950"
+      className="relative border-b border-dashed border-sky-950 bg-blue-500/5"
     >
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-500/10 blur-3xl rounded-full -z-10" />
-
-      <div className="relative max-w-7xl mx-auto border-x border-dashed border-sky-950 p-10">
+      <div className="custom-container relative border-x border-dashed border-sky-950">
         <BorderIndicators />
 
-        <div className="text-center mb-16">
-          <p className="bg-linear-to-r from-blue-500 to-sky-500 bg-clip-text text-transparent font-semibold">
-            Everything you need
-          </p>
-          <h2 className="text-4xl font-bold mt-2">Powerful Features</h2>
-          <p className="text-lg text-gray-400 mt-4 max-w-3xl mx-auto">
-            Everything you need for modern authentication and authorization
+        <div className="mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Everything you need for Auth
+          </h2>
+          <p className="text-muted-foreground text-lg max-w-2xl">
+            Production-ready features that would take months to build yourself.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
-          {featuresItems.map((feature, index: number) => (
-            <div key={index} className="flex gap-6">
-              <div className="shrink-0">
-                <div className="w-14 h-14 bg-linear-to-r from-blue-500/10 to-sky-500/30 border border-blue-400/20 rounded-lg flex items-center justify-center">
-                  <feature.icon className="w-7 h-7 text-blue-400" />
-                </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {features.map((feature, i) => (
+            <div
+              key={i}
+              className={`group relative overflow-hidden rounded-xl border-2 bg-card p-6 hover:shadow-md transition-all hover:border-blue-500/30 ${feature.className}`}
+            >
+              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                <feature.icon className="h-5 w-5" />
               </div>
-              <div>
-                <h3 className="mb-2 text-base font-semibold">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-gray-400">{feature.description}</p>
-              </div>
+              <h3 className="mb-2 text-lg font-semibold">{feature.title}</h3>
+              <p className="text-muted-foreground">{feature.description}</p>
             </div>
           ))}
         </div>

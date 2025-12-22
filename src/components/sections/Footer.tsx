@@ -6,6 +6,7 @@ import { BookOpen } from "lucide-react";
 import GitHubIcon from "@/components/shared/icons/GitHubIcon";
 import { CONSTANTS } from "@/constants/constants";
 import DiscordIcon from "../shared/icons/DiscordIcon";
+import BorderIndicators from "@/components/shared/BorderIndicators";
 
 type LinkItem = {
   href: string;
@@ -35,35 +36,39 @@ const linkItems: LinkItem[] = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-dashed border-sky-950 text-gray-400 py-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div className="flex items-center gap-3">
-          <Image
-            src="/app-logo.png"
-            alt="Go Better Auth Logo"
-            width={50}
-            height={50}
-          />
+    <footer className="relative border-y border-dashed border-sky-950 text-gray-400">
+      <div className="custom-container relative border-x border-dashed border-sky-950 p-4! md:p-6!">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-3">
+            <Image
+              src="/app-logo.png"
+              alt="Go Better Auth Logo"
+              width={50}
+              height={50}
+            />
+          </div>
+
+          <div className="flex items-center gap-6">
+            {linkItems.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                target="_blank"
+                className="flex items-center gap-2 text-sm hover:text-white transition-colors"
+              >
+                {link.icon}
+                {link.label}
+              </Link>
+            ))}
+          </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          {linkItems.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              target="_blank"
-              className="flex items-center gap-2 text-sm hover:text-white transition-colors"
-            >
-              {link.icon}
-              {link.label}
-            </Link>
-          ))}
-        </div>
+        <hr className="mt-4 mb-2 border-t border-dashed border-sky-950" />
+
+        <p className="text-sm text-center py-4">
+          &copy; {new Date().getFullYear()} GoBetterAuth | All rights reserved.
+        </p>
       </div>
-
-      <p className="mt-5 text-sm text-center border-t border-dashed border-sky-950 pt-4">
-        &copy; {new Date().getFullYear()} All rights reserved.
-      </p>
     </footer>
   );
 }

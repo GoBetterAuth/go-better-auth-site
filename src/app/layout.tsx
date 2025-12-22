@@ -10,7 +10,7 @@ import { primaryFont } from "@/constants/fonts";
 export const metadata: Metadata = {
   title: "Go Better Auth",
   description:
-    "A comprehensive, framework-agnostic authentication and authorization library for Go.",
+    "GoBetterAuth is an open-source authentication solution that scales with you. Embed it as a library in your Go app, or run it as a standalone auth server for any language or framework.",
 };
 
 export default function Layout({ children }: LayoutProps<"/">) {
