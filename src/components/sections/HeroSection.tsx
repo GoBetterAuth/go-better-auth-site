@@ -26,7 +26,7 @@ func main() {
 }
 `.trim();
 
-const serverCode = `
+const tomlConfigCode = `
 # Standalone Mode
 app_name = "GoBetterAuth"
 base_url = "http://localhost:8080"
@@ -40,10 +40,6 @@ provider = "postgres"
 
 [email_password]
 enabled = true
-
-[webhooks]
-enabled = true
-url = "https://api.myapp.com/webhooks/auth"
 
 // and more to configure and customise...
 `.trim();
@@ -157,7 +153,7 @@ export default function HeroSection() {
               </div>
               <div className="p-4 overflow-x-auto scrollbar-hide">
                 <pre className="text-sm font-mono text-muted-foreground">
-                  <code className="language-toml">{serverCode}</code>
+                  <code className="language-toml">{tomlConfigCode}</code>
                 </pre>
               </div>
               <BorderBeam
