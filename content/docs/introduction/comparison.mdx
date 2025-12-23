@@ -3,7 +3,7 @@ title: Comparison
 description: Comparing GoBetterAuth with other solutions
 ---
 
-GoBetterAuth is a batteries-included authentication and authorization toolkit for Go. It unifies common auth needs (email/password with secure hashing, OAuth providers, session and token handling, hooks, plugins, and adapters for databases/Redis) so teams avoid stitching many small libraries together. It emphasises performance, low operational overhead, and an explicit extension model (hooks, event bus, plugins).
+GoBetterAuth is a batteries-included authentication and authorization toolkit for Go. It unifies common auth needs (email/password with secure hashing, OAuth providers, session and token handling, hooks, plugins, and adapters for databases/Redis) so teams avoid stitching many small libraries together. It focuses solely on the authentication and authorization layer — a crucial part of any app — and is designed to be stable, secure, and production-ready. You can adopt GoBetterAuth without replacing other parts of your stack; it integrates cleanly with existing services and frameworks. It emphasises performance, low operational overhead, and an explicit extension model (hooks, event bus, plugins).
 
 ## Key advantages
 
@@ -37,21 +37,21 @@ In summary, GoBetterAuth isn't just another auth library — it's a game-changer
 - **Performance & footprint:** Go apps compile to static binaries with low memory use and predictable latency — typically lower runtime overhead than others for equivalent workloads.
 - **Deployment & ops:** Go produces single binaries that are easy to deploy and observe; others require a runtime and typically more complex dependency management and container sizing.
 - **Type safety & reliability:** Go’s static typing and compilation catch many errors early. Others provide type safety too, but transpilation and runtime ecosystem differences can lead to more variability across deployments.
-- **Ecosystem breadth:** While others may have a richer ecosystem and faster iteration of auth-related packages and UI integrations. That can speed development for frontend-heavy teams but increases dependency surface and potential maintenance.
+- **Ecosystem breadth:** Other ecosystems may offer a larger number of third-party packages and faster churn, but many of those packages vary in maintenance and quality. Go provides a mature standard library and a stable, well-maintained ecosystem that reduces churn and lowers maintenance risk while still enabling extensive integrations.
 - **Smaller dependency surface & security:** Go’s rich standard library and tendency toward fewer third‑party packages mean fewer external dependencies to audit and smaller transitive dependency trees — reducing the overall attack surface compared with ecosystems (Node/Python) that commonly pull in many packages.
 - **Extensibility & speed of iteration:** Others may allow faster prototyping due to ecosystem tooling; GoBetterAuth focuses on safe, explicit extension points for production-grade customisation.
 
 When to pick which:
 
-- Choose GoBetterAuth (Go) when you prioritise low-latency, low-resource deployments, tight control over auth logic/data residency, and a production-ready extensibility model.
-- Choose other stacks when you need the vast ecosystem they may have (npm, pypi etc.), rapid prototyping with many ready-made integrations, or when your stack and team are already others-first and you accept the runtime trade-offs.
+- Choose GoBetterAuth (Go) when you prioritise low-latency, low-resource deployments, tight control over auth logic/data residency, and a production-ready extensibility model. Note: choosing GoBetterAuth doesn't require you to replace other parts of your stack — it is intentionally scoped to the auth layer and is designed to integrate with other tooling and services.
+- Choose other stacks when you need the sheer quantity of community packages (npm, pypi etc.) and prefer an ecosystem tailored for rapid prototyping; note that package maintenance and long-term stability can vary across those ecosystems.
 
 ## Pragmatic guidance
 
-- Use GoBetterAuth if you want fewer moving parts in production, deterministic performance, and strong, explicit extension points.
+- Use GoBetterAuth if you want fewer moving parts in production, deterministic performance, and strong, explicit extension points. It can be adopted as the authentication/authorization layer while you keep other services and frameworks in place.
 - Use smaller libraries when your needs are extremely narrow and you prefer tiny dependencies.
 - Use a hosted provider when you need SLA-backed features, compliance, and minimal engineering overhead, and vendor lock-in is acceptable.
 
 ## Bottom line
 
-GoBetterAuth reduces glue code and operational complexity for Go teams while offering a flexible, production-focused extension model. Go is mature and increasingly adopted for performance-sensitive back-end and infrastructure work (including parts of AI stacks), giving projects stability, predictable operations, and a smaller runtime surface. Compared to other solutions it trades ecosystem breadth for lower runtime overhead and simpler deployments — choose based on your team's priorities: performance and control (Go) vs ecosystem and rapid iteration (Others).
+GoBetterAuth reduces glue code and operational complexity for Go teams while offering a flexible, production-focused extension model. Go is mature and increasingly adopted for performance-sensitive back-end and infrastructure work (including parts of AI stacks), giving projects stability, predictable operations, and a smaller runtime surface. Compared to other solutions, GoBetterAuth leverages Go's mature standard library and stable ecosystem to deliver low runtime overhead and simple deployments while providing reliable integrations and long-term stability — choose based on your team's priorities: performance and control (Go) vs ecosystem breadth and rapid iteration (Others).
