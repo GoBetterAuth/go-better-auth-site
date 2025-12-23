@@ -7,33 +7,44 @@ import { Badge } from "@/components/ui/badge";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { CONSTANTS } from "@/constants/constants";
 import GitHubIcon from "../shared/icons/GitHubIcon";
+import GolangIcon from "../shared/icons/GolangIcon";
+import { ShineBorder } from "../ui/shine-border";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const libraryCode = `
 // Library Mode
 import (
+  "log"
+
   gobetterauth "github.com/GoBetterAuth/go-better-auth"
   gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
 )
 
 func main() {
-  config := gobetterauthconfig.NewConfig(/*...*/) 
+  // Create GoBetterAuth configuration
+  config := gobetterauthconfig.NewConfig(
+    gobetterauthconfig.WithAppName("MyApp"),
+    gobetterauthconfig.WithBaseURL("http://localhost:8080"),
+    gobetterauthconfig.WithBasePath("/auth"),
+    // ...more config options
+  ) 
+  
+  // Initialise GoBetterAuth
   auth := gobetterauth.New(config)
   
   // Native http.ServeMux support
   http.Handle("/auth/", auth.Handler())
   
-  http.ListenAndServe(":8080", nil)
+  // Start your Go application
+  log.Fatal(http.ListenAndServe(":8080", nil))
 }
 `.trim();
 
 const tomlConfigCode = `
-# Standalone Mode
+# Configure settings
 app_name = "GoBetterAuth"
 base_url = "http://localhost:8080"
 base_path = "/auth"
-
-[logger]
-level = "info"
 
 [database]
 provider = "postgres"
@@ -42,6 +53,17 @@ provider = "postgres"
 enabled = true
 
 // and more to configure and customise...
+`.trim();
+
+const dockerDeployCode = `
+docker run -itd -p 8080:8080 \\
+  -v $(pwd)/config.toml:/home/appuser/config.toml \\
+  -e GO_BETTER_AUTH_ADMIN_SECRET=my-admin-secret \\
+  -e GO_BETTER_AUTH_ADMIN_API_KEY=my-admin-api-key \\
+  -e GO_BETTER_AUTH_BASE_URL=http://localhost:8080 \\
+  -e GO_BETTER_AUTH_SECRET=my-app-secret \\
+  -e DATABASE_URL=<your_connection_string> \\
+  ghcr.io/gobetterauth/go-better-auth:latest
 `.trim();
 
 export default function HeroSection() {
@@ -111,10 +133,15 @@ export default function HeroSection() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
             {/* Library Mode Preview */}
-            <div className="relative group rounded-xl border bg-card/50 backdrop-blur-sm overflow-hidden">
+            <div className="relative group rounded-xl border bg-card/50 backdrop-blur-sm overflow-hidden flex flex-col h-full">
+              <ShineBorder
+                shineColor={["#3b82f6", "#0ea5e9"]}
+                className="pointer-events-none!"
+              />
+
               <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30">
                 <div className="flex items-center gap-2">
-                  <TerminalIcon className="h-4 w-4 text-muted-foreground" />
+                  <GolangIcon className="h-6 w-6 text-muted-foreground" />
                   <span className="text-sm font-medium text-muted-foreground">
                     main.go
                   </span>
@@ -123,46 +150,82 @@ export default function HeroSection() {
                   Library Mode
                 </Badge>
               </div>
-              <div className="p-4 overflow-x-auto scrollbar-hide">
-                <pre className="text-sm font-mono text-muted-foreground">
-                  <code className="language-go">{libraryCode}</code>
-                </pre>
-              </div>
-              <BorderBeam
-                size={250}
-                duration={12}
-                delay={9}
-                colorFrom="#3b82f6"
-                colorTo="#0ea5e9"
-                reverse
-              />
+              <ScrollArea>
+                <div className="p-4">
+                  <pre className="text-sm font-mono text-muted-foreground">
+                    <code className="language-go">{libraryCode}</code>
+                  </pre>
+                </div>
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
             </div>
 
             {/* Standalone Mode Preview */}
-            <div className="relative group rounded-xl border bg-card/50 backdrop-blur-sm overflow-hidden">
+            <div className="relative group rounded-xl border bg-card/50 backdrop-blur-sm overflow-hidden flex flex-col h-full">
+              <ShineBorder
+                shineColor={["#3b82f6", "#0ea5e9"]}
+                className="pointer-events-none!"
+              />
+
               <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30">
                 <div className="flex items-center gap-2">
                   <Server className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm font-medium text-muted-foreground">
-                    config.toml
+                    server
                   </span>
                 </div>
                 <Badge variant="outline" className="text-xs">
                   Standalone Mode
                 </Badge>
               </div>
-              <div className="p-4 overflow-x-auto scrollbar-hide">
-                <pre className="text-sm font-mono text-muted-foreground">
-                  <code className="language-toml">{tomlConfigCode}</code>
-                </pre>
+
+              <div className="p-4 space-y-3">
+                <div className="rounded-md border bg-muted/10 overflow-hidden flex flex-col">
+                  <div className="flex items-center justify-between px-3 py-2 border-b bg-muted/20 shrink-0">
+                    <div className="flex items-center gap-2">
+                      <Server className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-sm font-medium text-muted-foreground">
+                        config.toml
+                      </span>
+                    </div>
+                    <Badge variant="outline" className="text-xs">
+                      Config File
+                    </Badge>
+                  </div>
+                  <ScrollArea className="h-48">
+                    <div className="p-3">
+                      <pre className="text-sm font-mono text-muted-foreground">
+                        <code className="language-toml">{tomlConfigCode}</code>
+                      </pre>
+                    </div>
+                    <ScrollBar orientation="vertical" />
+                  </ScrollArea>
+                </div>
+
+                <div className="rounded-md border bg-muted/10 overflow-hidden flex flex-col">
+                  <div className="flex items-center justify-between px-3 py-2 border-b bg-muted/20 shrink-0">
+                    <div className="flex items-center gap-2">
+                      <TerminalIcon className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-sm font-medium text-muted-foreground">
+                        bash
+                      </span>
+                    </div>
+                    <Badge variant="outline" className="text-xs">
+                      Deploy with Docker
+                    </Badge>
+                  </div>
+                  <ScrollArea className="h-48">
+                    <div className="p-3">
+                      <pre className="text-sm font-mono text-muted-foreground">
+                        <code className="language-bash">
+                          {dockerDeployCode}
+                        </code>
+                      </pre>
+                    </div>
+                    <ScrollBar orientation="vertical" />
+                  </ScrollArea>
+                </div>
               </div>
-              <BorderBeam
-                size={250}
-                duration={12}
-                delay={9}
-                colorFrom="#3b82f6"
-                colorTo="#0ea5e9"
-              />
             </div>
           </div>
         </div>

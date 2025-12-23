@@ -21,7 +21,6 @@ const standaloneModeFeatures = [
   "Works with any language",
   "Live config updates",
   "Scales independently",
-  "Webhooks for auth events",
   "Docker & K8s ready",
 ];
 

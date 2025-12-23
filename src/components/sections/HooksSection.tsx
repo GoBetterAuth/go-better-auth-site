@@ -1,8 +1,16 @@
-import { ArrowRight, Database, Globe, Server, Webhook } from "lucide-react";
+import { Database, Globe, Server, Webhook } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import BorderIndicators from "@/components/shared/BorderIndicators";
 
 const hookTypes = [
+  {
+    id: "endpoint",
+    title: "Endpoint Hooks",
+    icon: Server,
+    description: "Modify requests and responses of the HTTP lifecycle.",
+    examples: ["Before", "Response", "After"],
+  },
   {
     id: "database",
     title: "Database Hooks",
@@ -28,13 +36,7 @@ const hookTypes = [
       "+ more",
     ],
   },
-  {
-    id: "endpoint",
-    title: "Endpoint Hooks",
-    icon: Server,
-    description: "Modify requests and responses in the lifecycle.",
-    examples: ["Before", "Response", "After"],
-  },
+
   {
     id: "webhooks",
     title: "Webhooks",
