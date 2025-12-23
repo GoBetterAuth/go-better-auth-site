@@ -3,20 +3,20 @@ title: Architecture
 description: Clean Architecture and design principles
 ---
 
-Go Better Auth follows **Clean Architecture** principles with built-in HTTP handlers:
+GoBetterAuth follows **Clean Architecture** principles with built-in HTTP handlers:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ Go Better Auth Library                                      │
+│ GoBetterAuth Library                                        │
 ├─────────────────────────────────────────────────────────────┤
 │ Standalone HTTP Handlers                                    │
 │ • Built-in http.Handler implementation                      │
 │ • auth.Handler() returns ready-to-use handler               │
-│ • Mount on any standard HTTP server                         │
+│ • Mount on any standard Mux HTTP server                     │
 ├─────────────────────────────────────────────────────────────┤
 │ Database Adapters                                           │
-│ • PostgreSQL                                                │
 │ • SQLite                                                    │
+│ • PostgreSQL                                                │
 │ • MySQL                                                     │
 │ • Extensible                                                │
 └─────────────────────────────────────────────────────────────┘
@@ -40,7 +40,7 @@ Go Better Auth follows **Clean Architecture** principles with built-in HTTP hand
 
 ### Services Layer
 
-- Business logic for authentication workflows
+- Use cases (interfaces) and services (business logic) for authentication workflows
 
 ### Database Layer
 
@@ -48,5 +48,6 @@ Go Better Auth follows **Clean Architecture** principles with built-in HTTP hand
 
 ### Extensibility
 
-- Plugin system for custom logic
+- Various hooks into the authentication flow for customisation
+- Plugin system for custom logic and extensions
 - Event Bus for event-driven architecture

@@ -91,7 +91,7 @@ export default function HeroSection() {
 
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
             The Auth Platform <br className="hidden md:block" />
-            <span className="bg-linear-to-r from-blue-500 to-sky-500 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-blue-400 to-sky-600 bg-clip-text text-transparent">
               Native to Go. Built for Any Stack.
             </span>
           </h1>
@@ -222,7 +222,7 @@ export default function HeroSection() {
                         </code>
                       </pre>
                     </div>
-                    <ScrollBar orientation="vertical" />
+                    <ScrollBar orientation="horizontal" />
                   </ScrollArea>
                 </div>
               </div>

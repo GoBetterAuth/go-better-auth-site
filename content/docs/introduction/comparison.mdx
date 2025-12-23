@@ -3,28 +3,55 @@ title: Comparison
 description: Comparing GoBetterAuth with other solutions
 ---
 
-## Why GoBetterAuth Stands Out
+GoBetterAuth is a batteries-included authentication and authorization toolkit for Go. It unifies common auth needs (email/password with secure hashing, OAuth providers, session and token handling, hooks, plugins, and adapters for databases/Redis) so teams avoid stitching many small libraries together. It emphasises performance, low operational overhead, and an explicit extension model (hooks, event bus, plugins).
 
-GoBetterAuth is a comprehensive, flexible authentication library for Go that addresses the significant gaps in the ecosystem. Unlike many existing solutions, which are often rigid or limited in scope, GoBetterAuth offers unparalleled configurability across all aspects of authentication, making it a superior choice for developers building secure, scalable applications.
+## Key advantages
 
-### Comparison with Other Solutions
+- **Integrated:** Single API for registration, sessions, social logins, webhooks and lifecycle hooks — less glue code.
+- **Extensible:** First-class plugin and event APIs for safe customisation without forking core code.
+- **Secure defaults:** Modern practices (e.g., Argon2-style password hashing, rate-limiting, PKCE/OAuth best practices) out of the box.
+- **Low ops & performance:** Go binaries are small, fast, and easy to deploy — ideal where latency and resource use matter.
 
-- **Flexibility and Customisation**: While libraries like `goth` or `oauth2` provide basic OAuth support, they lack deep integration for email/password authentication, custom plugins, and hooks. GoBetterAuth allows full customisation of authentication flows, from user registration to session management, enabling developers to tailor it to specific needs without rewriting core logic.
-
-- **Comprehensive Feature Set**: Solutions such as `jwt-go` or `gin-contrib/sessions` focus on narrow areas like JWT handling or session storage. GoBetterAuth integrates everything—email/password auth, social OAuth (e.g., Google, GitHub), plugins for extensions, and hooks for lifecycle events—into a single, cohesive library, reducing dependency overhead and complexity.
-
-- **Security and Best Practices**: Many Go auth libraries are outdated, no longer maintained or lack modern security features like rate limiting, MFA, or secure token storage. GoBetterAuth aims to incorporate industry standards (e.g., OAuth 2.0, PKCE) with built-in protections against common vulnerabilities, outperforming simpler alternatives that leave developers to implement security manually.
-
-- **Ecosystem Fit**: The Go ecosystem has historically lacked a "batteries-included" auth library, forcing developers to bring together multiple packages, leading to inconsistencies and maintenance issues. GoBetterAuth fills this void by providing a unified, well-documented solution that aligns with Go's philosophy of simplicity and performance.
-
-### Benefits in the Go Ecosystem
+## Benefits in the Go Ecosystem
 
 The Go community has long struggled with fragmented auth tools, often requiring integrations with external services or custom code that increases technical debt. A library like GoBetterAuth is invaluable because:
 
-- **Rapid Development**: Its configurability accelerates prototyping and production deployment, allowing teams to focus on business logic rather than auth boilerplate.
+- **Rapid Development:** Its configurability accelerates prototyping and production deployment, allowing teams to focus on business logic rather than auth boilerplate.
 
-- **Scalability and Performance**: Built with Go's concurrency in mind, it handles high-load scenarios efficiently, unlike some heavier frameworks that introduce unnecessary overhead.
+- **Scalability and Performance:** Built with Go's concurrency in mind, it handles high-load scenarios efficiently, unlike some heavier frameworks that introduce unnecessary overhead.
 
-- **Community and Extensibility**: With support for plugins and hooks, it fosters a vibrant ecosystem where developers can extend functionality (e.g., adding custom providers or audit logging) without forking the library.
+- **Community and Extensibility:** With support for plugins and hooks, it fosters a vibrant ecosystem where developers can extend functionality (e.g., adding custom providers or audit logging) without forking the library.
 
-In summary, GoBetterAuth isn't just another auth library, it's a game-changer for Go developers, offering the flexibility and robustness that the ecosystem desperately needs to build secure, user-friendly applications.
+In summary, GoBetterAuth isn't just another auth library — it's a game-changer for Go developers, offering the flexibility and robustness the ecosystem needs to build secure, user-friendly applications.
+
+## How it compares
+
+- **Single-purpose Go libraries (goth, oauth2, jwt, session middleware):** Those are focused and composable, but building a full, secure system requires substantial glue (user model, migrations, verification emails, rate limits). GoBetterAuth provides the glue and conventions so teams ship faster and maintain less glue code.
+
+- **Framework-bound or monolithic OSS solutions:** Framework-tied tools may lock you to a runtime or server model. GoBetterAuth supports both in-process embedding and a standalone service model, so you can start embedded and migrate to a central service with the same semantics.
+
+- **Managed providers (Auth0, Firebase, hosted offerings):** Hosted services reduce ops and give enterprise features but add vendor lock-in, cost at scale, and limited deep customization. Self-hosting GoBetterAuth gives full control over data, customization, and costs.
+
+## Go vs Others (Python/Node)
+
+- **Performance & footprint:** Go apps compile to static binaries with low memory use and predictable latency — typically lower runtime overhead than others for equivalent workloads.
+- **Deployment & ops:** Go produces single binaries that are easy to deploy and observe; others require a runtime and typically more complex dependency management and container sizing.
+- **Type safety & reliability:** Go’s static typing and compilation catch many errors early. Others provide type safety too, but transpilation and runtime ecosystem differences can lead to more variability across deployments.
+- **Ecosystem breadth:** While others may have a richer ecosystem and faster iteration of auth-related packages and UI integrations. That can speed development for frontend-heavy teams but increases dependency surface and potential maintenance.
+- **Smaller dependency surface & security:** Go’s rich standard library and tendency toward fewer third‑party packages mean fewer external dependencies to audit and smaller transitive dependency trees — reducing the overall attack surface compared with ecosystems (Node/Python) that commonly pull in many packages.
+- **Extensibility & speed of iteration:** Others may allow faster prototyping due to ecosystem tooling; GoBetterAuth focuses on safe, explicit extension points for production-grade customisation.
+
+When to pick which:
+
+- Choose GoBetterAuth (Go) when you prioritise low-latency, low-resource deployments, tight control over auth logic/data residency, and a production-ready extensibility model.
+- Choose other stacks when you need the vast ecosystem they may have (npm, pip etc.), rapid prototyping with many ready-made integrations, or when your stack and team are already others-first and you accept the runtime trade-offs.
+
+## Pragmatic guidance
+
+- Use GoBetterAuth if you want fewer moving parts in production, deterministic performance, and strong, explicit extension points.
+- Use smaller libraries when your needs are extremely narrow and you prefer tiny dependencies.
+- Use a hosted provider when you need SLA-backed features, compliance, and minimal engineering overhead, and vendor lock-in is acceptable.
+
+## Bottom line
+
+GoBetterAuth reduces glue code and operational complexity for Go teams while offering a flexible, production-focused extension model. Go is mature and increasingly adopted for performance-sensitive back-end and infrastructure work (including parts of AI stacks), giving projects stability, predictable operations, and a smaller runtime surface. Compared to other solutions it trades ecosystem breadth for lower runtime overhead and simpler deployments — choose based on your team's priorities: performance and control (Go) vs ecosystem and rapid iteration (Others).
