@@ -1,21 +1,91 @@
 ---
 title: Installation
-description: Configure Go Better Auth in your project.
+description: Configure GoBetterAuth in your project.
 ---
 
 import { Step, Steps } from "fumadocs-ui/components/steps";
 
+There are two ways to configure GoBetterAuth in your project: as a standalone server or as a library integrated into your existing API server.
+
+The following sections will guide you through both methods.
+
+## Standalone Mode
+
 <Steps>
 <Step>
 
-### Install the Package
+### Setup configuration file
 
-```bash
-$ go get "github.com/GoBetterAuth/go-better-auth"
+- Make a copy of the `config.example.toml` file provided in the repository.
+- Rename the copied file to `config.toml`.
+- Populate the configuration fields with your desired settings. Most of these settings allow you to configure the server according to your needs.
+- It is recommended that you do not set secret values within the `config.toml` file directly. Instead, use environment variables to manage sensitive information securely.
+
+```toml title="config.toml"
+app_name = "GoBetterAuth"
+base_url = "http://localhost:8080"
+base_path = "/auth"
+
+[database]
+provider = "postgres"
+
+# ... other settings
 ```
 
 </Step>
 
+<Step>
+
+### Set environment variables via .env file
+
+- Make a copy of the `.env.example` file provided in the repository.
+- Rename the copied file to `.env`.
+- Populate the environment variables with your desired values. These values will override any corresponding values set in the `config.toml` file.
+
+```txt title=".env"
+# Path to your configuration file (e.g., ./config.toml) (optional)
+GO_BETTER_AUTH_CONFIG_PATH=
+
+# Gives admin access to update and manage the GoBetterAuth server
+# Generate using `echo gba_sk_$(openssl rand -base64 50 | tr -dc 'A-Za-z0-9' | cut -c -35)`
+GO_BETTER_AUTH_ADMIN_API_KEY=
+
+# The base URL of your API
+GO_BETTER_AUTH_BASE_URL=
+
+# Used for encryption. Generate using `openssl rand -base64 50 | tr -dc 'A-Za-z0-9' | cut -c -40`
+GO_BETTER_AUTH_SECRET=
+
+# sqlite/postgres/mysql connection string
+GO_BETTER_AUTH_DATABASE_URL=
+```
+
+</Step>
+
+<Step>
+
+### Run the server via Docker
+
+```bash
+$ docker run -itd \ 
+  -p 8080:8080 \
+  -v $(pwd)/config.toml:/home/appuser/config.toml \
+  -e GO_BETTER_AUTH_ADMIN_API_KEY=my-admin-api-key \
+  -e GO_BETTER_AUTH_BASE_URL=http://localhost:8080 \
+  -e GO_BETTER_AUTH_SECRET=my-app-secret \
+  -e GO_BETTER_AUTH_DATABASE_URL=<your_connection_string> \
+  ghcr.io/gobetterauth/go-better-auth:latest
+```
+
+</Step>
+
+</Steps>
+
+---
+
+## Library Mode
+
+<Steps>
 <Step>
 
 ### Set environment variables
@@ -26,8 +96,21 @@ Create a `.env` file in the root of your project and add the following environme
 # The base URL of your API
 GO_BETTER_AUTH_BASE_URL=
 
-# Used for encryption
+# Used for encryption. Generate using `openssl rand -base64 50 | tr -dc 'A-Za-z0-9' | cut -c -40`
 GO_BETTER_AUTH_SECRET=
+
+# sqlite/postgres/mysql connection string
+GO_BETTER_AUTH_DATABASE_URL=
+```
+
+</Step>
+
+<Step>
+
+### Install the Package
+
+```bash
+$ go get "github.com/GoBetterAuth/go-better-auth"
 ```
 
 </Step>
@@ -52,7 +135,7 @@ auth := gobetterauth.New(config)
 
 ### Configure database
 
-Go Better Auth supports multiple database providers such as SQLite, Postgres and more coming soon. You can select a database provider by supplying it in the config.
+GoBetterAuth supports multiple database providers. You can select a database provider by supplying it in the config.
 
 <CodeBlockTabs defaultValue="sqlite" groupId="database-provider" persist>
     <CodeBlockTabsList>
@@ -63,14 +146,17 @@ Go Better Auth supports multiple database providers such as SQLite, Postgres and
       <CodeBlockTabsTrigger value="postgres">
         Postgres
       </CodeBlockTabsTrigger>
+
+      <CodeBlockTabsTrigger value="mysql">
+        MySQL
+      </CodeBlockTabsTrigger>
     </CodeBlockTabsList>
 
     <CodeBlockTab value="sqlite">
       ```go
       gobetterauthconfig.NewConfig(
         gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
-          Provider:         "sqlite",
-          ConnectionString: "./auth.db", // Path to your sqlite database file
+          Provider:   "sqlite",
         }),
       )
       ```
@@ -80,8 +166,17 @@ Go Better Auth supports multiple database providers such as SQLite, Postgres and
       ```go
       gobetterauthconfig.NewConfig(
         gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
-          Provider:         "postgres",
-          ConnectionString: os.Getenv("DATABASE_URL"), // Add this ENV variable to your .env
+          Provider:   "postgres",
+        }),
+      )
+      ```
+    </CodeBlockTab>
+
+    <CodeBlockTab value="mysql">
+      ```go
+      gobetterauthconfig.NewConfig(
+        gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
+          Provider:   "mysql",
         }),
       )
       ```
@@ -95,15 +190,12 @@ Go Better Auth supports multiple database providers such as SQLite, Postgres and
 
 ### Run database migrations
 
-Go Better Auth provides migration files which you can run directly against your database of choice. Or you can run the migrations programmatically by running the `RunMigrations()` function. An example is shown below:
+GoBetterAuth already runs core migrations automatically when you create a new instance so all the important database tables are created for you automatically without any additional steps. But GoBetterAuth also provides migration files which you can run directly against your database of choice. Or you can run the migrations programmatically by running the `RunMigrations()` function. An example is shown below:
 
 ```go
 // Create the config
 config := gobetterauthconfig.NewConfig(/*...*/)
 auth := gobetterauth.New(config)
-
-// Run the migrations
-auth.RunMigrations()
 ```
 
 </Step>
@@ -112,7 +204,7 @@ auth.RunMigrations()
 
 ### Authentication Methods
 
-Configure the authentication methods you want to use in your config struct. Go Better Auth supports the basic Email/Password authentication method and will soon support social sign-on providers such as Google, GitHub, Discord and more.
+Configure the authentication methods you want to use in your config struct. GoBetterAuth supports the basic Email/Password authentication method and will soon support social sign-on providers such as Google, GitHub, Discord and more.
 
 ```go
 config := gobetterauthconfig.NewConfig(
@@ -130,7 +222,7 @@ config := gobetterauthconfig.NewConfig(
 
 ### Mount Handlers
 
-To handle API requests, you need to integrate the Go Better Auth handlers in your API.
+To handle API requests, you need to integrate the GoBetterAuth handlers in your API.
 
 This is an example of how it can be done with the standard library server:
 

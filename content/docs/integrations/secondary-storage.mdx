@@ -1,6 +1,6 @@
 ---
 title: Secondary Storage
-description: Integrate Go Better Auth with secondary storage
+description: Integrate GoBetterAuth with secondary storage
 ---
 
 Secondary storage allows you to use various key-value store options such as in-memory, database and custom implementations (e.g. Redis) for managing session data, rate limiting counters, and other high-frequency records. This is useful for offloading intensive operations from your main database to a fast storage layer.
@@ -13,7 +13,7 @@ Secondary storage allows you to use various key-value store options such as in-m
 
 ## Configuration
 
-By default, Go Better Auth uses an in-memory secondary storage. But you can configure it to use any of the available built-in providers:
+By default, GoBetterAuth uses an in-memory secondary storage. But you can configure it to use any of the available built-in providers:
 
 ```go
 import (

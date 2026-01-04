@@ -1,6 +1,6 @@
 ---
 title: Discord
-description: Guide on how to set up Discord authentication using Go Better Auth.
+description: Guide on how to set up Discord authentication using GoBetterAuth.
 ---
 
 import { Step, Steps } from "fumadocs-ui/components/steps";
@@ -19,7 +19,7 @@ import { Step, Steps } from "fumadocs-ui/components/steps";
    # Assuming base path is /api/auth
    http://localhost:8080/api/auth/oauth2/discord/callback
    ```
-   For production, replace localhost with the base URL of your Go Better Auth server (e.g. `https://api.yourdomain.com`).
+   For production, replace localhost with the base URL of your GoBetterAuth server (e.g. `https://api.yourdomain.com`).
 
 </Step>
 
@@ -65,10 +65,10 @@ config := gobetterauthconfig.NewConfig(
 
 ### Test the integration
 
-1. Start your Go Better Auth server.
+1. Start your GoBetterAuth server.
 1. In your webapp, create a button when clicked on, it navigates the user to:
     ```bash
-    # (replace localhost with your Go Better Auth server URL in production).
+    # (replace localhost with your GoBetterAuth server URL in production).
     http://localhost:8080/api/auth/oauth2/discord/login?redirect_to=<YOUR_REDIRECT_URL>
     ```
 1. You should be redirected to Discord's authorization page. After authorizing, you will be redirected back to your application.

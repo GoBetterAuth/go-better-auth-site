@@ -42,7 +42,7 @@ export default function Footer() {
           <div className="flex items-center gap-3">
             <Image
               src="/app-logo.png"
-              alt="Go Better Auth Logo"
+              alt="GoBetterAuth Logo"
               width={50}
               height={50}
             />

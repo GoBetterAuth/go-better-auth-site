@@ -1,19 +1,19 @@
 ---
 title: Rate Limit
-description: Rate Limiting in Go Better Auth
+description: Rate Limiting in GoBetterAuth
 ---
 
-Rate limiting is a crucial mechanism to protect your application from abuse, such as brute-force attacks or excessive API requests. Go Better Auth provides built-in support for rate limiting to help you manage and control the flow of requests to your authentication endpoints.
+Rate limiting is a crucial mechanism to protect your application from abuse, such as brute-force attacks or excessive API requests. GoBetterAuth provides built-in support for rate limiting to help you manage and control the flow of requests to your authentication endpoints.
 
 ## How Rate Limiting Works
 
 Rate limiting restricts the number of requests a user or client can make to your authentication endpoints within a specified time window. This helps prevent abuse, brute-force attacks, and ensures fair usage.
 
-Go Better Auth uses a configurable rate limiting system that can be tailored to your needs.
+GoBetterAuth uses a configurable rate limiting system that can be tailored to your needs.
 
 ## Configuration
 
-You can configure rate limiting in Go Better Auth using the `RateLimitConfig` struct in your main config:
+You can configure rate limiting in GoBetterAuth using the `RateLimitConfig` struct in your main config:
 
 ```go
 type RateLimitConfig struct {

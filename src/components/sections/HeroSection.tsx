@@ -58,11 +58,10 @@ enabled = true
 const dockerDeployCode = `
 docker run -itd -p 8080:8080 \\
   -v $(pwd)/config.toml:/home/appuser/config.toml \\
-  -e GO_BETTER_AUTH_ADMIN_SECRET=my-admin-secret \\
   -e GO_BETTER_AUTH_ADMIN_API_KEY=my-admin-api-key \\
   -e GO_BETTER_AUTH_BASE_URL=http://localhost:8080 \\
   -e GO_BETTER_AUTH_SECRET=my-app-secret \\
-  -e DATABASE_URL=<your_connection_string> \\
+  -e GO_BETTER_AUTH_DATABASE_URL=<your_connection_string> \\
   ghcr.io/gobetterauth/go-better-auth:latest
 `.trim();
 
