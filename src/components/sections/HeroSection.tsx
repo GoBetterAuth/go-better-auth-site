@@ -11,59 +11,67 @@ import GolangIcon from "../shared/icons/GolangIcon";
 import { ShineBorder } from "../ui/shine-border";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
-const libraryCode = `
-// Library Mode
-import (
-  "log"
+// const libraryCode = `
+// // Library Mode
+// import (
+//   "log"
 
-  gobetterauth "github.com/GoBetterAuth/go-better-auth"
-  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
-)
+//   gobetterauth "github.com/GoBetterAuth/go-better-auth"
+//   gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+// )
 
-func main() {
-  // Create GoBetterAuth configuration
-  config := gobetterauthconfig.NewConfig(
-    gobetterauthconfig.WithAppName("MyApp"),
-    gobetterauthconfig.WithBaseURL("http://localhost:8080"),
-    gobetterauthconfig.WithBasePath("/auth"),
-    // ...more config options
-  ) 
-  
-  // Initialise GoBetterAuth
-  auth := gobetterauth.New(config)
-  
-  // Native http.ServeMux support
-  http.Handle("/auth/", auth.Handler())
-  
-  // Start your Go application
-  log.Fatal(http.ListenAndServe(":8080", nil))
-}
-`.trim();
+// func main() {
+//   // Create GoBetterAuth configuration
+//   config := gobetterauthconfig.NewConfig(
+//     gobetterauthconfig.WithAppName("MyApp"),
+//     gobetterauthconfig.WithBaseURL("http://localhost:8080"),
+//     gobetterauthconfig.WithBasePath("/auth"),
+//     // ...more config options
+//   )
 
-const tomlConfigCode = `
-# Configure settings
-app_name = "GoBetterAuth"
-base_url = "http://localhost:8080"
-base_path = "/auth"
+//   // Initialise GoBetterAuth
+//   auth := gobetterauth.New(&gobetterauth.AuthConfig{
+//     Config: config,
+//     Plugins: []gobetterauthmodels.Plugin{
+//       coreplugin.New(coretypes.CorePluginConfig{
+//         Enabled: true,
+//       }),
+//       emailpasswordplugin.New(emailpasswordplugintypes.EmailPasswordPluginConfig{
+//         Enabled:                  true,
+//         MinPasswordLength:        8,
+//         MaxPasswordLength:        32,
+//         RequireEmailVerification: true,
+//       }),
+//       // ... other plugins
+//     },
+//   })
 
-[database]
-provider = "postgres"
+//   // Start your Go application
+//   log.Fatal(http.ListenAndServe(":8080", auth.Handler()))
+// }
+// `.trim();
 
-[email_password]
-enabled = true
+// const tomlConfigCode = `
+// # Configure settings
+// app_name = "GoBetterAuth"
+// base_url = "http://localhost:8080"
+// base_path = "/auth"
 
-// and more to configure and customise...
-`.trim();
+// [database]
+// provider = "postgres"
 
-const dockerDeployCode = `
-docker run -itd -p 8080:8080 \\
-  -v $(pwd)/config.toml:/home/appuser/config.toml \\
-  -e GO_BETTER_AUTH_ADMIN_API_KEY=my-admin-api-key \\
-  -e GO_BETTER_AUTH_BASE_URL=http://localhost:8080 \\
-  -e GO_BETTER_AUTH_SECRET=my-app-secret \\
-  -e GO_BETTER_AUTH_DATABASE_URL=<your_connection_string> \\
-  ghcr.io/gobetterauth/go-better-auth:latest
-`.trim();
+// // and more to configure and customise...
+// `.trim();
+
+// const dockerDeployCode = `
+// docker run -itd -p 8080:8080 \\
+//   -v $(pwd)/config.toml:/home/appuser/config.toml \\
+//   -e GO_BETTER_AUTH_ADMIN_API_KEY=my-admin-api-key \\
+//   -e GO_BETTER_AUTH_BASE_URL=http://localhost:8080 \\
+//   -e GO_BETTER_AUTH_SECRET=my-app-secret \\
+//   -e GO_BETTER_AUTH_DATABASE_URL=<your_connection_string> \\
+//   ghcr.io/gobetterauth/go-better-auth:latest
+// `.trim();
 
 export default function HeroSection() {
   return (
@@ -98,8 +106,7 @@ export default function HeroSection() {
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             An open-source authentication solution that scales with you. Embed
             it as a <strong>library</strong> in your Go app, or run it as a{" "}
-            <strong>standalone auth server</strong> for any language or
-            framework.
+            <strong>standalone auth server</strong> with any tech stack.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto pt-4">
@@ -124,108 +131,6 @@ export default function HeroSection() {
                 View on GitHub
               </Link>
             </Button>
-          </div>
-        </div>
-
-        <div className="mt-16 md:mt-24 relative max-w-5xl mx-auto">
-          <div className="absolute -inset-1 bg-linear-to-r from-blue-500/30 to-sky-500/30 rounded-xl blur-2xl opacity-50" />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
-            {/* Library Mode Preview */}
-            <div className="relative group rounded-xl border bg-card/50 backdrop-blur-sm overflow-hidden flex flex-col h-full">
-              <ShineBorder
-                shineColor={["#3b82f6", "#0ea5e9"]}
-                className="pointer-events-none!"
-              />
-
-              <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30">
-                <div className="flex items-center gap-2">
-                  <GolangIcon className="h-6 w-6 text-muted-foreground" />
-                  <span className="text-sm font-medium text-muted-foreground">
-                    main.go
-                  </span>
-                </div>
-                <Badge variant="outline" className="text-xs">
-                  Library Mode
-                </Badge>
-              </div>
-              <ScrollArea>
-                <div className="p-4">
-                  <pre className="text-sm font-mono text-muted-foreground">
-                    <code className="language-go">{libraryCode}</code>
-                  </pre>
-                </div>
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
-            </div>
-
-            {/* Standalone Mode Preview */}
-            <div className="relative group rounded-xl border bg-card/50 backdrop-blur-sm overflow-hidden flex flex-col h-full">
-              <ShineBorder
-                shineColor={["#3b82f6", "#0ea5e9"]}
-                className="pointer-events-none!"
-              />
-
-              <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/30">
-                <div className="flex items-center gap-2">
-                  <Server className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium text-muted-foreground">
-                    server
-                  </span>
-                </div>
-                <Badge variant="outline" className="text-xs">
-                  Standalone Mode
-                </Badge>
-              </div>
-
-              <div className="p-4 space-y-3">
-                <div className="rounded-md border bg-muted/10 overflow-hidden flex flex-col">
-                  <div className="flex items-center justify-between px-3 py-2 border-b bg-muted/20 shrink-0">
-                    <div className="flex items-center gap-2">
-                      <Server className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-sm font-medium text-muted-foreground">
-                        config.toml
-                      </span>
-                    </div>
-                    <Badge variant="outline" className="text-xs">
-                      Config File
-                    </Badge>
-                  </div>
-                  <ScrollArea className="h-48">
-                    <div className="p-3">
-                      <pre className="text-sm font-mono text-muted-foreground">
-                        <code className="language-toml">{tomlConfigCode}</code>
-                      </pre>
-                    </div>
-                    <ScrollBar orientation="vertical" />
-                  </ScrollArea>
-                </div>
-
-                <div className="rounded-md border bg-muted/10 overflow-hidden flex flex-col">
-                  <div className="flex items-center justify-between px-3 py-2 border-b bg-muted/20 shrink-0">
-                    <div className="flex items-center gap-2">
-                      <TerminalIcon className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-sm font-medium text-muted-foreground">
-                        bash
-                      </span>
-                    </div>
-                    <Badge variant="outline" className="text-xs">
-                      Deploy with Docker
-                    </Badge>
-                  </div>
-                  <ScrollArea className="h-48">
-                    <div className="p-3">
-                      <pre className="text-sm font-mono text-muted-foreground">
-                        <code className="language-bash">
-                          {dockerDeployCode}
-                        </code>
-                      </pre>
-                    </div>
-                    <ScrollBar orientation="horizontal" />
-                  </ScrollArea>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

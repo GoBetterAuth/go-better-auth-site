@@ -9,17 +9,17 @@ import {
 import BorderIndicators from "@/components/shared/BorderIndicators";
 
 const libraryModeFeatures = [
-  "Native http.ServeMux compatibility",
-  "Zero network latency (in-process)",
-  "Full access to internal Go APIs",
-  "Share database connections",
-  "Compile into a single binary",
+  "Flexible routing via built-in Chi router",
+  "Full programmatic access to internal APIs, Plugins and Service Registry",
+  "Compile and build your way",
+  "Customise via code",
+  "Integrate seamlessly with existing Go projects",
 ];
 
 const standaloneModeFeatures = [
   "Centralised auth service",
-  "Works with any language",
-  "Live config updates",
+  "Works with any tech stack",
+  "Live config updates using a plugin",
   "Scales independently",
   "Docker & K8s ready",
 ];
@@ -35,9 +35,9 @@ export default function ArchitectureSection() {
             Two Ways to Build
           </h2>
           <p className="text-muted-foreground text-lg">
-            GoBetterAuth is designed to grow with your needs. Start simple as a
-            library, or deploy as a centralised auth service for your entire
-            platform.
+            GoBetterAuth is designed to grow with your needs. Embed it as a
+            library giving you full control via code, or deploy it via Docker as
+            a centralised auth service for your entire backend.
           </p>
         </div>
 
@@ -53,8 +53,8 @@ export default function ArchitectureSection() {
               </div>
               <CardTitle className="text-2xl">Library Mode</CardTitle>
               <CardDescription className="text-base">
-                Import directly into your Go application. Perfect for monoliths
-                and simple services.
+                Import directly into your Go application giving you full control
+                via code.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -83,7 +83,7 @@ export default function ArchitectureSection() {
               <CardTitle className="text-2xl">Standalone Mode</CardTitle>
               <CardDescription className="text-base">
                 Run as a standalone service. Ideal for microservices and
-                multi-app platforms.
+                multi-language tech stacks.
               </CardDescription>
             </CardHeader>
             <CardContent>

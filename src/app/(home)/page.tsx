@@ -8,10 +8,12 @@ import HooksSection from "@/components/sections/HooksSection";
 import PluginSection from "@/components/sections/PluginSection";
 import DeveloperExperienceSection from "@/components/sections/DeveloperExperienceSection";
 import CommunitySection from "@/components/sections/CommunitySection";
+import AnnouncementBanner from "@/components/shared/AnnouncementBanner";
 
 export default function HomePage() {
   return (
     <main className="flex flex-col flex-1">
+      <AnnouncementBanner />
       <HeroSection />
       <ArchitectureSection />
       <ConfigurationSection />

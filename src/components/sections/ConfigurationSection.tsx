@@ -1,5 +1,11 @@
-import { Code2, Settings2, Database, Radio } from "lucide-react";
-import BorderIndicators from "@/components/shared/BorderIndicators";
+import {
+  Code2,
+  Settings2,
+  Database,
+  Radio,
+  Code,
+  CheckCircle2,
+} from "lucide-react";
 
 export default function ConfigurationSection() {
   return (
@@ -22,13 +28,16 @@ export default function ConfigurationSection() {
             </div>
             <h3 className="text-xl font-bold mb-3">Library Configuration</h3>
             <p className="text-muted-foreground mb-6">
-              Configure directly in Go using type-safe structs. Compiler
-              verification ensures your config is always valid and consistent.
+              Configure directly in Go using type-safe structs. Compile-time
+              checks ensures your config is always valid and consistent.
             </p>
-            <div className="w-full bg-muted/50 rounded-lg p-4 text-left">
-              <code className="text-xs font-mono text-muted-foreground">
-                gobetterauth.New(config.NewConfig(...))
-              </code>
+            <div className="flex gap-4 justify-center w-full">
+              <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground bg-muted/50 px-3 py-2 rounded-lg">
+                <Code className="h-3 w-3" /> Type-Safe
+              </div>
+              <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground bg-muted/50 px-3 py-2 rounded-lg">
+                <CheckCircle2 className="h-3 w-3" /> Full Control
+              </div>
             </div>
           </div>
 

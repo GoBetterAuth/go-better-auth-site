@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 
 import BorderIndicators from "@/components/shared/BorderIndicators";
+import { Badge } from "@/components/ui/badge";
 
 const features = [
   {
@@ -17,13 +18,15 @@ const features = [
       "Secure authentication with Argon2 hashing, email verification, password reset, and change email flows.",
     icon: Key,
     className: "md:col-span-1",
+    isPlugin: true,
   },
   {
     title: "Social OAuth",
     description:
-      "Connect with Google, GitHub, Discord, and more. Extensible provider system.",
+      "Connect with Discord, GitHub, Google, and more. Extensible provider system.",
     icon: Globe,
     className: "md:col-span-1",
+    isPlugin: true,
   },
   {
     title: "Multiple Databases",
@@ -31,6 +34,7 @@ const features = [
       "First-class support for PostgreSQL, MySQL, SQLite, and custom adapters with migration scripts.",
     icon: Database,
     className: "md:col-span-1",
+    isPlugin: false,
   },
   {
     title: "Secondary Storage",
@@ -38,6 +42,7 @@ const features = [
       "Redis/Key-Value support for high-performance sessions and rate limiting.",
     icon: Server,
     className: "md:col-span-1",
+    isPlugin: true,
   },
   {
     title: "Enhanced Security",
@@ -45,20 +50,23 @@ const features = [
       "Built-in CSRF protection, secure session management, and configurable rate limiting.",
     icon: Shield,
     className: "md:col-span-1",
+    isPlugin: true,
   },
   {
     title: "Minimal Dependencies",
     description:
-      "Standard library first design. Production-ready and framework-agnostic.",
+      "Standard library first design, powered by Chi for routing. Production-ready and framework-agnostic.",
     icon: Box,
     className: "md:col-span-1",
+    isPlugin: false,
   },
   {
     title: "Webhooks",
     description:
-      "Trigger external workflows on user signup, login, and other key events with configurable webhooks.",
+      "Easily create custom plugins and connect their API endpoints as webhooks. Flexible integration for any workflow or event.",
     icon: Webhook,
     className: "md:col-span-3",
+    isPlugin: false,
   },
 ];
 
@@ -89,7 +97,14 @@ export default function FeaturesSection() {
               <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
                 <feature.icon className="h-5 w-5" />
               </div>
-              <h3 className="mb-2 text-lg font-semibold">{feature.title}</h3>
+              <h3 className="mb-2 text-lg font-semibold flex items-center gap-2">
+                {feature.title}
+                {feature.isPlugin && (
+                  <Badge variant="secondary" className="text-xs">
+                    Plugin
+                  </Badge>
+                )}
+              </h3>
               <p className="text-muted-foreground">{feature.description}</p>
             </div>
           ))}
