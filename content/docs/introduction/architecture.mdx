@@ -13,6 +13,7 @@ GoBetterAuth follows **Clean Architecture** principles with built-in HTTP handle
 │ • Built-in http.Handler implementation                      │
 │ • auth.Handler() returns ready-to-use handler               │
 │ • Mount on any standard Mux HTTP server                     │
+│ • Uses Chi router under the hood                            │
 ├─────────────────────────────────────────────────────────────┤
 │ Database Adapters                                           │
 │ • SQLite                                                    │
@@ -35,16 +36,16 @@ GoBetterAuth follows **Clean Architecture** principles with built-in HTTP handle
 
 ### Handler Layer
 
-- Entrypoint for API endpoints, delegates logic to services
-- Integrated with middleware
+- Entrypoint for API endpoints, delegates logic to use cases which uilise services that use repositories providing clear separation of concerns.
+- Integrated with middleware and hooks for extensibility
 
-### Services Layer
+### Use Cases Layer
 
-- Use cases (interfaces) and services (business logic) for authentication workflows
+- Use cases (interfaces), services (business logic), repositories (database access) for authentication workflows
 
 ### Database Layer
 
-- GORM based adapters for multiple databases
+- [Bun ORM](https://bun.uptrace.dev/) based adapters for multiple databases
 
 ### Extensibility
 

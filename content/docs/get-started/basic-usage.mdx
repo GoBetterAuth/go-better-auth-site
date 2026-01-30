@@ -8,11 +8,12 @@ package main
 import (
 	"os"
 	"log"
-	"net/http"
 
 	gobetterauth "github.com/GoBetterAuth/go-better-auth"
 	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
 	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+	emailpasswordplugin "github.com/GoBetterAuth/go-better-auth/plugins/email-password"
+	emailpasswordplugintypes "github.com/GoBetterAuth/go-better-auth/plugins/email-password/types"
 )
 
 func main() {
@@ -22,24 +23,24 @@ func main() {
 			Provider:         "postgres",
 			ConnectionString: os.Getenv("DATABASE_URL"),
 		}),
-		gobetterauthconfig.WithEmailPassword(gobetterauthmodels.EmailPasswordConfig{
-			Enabled: true,
-		}),
 	)
-	auth := gobetterauth.New(config)
-	auth.RunMigrations()
-
-	// Mount auth routes
-	http.Handle("/auth/", auth.Handler())
-
-	// Add your application routes
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Welcome to My App!"))
+	auth := gobetterauth.New(&gobetterauth.AuthConfig{
+		Config:  config,
+		Plugins: [
+			emailpasswordplugin.New(emailpasswordplugintypes.EmailPasswordPluginConfig{
+				Enabled:                  true,
+				MinPasswordLength:        8,
+				MaxPasswordLength:        32,
+				DisableSignUp:            false,
+				RequireEmailVerification: true,
+				AutoSignIn:               true,
+				SendEmailOnSignUp:        true,
+			}),
+		],
 	})
 
-	// Start the server
-	log.Println("Server running on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	// Start the server and mount the handler
+	log.Fatal(http.ListenAndServe(":8080", auth.Handler()))
 }
 ```
 
@@ -48,7 +49,7 @@ func main() {
 ### Sign Up
 
 ```bash
-curl -X POST http://localhost:8080/auth/sign-up/email \
+curl -X POST http://localhost:8080/auth/sign-up \
   -H "Content-Type: application/json" \
   -d '{"name": "John Doe", "email": "john.doe@example.com", "password": "password123"}'
 ```
@@ -56,7 +57,7 @@ curl -X POST http://localhost:8080/auth/sign-up/email \
 ### Sign In
 
 ```bash
-curl -X POST http://localhost:8080/auth/sign-in/email \
+curl -X POST http://localhost:8080/auth/sign-in \
   -H "Content-Type: application/json" \
   -d '{"email": "john.doe@example.com", "password": "password123"}'
 ```

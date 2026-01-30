@@ -1,0 +1,86 @@
+---
+title: Security
+description: Learn about security in GoBetterAuth.
+---
+
+# Security Architecture
+
+GoBetterAuth is built with a **security-first philosophy**, treating protection as a foundational requirement rather than an add-on. Our architecture employs defense-in-depth, modern cryptographic primitives, and automated security lifecycles to protect user data.
+
+---
+
+## 1. Cryptographic Standards
+
+We utilize industry-leading algorithms selected for their resistance to modern attack vectors (GPU/ASIC cracking and side-channel attacks).
+
+| Feature                | Algorithm               | Implementation Details                                       |
+| ---------------------- | ----------------------- | ------------------------------------------------------------ |
+| **Password Hashing**   | **Argon2id**            | 64MB memory, 4 parallel threads, 16-byte unique salts.       |
+| **Digital Signatures** | **Ed25519**             | Used for JWTs; faster and more secure than RSA-3072.         |
+| **Data Encryption**    | **ChaCha20-Poly1305-X** | Superior performance on mobile; resistant to timing attacks. |
+
+---
+
+## 2. Authentication & Session Management
+
+GoBetterAuth uses a multi-layered approach to verify identity and maintain state.
+
+### Intelligent Sessions
+
+- **Sliding Window:** 7-day duration with active validation every 24 hours.
+- **Fingerprinting:** Tracks IP addresses and User Agents to detect session hijacking.
+
+### JWT Implementation & Rotation
+
+We use a dual-token system (Access/Refresh) with automated **Zero-Downtime Key Rotation**.
+
+- **Access Tokens:** Short-lived (15 min) to limit exposure.
+- **Refresh Tokens:** Long-lived (7 days) for user convenience.
+- **Key Rotation:** Keys rotate every 30 days. A 1-hour grace period ensures that old keys remain valid for tokens currently in transit, preventing service interruption.
+
+---
+
+## 3. Threat Mitigation
+
+### CSRF Protection
+
+We employ a **dual-layer defense**:
+
+1. **Double-Submit Cookie Pattern:** Validates cryptographically secure 24-byte tokens via request headers.
+2. **Native Browser Integration:** Leverages Go 1.25’s `CrossOriginProtection` to validate `Sec-Fetch-Site` and `Origin` headers at the browser level.
+
+### Intelligent Rate Limiting
+
+Protects against brute-force and DoS attacks with granular control:
+
+- **Backends:** Supports In-memory, Redis (distributed), or Database storage with automatic failover.
+- **Headers:** Provides transparent `X-RateLimit` headers for client-side retry logic.
+- **Proxy Awareness:** Sophisticated detection ensures limits apply to the actual client IP, not the load balancer.
+
+---
+
+## 4. Token Invalidation & Telemetry
+
+Security doesn't end after a token is issued. We monitor and manage the token lifecycle actively.
+
+- **Blacklisting:** Redis-backed blacklist with automatic TTL management for logged-out or revoked tokens.
+- **Event Telemetry:**
+- `TokenReuseRecoveredEvent`: Triggered on the first reuse (likely a network glitch).
+- `TokenReuseMaliciousEvent`: Triggered on multiple attempts, flagging a potential replay attack.
+
+---
+
+## 5. Network & Infrastructure Security
+
+### IP Anti-Spoofing
+
+We operate on a **Zero-Trust IP policy**. Unless a specific CIDR range is configured as a "Trusted Proxy," the system ignores `X-Forwarded-For` headers to prevent IP masquerading.
+
+### Security Headers & CORS
+
+- **CORS:** Strict origin validation; prevents dangerous wildcard (`*`) configurations when credentials are involved.
+- **Hardened Headers:** Automatically injects `X-Content-Type-Options`, `X-Frame-Options`, and `Referrer-Policy`.
+
+### Configuration Vaulting
+
+To prevent credential leaks, the system automatically detects and encrypts sensitive configuration keys (e.g., `APP_SECRET`, `DB_URL`) using ChaCha20-Poly1305-X before they are processed in-memory.

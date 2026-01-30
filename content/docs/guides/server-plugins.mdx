@@ -1,0 +1,551 @@
+---
+title: Server-Side Plugins
+description: Extend GoBetterAuth functionality with custom plugins via Go.
+---
+
+## Overview
+
+The GoBetterAuth plugin system provides a flexible and extensible architecture that allows developers to extend the authentication framework with custom functionality. The plugin system is designed around interfaces and follows a modular approach that enables:
+
+- Easy integration of new authentication methods
+- Custom hooks and routing
+- Database migrations
+- Request lifecycle hooks
+- Real-time configuration updates
+
+## Core Architecture
+
+### Plugin Interface
+
+Every plugin must implement the base `Plugin` interface:
+
+```go
+type Plugin interface {
+    Metadata() PluginMetadata
+    Config() any
+    Init(ctx *PluginContext) error
+    Close() error
+}
+```
+
+- `Metadata()` - Returns information about the plugin (ID, version, description)
+- `Config()` - Returns the plugin's configuration structure
+- `Init(ctx *PluginContext)` - Initializes the plugin with the provided context
+- `Close()` - Cleans up resources when the plugin is shut down
+
+### Plugin Context
+
+The `PluginContext` provides plugins with access to core services:
+
+```go
+type PluginContext struct {
+    DB              bun.IDB                 // Database connection
+    Logger          Logger                  // Logging service
+    EventBus        EventBus                // Event publishing/subscribing
+    ServiceRegistry ServiceRegistry         // Access to other services
+    GetConfig       func() *Config          // Function to get current config
+}
+```
+
+### Plugin Registry
+
+The `PluginRegistry` manages the lifecycle of all plugins:
+
+```go
+type PluginRegistry interface {
+    Register(p Plugin) error
+    SetConfigProvider(func() *Config)
+    InitAll() error
+    RunMigrations(ctx context.Context) error
+    DropMigrations(ctx context.Context) error
+    Plugins() []Plugin
+    GetConfig() *Config
+    CloseAll()
+    GetPlugin(pluginID string) Plugin
+}
+```
+
+## Plugin Capabilities
+
+Plugins can implement optional interfaces to provide additional functionality:
+
+### Database Migrations
+
+Implement `PluginWithMigrations` to include database schema changes:
+
+```go
+type PluginWithMigrations interface {
+    Migrations(ctx context.Context, dbProvider string) (*embed.FS, error)
+}
+```
+
+Example implementation:
+
+```go
+func (p *MyPlugin) Migrations(ctx context.Context, dbProvider string) (*embed.FS, error) {
+    switch dbProvider {
+    case "postgres":
+        return &PostgresMigrations, nil
+    case "mysql":
+        return &MySQLMigrations, nil
+    case "sqlite":
+        return &SQLLiteMigrations, nil
+    default:
+        return nil, fmt.Errorf("unsupported database provider: %s", dbProvider)
+    }
+}
+```
+
+Migration files should be organized as:
+
+- `20250115000001_migration_name.up.sql` - Apply migration
+- `20250115000001_migration_name.down.sql` - Rollback migration
+
+### HTTP Routes
+
+Implement `PluginWithRoutes` to add custom API endpoints:
+
+```go
+type PluginWithRoutes interface {
+    Routes() []Route
+}
+```
+
+Example implementation:
+
+```go
+func (p *MyPlugin) Routes() []models.Route {
+    return []models.Route{
+        {
+            Method: "GET",
+            Path:   "/api/my-plugin/status",
+            Handler: http.HandlerFunc(p.handleStatus),
+        },
+        {
+            Method: "POST",
+            Path:   "/api/my-plugin/action",
+            Middleware: []func(http.Handler) http.Handler{
+                p.authMiddleware(),
+            },
+            Handler: http.HandlerFunc(p.handleAction),
+        },
+    }
+}
+```
+
+### Middleware
+
+Implement `PluginWithMiddleware` to add global middleware:
+
+```go
+type PluginWithMiddleware interface {
+    Middleware() []func(http.Handler) http.Handler
+}
+```
+
+### Configuration Watchers
+
+Implement `PluginWithConfigWatcher` to receive real-time config updates:
+
+```go
+type PluginWithConfigWatcher interface {
+    OnConfigUpdate(config *Config) error
+}
+```
+
+### Request Lifecycle Hooks
+
+Implement `PluginWithHooks` to intercept and modify the request lifecycle:
+
+```go
+type PluginWithHooks interface {
+    Hooks() []Hook
+}
+
+// HookStage defines when a hook should be executed
+type HookStage int
+const (
+    HookOnRequest HookStage = iota  // Executed for every request at the very start
+    HookBefore                      // Executed before route matching and handling
+    HookAfter                       // Executed after route handling but before response is sent
+    HookOnResponse                  // Executed after the response has been written
+)
+```
+
+Example hook implementation:
+
+```go
+func (p *MyPlugin) Hooks() []models.Hook {
+    return []models.Hook{
+        {
+            Stage:    models.HookBefore,
+            PluginID: "my-plugin",
+            Matcher:  p.matchSpecificPaths,
+            Handler:  p.myHookHandler,
+            Order:    10,
+            Async:    false,
+        },
+    }
+}
+
+func (p *MyPlugin) matchSpecificPaths(reqCtx *models.RequestContext) bool {
+    // Only execute hook for specific paths
+    return reqCtx.Request.URL.Path == "/api/protected"
+}
+
+func (p *MyPlugin) myHookHandler(reqCtx *models.RequestContext) error {
+    // Modify request context or perform actions
+    reqCtx.Values["custom_value"] = "processed_by_hook"
+    return nil
+}
+```
+
+## Creating a Custom Plugin
+
+Here's a step-by-step guide to creating a custom plugin:
+
+### 1. Define the Plugin Struct
+
+```go
+package myplugin
+
+import (
+    "context"
+    "net/http"
+
+    "github.com/GoBetterAuth/go-better-auth/models"
+    "github.com/GoBetterAuth/go-better-auth/services"
+)
+
+type MyPlugin struct {
+    config       MyPluginConfig
+    logger       models.Logger
+    ctx          *models.PluginContext
+    userService  services.UserService
+}
+
+type MyPluginConfig struct {
+    Enabled bool   `json:"enabled" toml:"enabled"`
+    APIKey  string `json:"api_key" toml:"api_key"`
+    Timeout int    `json:"timeout" toml:"timeout"`
+}
+```
+
+### 2. Implement the Base Plugin Interface
+
+```go
+func New(config MyPluginConfig) *MyPlugin {
+    return &MyPlugin{config: config}
+}
+
+func (p *MyPlugin) Metadata() models.PluginMetadata {
+    return models.PluginMetadata{
+        ID:          "my-plugin",
+        Version:     "1.0.0",
+        Description: "Provides custom functionality for my application",
+    }
+}
+
+func (p *MyPlugin) Config() any {
+    return p.config
+}
+
+func (p *MyPlugin) Init(ctx *models.PluginContext) error {
+    p.ctx = ctx
+    p.logger = ctx.Logger
+
+    // Initialize services from the service registry
+    userService, ok := ctx.ServiceRegistry.Get(models.ServiceUser.String()).(services.UserService)
+    if !ok {
+        return fmt.Errorf("user service not available")
+    }
+    p.userService = userService
+
+    // Additional initialization logic here
+    p.logger.Info("MyPlugin initialized successfully")
+    return nil
+}
+
+func (p *MyPlugin) Close() error {
+    // Cleanup resources
+    p.logger.Info("MyPlugin closed")
+    return nil
+}
+```
+
+### 3. Implement Optional Capabilities
+
+#### Add HTTP Routes (Optional)
+
+```go
+func (p *MyPlugin) Routes() []models.Route {
+    return []models.Route{
+        {
+            Method:  "GET",
+            Path:    "/api/my-plugin/info",
+            Handler: http.HandlerFunc(p.handleInfo),
+        },
+    }
+}
+
+func (p *MyPlugin) handleInfo(w http.ResponseWriter, r *http.Request) {
+    util.JSONResponse(w, http.StatusOK, map[string]interface{}{
+        "plugin_id":   p.Metadata().ID,
+        "version":     p.Metadata().Version,
+        "description": p.Metadata().Description,
+    })
+}
+```
+
+#### Add Middleware (Optional)
+
+```go
+func (p *MyPlugin) Middleware() []func(http.Handler) http.Handler {
+    return []func(http.Handler) http.Handler{
+        p.customLoggingMiddleware,
+    }
+}
+
+func (p *MyPlugin) customLoggingMiddleware(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        startTime := time.Now()
+
+        p.logger.Info("Request started",
+            "method", r.Method,
+            "path", r.URL.Path,
+            "timestamp", startTime,
+        )
+
+        next.ServeHTTP(w, r)
+
+        duration := time.Since(startTime)
+        p.logger.Info("Request completed",
+            "method", r.Method,
+            "path", r.URL.Path,
+            "duration", duration,
+        )
+    })
+}
+```
+
+#### Add Configuration Watcher (Optional)
+
+```go
+func (p *MyPlugin) OnConfigUpdate(config *models.Config) error {
+    // Handle configuration updates
+    var newConfig MyPluginConfig
+    if err := util.LoadPluginConfig(config, p.Metadata().ID, &newConfig); err != nil {
+        p.logger.Error("Failed to load updated config", "error", err)
+        return err
+    }
+
+    p.config = newConfig
+    p.logger.Info("Configuration updated for MyPlugin")
+    return nil
+}
+```
+
+### 4. Register the Plugin
+
+To use your plugin, you need to register it in the plugin factory system. Add an entry to the `pluginFactories` slice in `internal/bootstrap/plugin_factory.go`:
+
+```go
+{
+    ID:                "my-plugin",
+    RequiredByDefault: false,
+    ConfigParser: func(rawConfig any) (any, error) {
+        config := MyPluginConfig{}
+        if rawConfig != nil {
+            if err := util.ParsePluginConfig(rawConfig, &config); err != nil {
+                return nil, fmt.Errorf("failed to parse my-plugin config: %w", err)
+            }
+        }
+        return config, nil
+    },
+    Constructor: func(typedConfig any) models.Plugin {
+        return New(typedConfig.(MyPluginConfig))
+    },
+},
+```
+
+## Built-in Plugins
+
+The framework comes with several built-in plugins:
+
+- **Config Manager** (`config_manager`): Dynamic configuration management
+- **Secondary Storage** (`secondary_storage`): Additional storage options
+- **Email** (`email`): Email sending capabilities
+- **CSRF Protection** (`csrf`): Cross-site request forgery protection
+- **Email Password** (`email_password`): Email/password authentication
+- **OAuth2** (`oauth2`): OAuth2 authentication flows
+- **Session** (`session`): Cookie-based session management
+- **JWT** (`jwt`): JSON Web Token authentication
+- **Bearer** (`bearer`): Bearer token authentication
+- **Rate Limit** (`ratelimit`): Request rate limiting
+
+## Configuration
+
+Plugins are configured through the main configuration file. Example configuration:
+
+```toml
+[plugins.session]
+enabled = true
+
+[plugins.oauth2]
+enabled = true
+[plugins.oauth2.providers.google]
+enabled = true
+redirect_url = "http://localhost:8080/api/auth/oauth2/callback/google"
+
+[plugins.ratelimit]
+enabled = true
+window = "1m"
+max = 100
+prefix = "ratelimit:"
+provider = "redis" # Options: "memory", "redis", "database"
+# [plugins.ratelimit.custom_rules]
+# "/path/to/your/endpoint" = { disabled = false, window = "1m", max = 5, prefix = "" }
+```
+
+## Best Practices
+
+1. **Always implement proper error handling** in the `Init` method
+2. **Clean up resources** in the `Close` method
+3. **Use the provided logger** for logging instead of external loggers
+4. **Validate configuration** during initialization
+5. **Follow naming conventions** for plugin IDs (lowercase with underscores)
+6. **Provide meaningful metadata** for your plugins
+7. **Use async hooks** for side-effect operations that shouldn't block responses
+8. **Consider security implications** when implementing authentication methods
+9. **Test your plugin** thoroughly, especially edge cases and error conditions
+10. **Document your plugin's configuration** options and behavior
+
+## Example:
+
+Here's a complete example of a basic plugin:
+
+```go
+package logger
+
+import (
+    "context"
+    "fmt"
+    "net/http"
+    "time"
+
+    "github.com/GoBetterAuth/go-better-auth/models"
+    "github.com/GoBetterAuth/go-better-auth/internal/util"
+)
+
+type LoggerPlugin struct {
+    config LoggerPluginConfig
+    logger models.Logger
+    ctx    *models.PluginContext
+}
+
+type LoggerPluginConfig struct {
+    Enabled     bool   `json:"enabled" toml:"enabled"`
+    LogRequests bool   `json:"log_requests" toml:"log_requests"`
+    LogLevel    string `json:"log_level" toml:"log_level"` // e.g., "info", "debug"
+}
+
+func New(config LoggerPluginConfig) *LoggerPlugin {
+    return &LoggerPlugin{config: config}
+}
+
+func (p *LoggerPlugin) Metadata() models.PluginMetadata {
+    return models.PluginMetadata{
+        ID:          "logger",
+        Version:     "1.0.0",
+        Description: "Logs incoming requests with timing and detailed information",
+    }
+}
+
+func (p *LoggerPlugin) Config() any {
+    return p.config
+}
+
+func (p *LoggerPlugin) Init(ctx *models.PluginContext) error {
+    p.ctx = ctx
+    p.logger = ctx.Logger
+
+    if p.config.LogRequests {
+        p.logger.Info("Request logging enabled with level: " + p.config.LogLevel)
+    }
+
+    return nil
+}
+
+func (p *LoggerPlugin) Hooks() []models.Hook {
+    return []models.Hook{
+        // Hook to log the start of each request
+        {
+            Stage: models.HookOnRequest,
+            Matcher: func(reqCtx *models.RequestContext) bool {
+                return p.config.LogRequests
+            },
+            Handler: p.logRequestStart,
+            Order:   10,
+        },
+        // Hook to log the end of each request
+        {
+            Stage: models.HookOnResponse,
+            Matcher: func(reqCtx *models.RequestContext) bool {
+                return p.config.LogRequests
+            },
+            Handler: p.logRequestEnd,
+            Order:   10,
+        },
+        // Optional hook for specific routes that require additional logging
+        {
+            Stage:    models.HookAfter,
+            PluginID: "logger", // Assuming routes can specify "logger" in metadata.plugins for extra logging
+            Handler:  p.logAdditionalInfo,
+            Order:    20,
+        },
+    }
+}
+
+func (p *LoggerPlugin) logRequestStart(reqCtx *models.RequestContext) error {
+    startTime := time.Now()
+    reqCtx.Values["start_time"] = startTime
+    if p.config.LogLevel == "debug" {
+        p.logger.Debug(fmt.Sprintf("Request started: %s %s from %s", reqCtx.Request.Method, reqCtx.Request.URL.Path, reqCtx.Request.RemoteAddr))
+    }
+    return nil
+}
+
+func (p *LoggerPlugin) logRequestEnd(reqCtx *models.RequestContext) error {
+    startTime, ok := reqCtx.Values["start_time"].(time.Time)
+    if !ok {
+        p.logger.Warn("Start time not found in request context")
+        return nil
+    }
+    duration := time.Since(startTime)
+    status := reqCtx.Response.StatusCode
+    userID := reqCtx.UserID
+    logMsg := fmt.Sprintf("Request completed: %s %s -> %d in %v", reqCtx.Request.Method, reqCtx.Request.URL.Path, status, duration)
+    if userID != "" {
+        logMsg += fmt.Sprintf(" (User: %s)", userID)
+    }
+    if status >= 400 {
+        p.logger.Error(logMsg)
+    } else {
+        p.logger.Info(logMsg)
+    }
+    return nil
+}
+
+func (p *LoggerPlugin) logAdditionalInfo(reqCtx *models.RequestContext) error {
+    // Example: Log additional info for specific routes, e.g., API calls
+    p.logger.Info(fmt.Sprintf("Additional logging for route: %s", reqCtx.Request.URL.Path))
+    return nil
+}
+
+func (p *LoggerPlugin) Close() error {
+    p.logger.Info("Request logger plugin shutting down")
+    return nil
+}
+```
+
+This documentation provides a comprehensive overview of the plugin system, showing how to create and configure plugins while following best practices for integration with GoBetterAuth.

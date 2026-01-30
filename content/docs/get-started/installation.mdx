@@ -46,7 +46,7 @@ provider = "postgres"
 # Path to your configuration file (e.g., ./config.toml) (optional)
 GO_BETTER_AUTH_CONFIG_PATH=
 
-# Gives admin access to update and manage the GoBetterAuth server
+# Gives admin access to update and manage the GoBetterAuth server. Only applicable if Config Manager plugin is enabled - by default it is.
 # Generate using `echo gba_sk_$(openssl rand -base64 50 | tr -dc 'A-Za-z0-9' | cut -c -35)`
 GO_BETTER_AUTH_ADMIN_API_KEY=
 
@@ -110,7 +110,7 @@ GO_BETTER_AUTH_DATABASE_URL=
 ### Install the Package
 
 ```bash
-$ go get "github.com/GoBetterAuth/go-better-auth"
+$ go get github.com/GoBetterAuth/go-better-auth@latest
 ```
 
 </Step>
@@ -121,12 +121,15 @@ $ go get "github.com/GoBetterAuth/go-better-auth"
 
 ```go
 import (
+  gobetterauth "github.com/GoBetterAuth/go-better-auth"
   gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
-  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
 )
 
 config := gobetterauthconfig.NewConfig(/*...*/)
-auth := gobetterauth.New(config)
+auth := gobetterauth.New(&gobetterauth.AuthConfig{
+  Config:  config,
+  Plugins: [/*...*/],
+})
 ```
 
 </Step>
@@ -190,12 +193,15 @@ GoBetterAuth supports multiple database providers. You can select a database pro
 
 ### Run database migrations
 
-GoBetterAuth already runs core migrations automatically when you create a new instance so all the important database tables are created for you automatically without any additional steps. But GoBetterAuth also provides migration files which you can run directly against your database of choice. Or you can run the migrations programmatically by running the `RunMigrations()` function. An example is shown below:
+GoBetterAuth runs all migrations (core & plugins) automatically when you create a new instance so all the relevant database tables are created for you without any additional steps. This is done via Bun ORM's migration system and migration files are embedded in the binary. But GoBetterAuth also provides migration files which you can run directly against your database of choice.
 
 ```go
 // Create the config
 config := gobetterauthconfig.NewConfig(/*...*/)
-auth := gobetterauth.New(config)
+auth := gobetterauth.New(gobetterauth.AuthConfig{
+  Config:  config,
+  Plugins: [/*...*/],
+})
 ```
 
 </Step>
@@ -204,16 +210,31 @@ auth := gobetterauth.New(config)
 
 ### Authentication Methods
 
-Configure the authentication methods you want to use in your config struct. GoBetterAuth supports the basic Email/Password authentication method and will soon support social sign-on providers such as Google, GitHub, Discord and more.
+Configure the authentication methods you want to use by choosing from the available plugins. GoBetterAuth supports the Email/Password authentication method as a plugin and also OAuth2 providers such as Discord, GitHub and Google with more coming soon.
 
 ```go
-config := gobetterauthconfig.NewConfig(
-  gobetterauthconfig.WithEmailPassword(gobetterauthmodels.EmailPasswordConfig{
-    Enabled:                  true,
-    RequireEmailVerification: true,
-    AutoSignIn:               true,
-  }),
+import (
+  gobetterauth "github.com/GoBetterAuth/go-better-auth"
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  emailpasswordplugin "github.com/GoBetterAuth/go-better-auth/plugins/email-password"
+  emailpasswordplugintypes "github.com/GoBetterAuth/go-better-auth/plugins/email-password/types"
 )
+
+config := gobetterauthconfig.NewConfig(/*...*/)
+auth := gobetterauth.New(&gobetterauth.AuthConfig{
+  Config:  config,
+  Plugins: [
+    emailpasswordplugin.New(emailpasswordplugintypes.EmailPasswordPluginConfig{
+      Enabled:                  true,
+      MinPasswordLength:        8,
+      MaxPasswordLength:        32,
+      DisableSignUp:            false,
+      RequireEmailVerification: true,
+      AutoSignIn:               true,
+      SendEmailOnSignUp:        true,
+    }),
+  ],
+})
 ```
 
 </Step>
@@ -229,14 +250,13 @@ This is an example of how it can be done with the standard library server:
 ```go
 // Initialise auth
 config := gobetterauthconfig.NewConfig(/*...*/)
-auth := gobetterauth.New(config)
+auth := gobetterauth.New(&gobetterauth.AuthConfig{
+  Config:  config,
+  Plugins: [/*...*/],
+})
 
-// Mount auth routes
-http.Handle("/auth/", auth.Handler())
-
-// Start the server
-log.Println("Server running on http://localhost:8080")
-log.Fatal(http.ListenAndServe(":8080", nil))
+// Start the server and mount the handler
+log.Fatal(http.ListenAndServe(":8080", auth.Handler()))
 ```
 
 Take a look at the [Examples](/docs/examples/routers) section to see how to integrate it with other frameworks.

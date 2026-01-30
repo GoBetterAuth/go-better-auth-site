@@ -1,0 +1,107 @@
+---
+title: Discord
+description: Guide on how to set up Discord authentication using GoBetterAuth.
+---
+
+**Note:** This guide uses Discord OAuth2 for user sign-in, which is recommended by Discord for new integrations.
+
+import { Step, Steps } from "fumadocs-ui/components/steps";
+
+<Steps>
+<Step>
+
+### Obtain Discord credentials
+
+1. Go to the [Discord Developer Portal](https://discord.com/developers/applications).
+1. Click on "New Application" and provide a name for your application.
+1. Fill in all the general information required for your application.
+1. Navigate to the "OAuth2" section and then you will see your "Client ID" and "Client Secret". Make a note of the "Client ID" and "Client Secret". Bear in mind you will only be shown the "Client Secret" once.
+1. Under "OAuth2", go to the "Redirects" section and add the following redirect URI:
+   ```bash
+   # Assuming base path is /api/auth
+   http://localhost:8080/api/auth/oauth2/callback/discord
+   ```
+   For production, replace localhost with the base URL of your GoBetterAuth server (e.g. `https://api.yourdomain.com`).
+
+</Step>
+
+<Step>
+
+### Configure the provider
+
+#### Standalone Mode
+
+Add the following to your `config.toml`:
+
+```toml
+# SECURITY NOTE: It is recommended to set the 'client_secret' for each of these via their
+# respective environment variables as shown in the .env.example file rather than hardcoding it here.
+[plugins.oauth2.providers.discord]
+enabled = true
+client_id = "your-client-id"
+client_secret = "your-client-secret"
+redirect_url = "http://localhost:8080/auth/oauth2/callback/discord"
+scopes = []
+```
+
+#### Library Mode
+
+```go
+import (
+  "os"
+  "fmt"
+
+  gobetterauth "github.com/GoBetterAuth/go-better-auth"
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+  oauth2plugin "github.com/GoBetterAuth/go-better-auth/plugins/oauth2"
+  oauth2plugintypes "github.com/GoBetterAuth/go-better-auth/plugins/oauth2/types"
+)
+
+func main() {
+  config := gobetterauthconfig.NewConfig(
+    gobetterauthconfig.WithSecurity(gobetterauthmodels.SecurityConfig{
+      // Make sure to configure CORS and Trusted Origins appropriately
+      TrustedOrigins: []string{"your frontend origin"},
+      CORS: gobetterauthmodels.CORSConfig{
+        AllowCredentials: true,
+        AllowedOrigins:   []string{"your frontend origin"},
+      },
+    }),
+  )
+  auth := gobetterauth.New(&gobetterauth.AuthConfig{
+    Config:  config,
+    Plugins: [
+      oauth2plugin.New(oauth2plugintypes.OAuth2PluginConfig{
+        Enabled: true,
+        Providers: map[string]oauth2plugintypes.ProviderConfig{
+          "discord": {
+            Enabled:      true,
+            ClientID:     os.Getenv(gobetterauthenv.EnvDiscordClientID),
+            ClientSecret: os.Getenv(gobetterauthenv.EnvDiscordClientSecret),
+            RedirectURL:  fmt.Sprintf("%s%s/oauth2/callback/discord", config.BaseURL, config.BasePath),
+          },
+        },
+      }),
+    ],
+  })
+}
+```
+
+</Step>
+
+<Step>
+
+### Test the integration
+
+1. Start your GoBetterAuth server.
+1. In your webapp, create a button when clicked on, it navigates the user to:
+   ```bash
+   # (replace localhost with your GoBetterAuth server URL in production).
+   http://localhost:8080/auth/oauth2/authorize/discord?redirect_to=<YOUR_REDIRECT_URL>
+   ```
+1. You should be redirected to Discord's authorization page. After authorizing, you will be redirected back to your application.
+
+</Step>
+
+</Steps>

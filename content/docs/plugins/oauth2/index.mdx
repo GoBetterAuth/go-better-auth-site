@@ -1,0 +1,64 @@
+---
+title: OAuth2 Plugin
+description: Enable OAuth2 authentication for your applications with ease.
+---
+
+The OAuth2 plugin for GoBetterAuth allows you to integrate third-party OAuth2 providers into your authentication flow, enabling users to sign in using their accounts from popular services like Google, GitHub, and Discord.
+
+## What is OAuth2?
+
+OAuth2 is an open standard for access delegation, commonly used as a way for Internet users to grant websites or applications access to their information on other websites but without giving them the passwords. It's widely used for authentication, allowing users to log in to your application using their existing accounts from OAuth2-enabled providers.
+
+## How It Works
+
+The OAuth2 plugin simplifies the integration by handling the OAuth2 flow on behalf of your application. It manages authorization requests, token exchanges, and user profile retrieval, while ensuring security best practices are followed.
+
+To use the plugin, you configure the desired providers with their client credentials and redirect URLs. The plugin then exposes endpoints for initiating OAuth2 flows and handling callbacks.
+
+## Supported Providers
+
+GoBetterAuth's OAuth2 plugin currently supports the following providers:
+
+- **[Discord](discord.mdx)**: Enable sign-in with Discord accounts.
+- **[GitHub](github.mdx)**: Allow users to authenticate using their GitHub credentials.
+- **[Google](google.mdx)**: Integrate Google OAuth2 for seamless user authentication.
+
+Each provider guide includes step-by-step instructions for obtaining credentials, configuring the provider, and testing the integration.
+
+## Standalone Mode
+
+Configure the plugin in your `config.toml`:
+
+```toml
+[plugins.oauth2]
+enabled = true
+
+# SECURITY NOTE: It is recommended to set the 'client_secret' for each of these via their
+# respective environment variables as shown in the .env.example file rather than hardcoding it here.
+[plugins.oauth2.providers.google]
+enabled = true
+client_id = "your-client-id"
+client_secret = "your-client-secret"
+redirect_url = "http://localhost:8080/auth/oauth2/callback/google"
+scopes = []
+```
+
+## Library Mode
+
+The plugin is configured by adding it to your GoBetterAuth instance with the desired providers. Here's a basic example:
+
+```go
+oauth2plugin.New(oauth2plugintypes.OAuth2PluginConfig{
+  Enabled: true,
+  Providers: map[string]oauth2plugintypes.ProviderConfig{
+    "google": {
+      Enabled:      true,
+      ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
+      ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
+      RedirectURL:  "https://yourdomain.com/api/auth/oauth2/callback/google",
+    },
+  },
+})
+```
+
+For detailed configuration options and provider-specific settings, refer to the individual provider documentation.

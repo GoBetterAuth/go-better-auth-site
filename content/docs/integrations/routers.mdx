@@ -18,21 +18,16 @@ import (
 )
 
 func main() {
-	config := gobetterauthconfig.NewConfig(
-		gobetterauthconfig.WithAppName("MyApp"),
-		gobetterauthconfig.WithBasePath("/api/auth"),
-		gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
-			Provider:         "sqlite",
-			ConnectionString: "./auth.db",
-		}),
-	)
-	auth := gobetterauth.New(config)
-	auth.RunMigrations()
+	config := gobetterauthconfig.NewConfig(/*...*/)
+	auth := gobetterauth.New(&gobetterauth.AuthConfig{
+		Config:  config,
+		Plugins: []gobetterauth.Plugin{},
+	})
 
-	// Mount auth routes
+	// Mount handler
 	http.Handle("/api/auth/", auth.Handler())
 
-	log.Println("Server running on http://localhost:8080")
+	// Start the server and mount the handler
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 ```
@@ -57,17 +52,12 @@ import (
 )
 
 func main() {
-	config := gobetterauthconfig.NewConfig(
-		gobetterauthconfig.WithAppName("MyApp"),
-		gobetterauthconfig.WithBasePath("/api/auth"),
-		gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
-			Provider:         "sqlite",
-			ConnectionString: "./auth.db",
-		}),
-	)
-	auth := gobetterauth.New(config)
-	auth.RunMigrations()
-
+	config := gobetterauthconfig.NewConfig(/*...*/)
+	auth := gobetterauth.New(&gobetterauth.AuthConfig{
+		Config:  config,
+		Plugins: []gobetterauth.Plugin{},
+	})
+	
 	r := chi.NewRouter()
 
 	// Add middleware
@@ -102,16 +92,11 @@ import (
 )
 
 func main() {
-	config := gobetterauthconfig.NewConfig(
-		gobetterauthconfig.WithAppName("MyApp"),
-		gobetterauthconfig.WithBasePath("/api/auth"),
-		gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
-			Provider:         "sqlite",
-			ConnectionString: "./auth.db",
-		}),
-	)
-	auth := gobetterauth.New(config)
-	auth.RunMigrations()
+	config := gobetterauthconfig.NewConfig(/*...*/)
+	auth := gobetterauth.New(&gobetterauth.AuthConfig{
+		Config:  config,
+		Plugins: []gobetterauth.Plugin{},
+	})
 
 	e := echo.New()
 
@@ -145,15 +130,11 @@ import (
 )
 
 func main() {
-	config := gobetterauthconfig.NewConfig(
-		gobetterauthconfig.WithAppName("MyApp"),
-		gobetterauthconfig.WithBasePath("/api/auth"),
-		gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
-			Provider:         "sqlite",
-			ConnectionString: "./auth.db",
-		}),
-	)
-	auth := gobetterauth.New(config)
+	config := gobetterauthconfig.NewConfig(/*...*/)
+	auth := gobetterauth.New(&gobetterauth.AuthConfig{
+		Config:  config,
+		Plugins: []gobetterauth.Plugin{},
+	})
 	auth.RunMigrations()
 
 	r := gin.Default()
@@ -184,16 +165,11 @@ import (
 )
 
 func main() {
-	config := gobetterauthconfig.NewConfig(
-		gobetterauthconfig.WithAppName("MyApp"),
-		gobetterauthconfig.WithBasePath("/api/auth"),
-		gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
-			Provider:         "sqlite",
-			ConnectionString: "./auth.db",
-		}),
-	)
-	auth := gobetterauth.New(config)
-	auth.RunMigrations()
+	config := gobetterauthconfig.NewConfig(/*...*/)
+	auth := gobetterauth.New(&gobetterauth.AuthConfig{
+		Config:  config,
+		Plugins: []gobetterauth.Plugin{},
+	})
 
 	app := fiber.New()
 
@@ -226,16 +202,11 @@ import (
 )
 
 func main() {
-	config := gobetterauthconfig.NewConfig(
-		gobetterauthconfig.WithAppName("MyApp"),
-		gobetterauthconfig.WithBasePath("/api/auth"),
-		gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
-			Provider:         "sqlite",
-			ConnectionString: "./auth.db",
-		}),
-	)
-	auth := gobetterauth.New(config)
-	auth.RunMigrations()
+	config := gobetterauthconfig.NewConfig(/*...*/)
+	auth := gobetterauth.New(&gobetterauth.AuthConfig{
+		Config:  config,
+		Plugins: []gobetterauth.Plugin{},
+	})
 
 	r := mux.NewRouter()
 
@@ -264,7 +235,7 @@ Configure CORS for web applications:
 r.Use(cors.Handler(cors.Options{
 	AllowedOrigins:   []string{"http://localhost:3000", "https://example.com"},
 	AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-	AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+	AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
 	AllowCredentials: true,
 }))
 ```

@@ -1,0 +1,320 @@
+---
+title: Hooks
+description: Configure hooks to customise the HTTP request/response lifecycle in GoBetterAuth.
+---
+
+## Overview
+
+The hooks system in GoBetterAuth provides a flexible and extensible mechanism for plugins to intercept and modify the request lifecycle. Hooks allow you to execute custom logic at specific points during request processing without tightly coupling your code to the router.
+
+The system enables powerful capabilities such as authentication, authorization, rate limiting, logging, and custom business logic integration. Each hook operates within the request context and can modify request state, share data with other hooks, or short-circuit the request flow.
+
+## Hook Stages
+
+Hooks execute at four distinct stages in the request lifecycle:
+
+### 1. `HookOnRequest`
+
+- Executes for every incoming request at the very start
+- Ideal for global logging, metrics collection, or request preprocessing
+- Runs before route matching occurs
+
+### 2. `HookBefore`
+
+- Executes after route matching but before the main route handler
+- Perfect for authentication, authorization, and request validation
+- Common use: checking session tokens, validating permissions
+
+### 3. `HookAfter`
+
+- Executes after the route handler but before the response is sent
+- Useful for response modification, post-processing, or cleanup
+- Good for adding response headers or transforming output
+
+### 4. `HookOnResponse`
+
+- Executes after the response has been written to the client
+- Suitable for analytics, audit logging, or fire-and-forget operations
+- Does not affect the response sent to the client
+
+## Configuration Options
+
+### Synchronization Types
+
+Hooks can be either synchronous or asynchronous:
+
+```go
+// Synchronous hook (default)
+Hook{
+    Async: false, // Blocks the request flow until completion
+    Handler: myHandler,
+}
+
+// Asynchronous hook
+Hook{
+    Async: true, // Runs in a background goroutine
+    Handler: myAsyncHandler,
+}
+```
+
+- **Synchronous**: Blocks the request flow and waits for completion. Use for authentication, validation, and critical security checks.
+- **Asynchronous**: Runs in a background goroutine without blocking the response. Ideal for logging, analytics, and side effects.
+
+### Error Handling Modes
+
+Configure how the router handles hook errors:
+
+```go
+opts := &RouterOptions{
+    HookErrorMode: HookErrorModeContinue, // Default: log errors, continue execution
+}
+```
+
+- **`HookErrorModeContinue`** (default): Logs errors but continues to the next hook
+- **`HookErrorModeFailFast`**: Logs error and stops remaining hooks in the current stage
+- **`HookErrorModeSilent`**: Silently ignores errors without logging
+
+### Async Hook Timeout
+
+Control how long async hooks can run before being cancelled:
+
+```go
+opts := &RouterOptions{
+    AsyncHookTimeout: 30 * time.Second, // Default timeout
+}
+```
+
+## Hook Structure
+
+Each hook is defined with the following properties:
+
+```go
+type Hook struct {
+    Stage    HookStage      // When to execute (HookOnRequest, HookBefore, etc.)
+    PluginID string         // Optional: limits execution to specific routes
+    Matcher  HookMatcher    // Optional: conditional execution based on request
+    Handler  HookHandler    // The function that executes the hook
+    Order    int           // Execution order within the same stage
+    Async    bool          // Whether to run asynchronously
+}
+```
+
+### Properties Explained
+
+- **Stage**: Determines when the hook executes in the request lifecycle
+- **PluginID**: If set, hook only executes if the route's metadata includes this plugin ID
+- **Matcher**: A function that returns true/false to conditionally execute the hook
+- **Handler**: The actual function that performs the hook's logic
+- **Order**: Controls execution order among hooks in the same stage (lower numbers first)
+- **Async**: Whether the hook runs synchronously or asynchronously
+
+## Practical Examples
+
+### Basic Authentication Hook
+
+```go
+// Simple authentication hook that checks for a valid session
+authHook := models.Hook{
+    Stage: models.HookBefore,
+    Order: 0,
+    Handler: func(ctx *models.RequestContext) error {
+        // Check if user is authenticated
+        sessionToken := ctx.Headers.Get("Authorization")
+        if sessionToken == "" {
+            ctx.SetResponse(401, nil, []byte(`{"error": "Unauthorized"}`))
+            ctx.Handled = true
+            return nil
+        }
+
+        // Validate session and set user info
+        userID, err := validateSession(sessionToken)
+        if err != nil {
+            ctx.SetResponse(401, nil, []byte(`{"error": "Invalid session"}`))
+            ctx.Handled = true
+            return nil
+        }
+
+        // Store user ID in context for later use
+        ctx.SetUserIDInContext(userID)
+        return nil
+    },
+}
+```
+
+### Conditional Hook with Matcher
+
+```go
+// Only execute hook for admin routes
+adminOnlyHook := models.Hook{
+    Stage: models.HookBefore,
+    Matcher: func(ctx *models.RequestContext) bool {
+        // Only run for paths starting with /admin
+        return strings.HasPrefix(ctx.Path, "/admin")
+    },
+    Handler: func(ctx *models.RequestContext) error {
+        userID := ctx.UserID
+        if userID == nil {
+            ctx.SetResponse(401, nil, []byte(`{"error": "Authentication required"}`))
+            ctx.Handled = true
+            return nil
+        }
+
+        // Check if user has admin role
+        isAdmin, err := userHasRole(*userID, "admin")
+        if err != nil || !isAdmin {
+            ctx.SetResponse(403, nil, []byte(`{"error": "Admin access required"}`))
+            ctx.Handled = true
+            return nil
+        }
+
+        return nil
+    },
+}
+```
+
+### Data Sharing Between Hooks
+
+```go
+// First hook sets data in the Values map
+setUserDataHook := models.Hook{
+    Stage: models.HookBefore,
+    Order: 0,
+    Handler: func(ctx *models.RequestContext) error {
+        userID := ctx.UserID
+        if userID != nil {
+            // Fetch user profile and store in Values for other hooks
+            userProfile, err := getUserProfile(*userID)
+            if err != nil {
+                return err
+            }
+            ctx.Values["user_profile"] = userProfile
+        }
+        return nil
+    },
+}
+
+// Second hook reads the shared data
+auditLogHook := models.Hook{
+    Stage: models.HookAfter,
+    Order: 1, // Must run after setUserDataHook
+    Handler: func(ctx *models.RequestContext) error {
+        if profile, exists := ctx.Values["user_profile"]; exists {
+            // Log the action with user information
+            logAuditEvent(profile.(UserProfile), ctx.Path, ctx.Method)
+        }
+        return nil
+    },
+}
+```
+
+### Asynchronous Analytics Hook
+
+```go
+// Fire-and-forget analytics hook
+analyticsHook := models.Hook{
+    Stage: models.HookOnResponse,
+    Async: true,
+    Handler: func(ctx *models.RequestContext) error {
+        // Track page views, user actions, etc.
+        trackEvent("page_view", map[string]interface{}{
+            "path":     ctx.Path,
+            "method":   ctx.Method,
+            "clientIP": ctx.ClientIP,
+            "userID":   ctx.UserID,
+        })
+        return nil
+    },
+}
+```
+
+### Plugin-Specific Hook
+
+```go
+// Hook that only runs for routes that include this plugin
+rateLimitHook := models.Hook{
+    Stage:    models.HookBefore,
+    PluginID: "ratelimit",
+    Order:    0,
+    Handler: func(ctx *models.RequestContext) error {
+        // Apply rate limiting only to routes that have "ratelimit" in their metadata
+        if err := checkRateLimit(ctx.ClientIP); err != nil {
+            ctx.SetResponse(429, nil, []byte(`{"error": "Rate limit exceeded"}`))
+            ctx.Handled = true
+            return nil
+        }
+        return nil
+    },
+}
+```
+
+## Best Practices
+
+### 1. Order Matters
+
+- Use lower `Order` values for security-critical hooks (authentication, authorization)
+- Higher `Order` values for less critical operations
+- Remember that order is local to each plugin, so compare within the same `PluginID`
+
+### 2. Handle Errors Gracefully
+
+- Always return appropriate errors from your handlers
+- Use `ctx.Handled = true` to short-circuit when returning an error response
+- Consider the error handling mode when designing your hooks
+
+### 3. Use Asynchronous Hooks for Side Effects
+
+- Use `Async: true` for logging, analytics, notifications
+- Keep synchronous hooks for authentication, validation, and response modification
+- Be mindful of the timeout for async hooks
+
+### 4. Leverage the Values Map
+
+- Use `ctx.Values` to share data between hooks
+- Store computed values that other hooks might need
+- Avoid storing sensitive information in Values
+
+### 5. Use Matchers for Conditional Logic
+
+- Implement `Matcher` functions to conditionally execute hooks
+- This is more efficient than checking conditions inside the handler
+- Keep matchers lightweight to avoid performance overhead
+
+### 6. Plugin Integration
+
+- Use `PluginID` to ensure hooks only run on relevant routes
+- Coordinate with route metadata to enable/disable hooks per endpoint
+- Follow the plugin architecture patterns for consistency
+
+## Use Cases
+
+### Authentication & Authorization
+
+- Session validation
+- JWT verification
+- Role-based access control
+- Permission checking
+
+### Security
+
+- Rate limiting
+- CSRF protection
+- Input validation
+- IP blacklisting
+
+### Monitoring & Analytics
+
+- Request logging
+- Performance metrics
+- User activity tracking
+- Error monitoring
+
+### Business Logic
+
+- Custom validation rules
+- Data enrichment
+- Audit trails
+- Notification triggers
+
+The hooks system provides a powerful and flexible foundation for extending Go Better Auth's functionality while maintaining clean separation of concerns between different aspects of your authentication and authorization logic.
+
+NOTE: this documentation explains a general overview of the hooks system but bear in mind that GoBetterAuth may already contain a lot of this functionality already as plugins so you may not need to implement the things that are mentioned under "use cases" in your own project etc. So take a look at the [Plugins](/docs/guides/plugins) documentation next to see what is already available!

@@ -1,0 +1,126 @@
+---
+title: Session Plugin
+---
+
+The Session Plugin provides cookie-based session authentication with automatic renewal and secure cookie management.
+
+## Features
+
+- **Cookie-Based Sessions**: Secure HTTP-only cookies for session tracking
+- **Sliding Window Renewal**: Sessions automatically renew when approaching expiration
+- **Dual Authentication Modes**: Required authentication (returns 401) or optional authentication (silent)
+- **Secure Cookie Attributes**: Configurable HttpOnly, Secure, and SameSite settings
+- **Cooperative Authentication**: Works alongside other auth plugins without conflicts
+- **Automatic Cleanup**: Expired sessions are automatically purged
+
+## Standalone Mode
+
+### Plugin Configuration
+
+```toml
+[plugins.session]
+enabled = true
+```
+
+### Global Session Settings
+
+```toml
+[session]
+cookie_name = "gobetterauth.session_token"
+expires_in = "168h"        # 7 days - session duration (sliding window)
+update_age = "84h"         # 3.5 days - renew when <50% life remains
+cookie_max_age = "720h"    # 30 days - absolute max cookie age
+secure = true              # Requires HTTPS
+http_only = true           # Prevents JavaScript access
+same_site = "lax"          # Options: strict, lax, none
+```
+
+## Library Mode
+
+To use the plugin programmatically, instantiate it as part of the plugins array when creating a new GoBetterAuth instance:
+
+```go
+sessionplugin.New(sessionplugin.SessionPluginConfig{
+	Enabled: true,
+}),
+```
+
+## Available Hooks
+
+| Hook ID                 | Stage  | Purpose                                                                  |
+| ----------------------- | ------ | ------------------------------------------------------------------------ |
+| `session.auth`          | Before | Validates session cookie; returns 401 Unauthorized if invalid or missing |
+| `session.auth.optional` | Before | Validates session if present; silently continues if invalid or missing   |
+| _(auto-issued)_         | After  | Automatically sets session cookie after successful authentication        |
+| _(auto-cleared)_        | After  | Automatically clears session cookie on sign-out                          |
+
+## Session Lifecycle
+
+```
+┌─────────────┐     ┌──────────────┐     ┌─────────────┐
+│   Login     │────▶│   Session    │────▶│   Active    │
+│   Success   │     │   Created    │     │   Session   │
+└─────────────┘     └──────────────┘     └──────┬──────┘
+                                                │
+                      ┌─────────────────────────┼──────────────────────┐
+                      │                         │                      │
+                      ▼                         ▼                      ▼
+              ┌──────────────┐          ┌─────────────┐        ┌─────────────┐
+              │   Renewal    │          │   Expired   │        │   Sign Out  │
+              │   (<50%)     │          │   (Timeout) │        │   (Manual)  │
+              └──────┬───────┘          └──────┬──────┘        └──────┬──────┘
+                     │                         │                      │
+                     ▼                         ▼                      ▼
+              ┌──────────────┐          ┌─────────────┐        ┌─────────────┐
+              │   Session    │          │   Session   │        │   Cookie    │
+              │   Extended   │          │   Deleted   │        │   Cleared   │
+              └──────────────┘          └─────────────┘        └─────────────┘
+```
+
+### Lifecycle Phases
+
+**1. Session Creation**: Triggered after successful authentication. The plugin automatically issues a session cookie via the post-authentication hook.
+
+**2. Active Session**: Each request validates the session cookie. Sessions are checked for expiration on every request.
+
+**3. Renewal**: When a session has less than 50% of its lifetime remaining (based on `update_age`), it automatically renews extending the expiration.
+
+**4. Expiration**: Sessions past their expiration are automatically deleted from the database and return 401 on subsequent requests.
+
+**5. Sign Out**: When a sign-out action is detected, the session cookie is immediately cleared.
+
+## How to Use
+
+Enable session authentication on routes by adding the appropriate hook ID to route metadata:
+
+**Required Authentication (returns 401 if not logged in):**
+
+```toml
+[[route_mappings]]
+path = "/auth/me"
+method = "GET"
+plugins = ["session.auth"]
+```
+
+**Optional Authentication (works whether logged in or not):**
+
+```toml
+[[route_mappings]]
+path = "/api/public"
+method = "GET"
+plugins = ["session.auth.optional"]
+```
+
+## Security Features
+
+- **Token Hashing**: Session tokens are hashed before storage in the database
+- **HttpOnly Cookies**: Prevents XSS attacks by restricting JavaScript access
+- **Secure Flag**: Ensures cookies are only transmitted over HTTPS
+- **SameSite Protection**: Defends against CSRF attacks (strict, lax, or none modes)
+- **Automatic Expiration**: Sessions cannot be used beyond their expiration time
+
+## Cooperative Authentication
+
+The session plugin implements cooperative authentication - if a request already has a `UserID` set by another authentication plugin (e.g., JWT), the session plugin will skip its validation. This allows multiple auth methods to work together seamlessly.
+
+NOTE: there is no automatic removal of expired sessions from the database. You are responsible for implementing cleanup logic on your end via a scheduled job or as appropriate for your use case.

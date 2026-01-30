@@ -1,0 +1,14 @@
+{
+  "pages": [
+    "config-manager",
+    "secondary-storage",
+    "email",
+    "email-password",
+    "oauth2",
+    "csrf",
+    "session",
+    "jwt",
+    "bearer",
+    "ratelimit"
+  ]
+}

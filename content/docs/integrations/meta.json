@@ -1,3 +1,10 @@
 {
-  "pages": ["routers", "custom-routes", "middleware", "secondary-storage", "endpoint-hooks", "database-hooks", "event-hooks", "plugins"]
+  "pages": [
+    "routers",
+    "custom-routes",
+    "middleware",
+    "hooks",
+    "database-hooks",
+    "plugins"
+  ]
 }

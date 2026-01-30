@@ -1,0 +1,307 @@
+---
+title: Client-Side Plugins
+description: Extend the capabilities of the TypeScript SDK with client-side plugins.
+---
+
+## Overview
+
+GoBetterAuth provides a flexible plugin architecture that allows developers to extend the functionality of the TypeScript SDK with custom authentication flows, middleware, and utilities. The plugin system enables you to enhance the client-side authentication experience without modifying the core SDK.
+
+## How the Plugin System Works
+
+The plugin architecture is built around the concept of intercepting and enhancing HTTP requests made by the SDK. Each plugin can:
+
+- Register before-fetch hooks to modify requests before they're sent
+- Register after-fetch hooks to handle responses and potentially retry requests
+- Add custom methods to the client instance
+- Access and manipulate authentication tokens and cookies
+
+### Core Architecture
+
+The plugin system operates through three main components:
+
+1. **Plugin Interface**: Defines the contract that all plugins must implement
+2. **Hook Registration**: Allows plugins to intercept requests and responses
+3. **Method Extension**: Enables plugins to add functionality to the client
+
+## Creating Custom Plugins
+
+### The Plugin Interface
+
+Every plugin must implement the `Plugin` interface:
+
+```typescript
+export interface Plugin {
+  readonly id: string;
+  init(client: GoBetterAuthClient): any;
+}
+```
+
+- `id`: A unique identifier for the plugin that becomes the property name on the client
+- `init`: A method that receives the client instance and returns the plugin's public API
+
+### Basic Plugin Structure
+
+Here's the basic structure of a custom plugin:
+
+```typescript
+import type { GoBetterAuthClient, Plugin } from "go-better-auth";
+
+class MyCustomPlugin implements Plugin {
+  public readonly id = "myCustom"; // This becomes client.myCustom
+
+  public init(client: GoBetterAuthClient) {
+    // Register hooks and return public API
+    return {
+      // Public methods that will be available on client.myCustom
+      doSomething: async () => {
+        // Implementation here
+      },
+    };
+  }
+}
+```
+
+### Using Hooks
+
+Plugins can register two types of hooks:
+
+#### Before-Fetch Hooks
+
+Before-fetch hooks allow you to modify requests before they're sent to the server:
+
+```typescript
+client.registerBeforeFetch(async (ctx: FetchContext) => {
+  // Modify the request context
+  ctx.init.headers = {
+    ...ctx.init.headers,
+    "X-Custom-Header": "custom-value",
+  };
+});
+```
+
+#### After-Fetch Hooks
+
+After-fetch hooks allow you to handle responses and potentially retry requests:
+
+```typescript
+client.registerAfterFetch(async (ctx: FetchContext, res: Response) => {
+  if (res.status === 401) {
+    // Handle unauthorized responses
+    // Return "retry" to retry the request
+    return "retry";
+  }
+});
+```
+
+## Available Plugins
+
+### Email/Password
+
+The EmailPassword plugin provides convenience methods to make requests to the API endpoints on the GoBetterAuth server. View the [Source Code](https://github.com/GoBetterAuth/go-better-auth-node-sdk/blob/main/src/plugins/email-password/).
+
+### OAuth2
+
+The OAuth2 plugin provides convenience methods to make requests to the API endpoints on the GoBetterAuth server. View the [Source Code](https://github.com/GoBetterAuth/go-better-auth-node-sdk/blob/main/src/plugins/oauth2/).
+
+### CSRF
+
+The CSRF plugin automatically handles CSRF tokens for mutating requests. View the [Source Code](https://github.com/GoBetterAuth/go-better-auth-node-sdk/blob/main/src/plugins/csrf/).
+
+### JWT
+
+The JWT plugin provides convenience methods to make requests to the API endpoints on the GoBetterAuth server. View the [Source Code](https://github.com/GoBetterAuth/go-better-auth-node-sdk/blob/main/src/plugins/jwt/).
+
+### Bearer
+
+The Bearer plugin automatically adds authorization headers and handles token refresh. View the [Source Code](https://github.com/GoBetterAuth/go-better-auth-node-sdk/blob/main/src/plugins/bearer/).
+
+## Available Capabilities
+
+### Hook System
+
+Plugins have access to the following hook capabilities:
+
+- **Before-Fetch Hooks**: Modify request headers, parameters, or body before sending
+- **After-Fetch Hooks**: Handle responses, implement retry logic, or manage token refresh
+- **Retry Mechanism**: Return "retry" from after-fetch hooks to automatically retry failed requests
+
+### Client Integration
+
+Plugins can:
+
+- Access the client configuration (server URL, cookies, fetch options)
+- Register multiple hooks of the same type
+- Add custom methods to the client instance
+- Interact with other registered plugins
+
+### Cookie Management
+
+For SSR environments, plugins can work with cookie stores:
+
+```typescript
+// Access cookies in SSR contexts
+if (client.config.cookies) {
+  const cookieStore = await client.config.cookies();
+  // Manipulate cookies as needed
+}
+```
+
+## Using Plugins
+
+### Installing Plugins
+
+To use plugins, pass them when creating a client instance:
+
+```typescript
+import { createClient } from "go-better-auth";
+import {
+  EmailPasswordPlugin,
+  BearerPlugin,
+  CSRFPlugin,
+} from "go-better-auth/plugins";
+
+const client = createClient({
+  url: "http://localhost:8080/auth",
+  plugins: [
+    new EmailPasswordPlugin(),
+    new BearerPlugin(),
+    new CSRFPlugin({
+      cookieName: "csrf-token",
+      headerName: "X-CSRF-Token",
+    }),
+    new MyCustomPlugin(),
+  ],
+});
+
+// Now you can use plugin methods
+await client.emailPassword.signIn({ email, password });
+await client.myCustom.doSomething();
+```
+
+### Plugin Dependencies
+
+Some plugins may depend on others. For example, the Bearer plugin requires the JWT plugin for token refresh functionality:
+
+```typescript
+// Type-safe plugin dependencies
+public init(client: ClientWithPlugins<[JWTPlugin]>) {
+  // The client is guaranteed to have the JWT plugin available
+  if (!client.jwt) {
+    console.warn("JWT Plugin is required for Bearer token refresh.");
+    return;
+  }
+
+  // Use client.jwt methods here
+}
+```
+
+## Best Practices
+
+### 1. Unique Plugin IDs
+
+Always use unique, descriptive IDs for your plugins to avoid conflicts:
+
+```typescript
+// Good
+public readonly id = "myFeature";
+
+// Avoid generic names
+public readonly id = "plugin"; // Too generic
+```
+
+### 2. Proper Error Handling
+
+Handle errors gracefully, especially in hooks that affect all requests:
+
+```typescript
+client.registerAfterFetch(async (ctx: FetchContext, res: Response) => {
+  try {
+    if (res.status === 401) {
+      // Handle unauthorized
+    }
+  } catch (error) {
+    console.error("Plugin error:", error);
+    // Don't break the request chain
+  }
+});
+```
+
+### 3. Environment Awareness
+
+Be aware of client vs. server environments when accessing browser-specific APIs:
+
+```typescript
+client.registerBeforeFetch(async (ctx: FetchContext) => {
+  if (typeof document === "undefined") {
+    // Server-side code
+    return;
+  }
+
+  // Client-side code
+  const token = localStorage.getItem("token");
+});
+```
+
+### 4. Single-Flight Requests
+
+For operations that should not run concurrently (like token refresh), implement single-flight patterns:
+
+```typescript
+private refreshPromise: Promise<any> | null = null;
+
+// In your method:
+if (!this.refreshPromise) {
+  this.refreshPromise = refreshTokenLogic();
+}
+const result = await this.refreshPromise;
+this.refreshPromise = null;
+```
+
+### 5. Clean Up Resources
+
+If your plugin creates resources that need cleanup, consider providing a destroy method or ensuring proper cleanup in your plugin lifecycle.
+
+## Advanced Patterns
+
+### Conditional Hook Registration
+
+Register hooks conditionally based on configuration:
+
+```typescript
+public init(client: GoBetterAuthClient) {
+  if (this.options.enableLogging) {
+    client.registerBeforeFetch(logRequest);
+    client.registerAfterFetch(logResponse);
+  }
+
+  return {
+    // Plugin methods
+  };
+}
+```
+
+### Plugin Composition
+
+Combine multiple plugins or create plugin factories:
+
+```typescript
+function createAuthPlugin(options: AuthPluginOptions) {
+  return [
+    new CSRFPlugin(options.csrf),
+    new BearerPlugin(options.bearer),
+    new EmailPasswordPlugin(),
+  ];
+}
+
+const client = createClient({
+  url: "...",
+  plugins: createAuthPlugin(config),
+});
+```
+
+## Conclusion
+
+The GoBetterAuth plugin system provides a powerful and flexible way to extend the client-side authentication SDK. By implementing the Plugin interface and leveraging the hook system, you can customize authentication flows, add security features, implement caching strategies, and much more.
+
+The architecture is designed to be modular, type-safe, and compatible with both client-side and server-side rendering environments, making it suitable for a wide range of applications and use cases.
