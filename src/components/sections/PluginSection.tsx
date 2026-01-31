@@ -180,7 +180,7 @@ export default function PluginSection() {
                 variant="outline"
                 className="border-blue-500/20 hover:bg-blue-500/5"
               >
-                <Link href="/docs/integrations/plugins">
+                <Link href="/docs/guides/server-plugins">
                   Learn Plugin Development
                 </Link>
               </Button>
