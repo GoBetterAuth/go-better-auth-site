@@ -1,77 +1,12 @@
 import Link from "next/link";
 
-import { ArrowRight, Terminal as TerminalIcon, Server } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { CONSTANTS } from "@/constants/constants";
 import GitHubIcon from "../shared/icons/GitHubIcon";
-import GolangIcon from "../shared/icons/GolangIcon";
-import { ShineBorder } from "../ui/shine-border";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-
-// const libraryCode = `
-// // Library Mode
-// import (
-//   "log"
-
-//   gobetterauth "github.com/GoBetterAuth/go-better-auth"
-//   gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
-// )
-
-// func main() {
-//   // Create GoBetterAuth configuration
-//   config := gobetterauthconfig.NewConfig(
-//     gobetterauthconfig.WithAppName("MyApp"),
-//     gobetterauthconfig.WithBaseURL("http://localhost:8080"),
-//     gobetterauthconfig.WithBasePath("/auth"),
-//     // ...more config options
-//   )
-
-//   // Initialise GoBetterAuth
-//   auth := gobetterauth.New(&gobetterauth.AuthConfig{
-//     Config: config,
-//     Plugins: []gobetterauthmodels.Plugin{
-//       coreplugin.New(coretypes.CorePluginConfig{
-//         Enabled: true,
-//       }),
-//       emailpasswordplugin.New(emailpasswordplugintypes.EmailPasswordPluginConfig{
-//         Enabled:                  true,
-//         MinPasswordLength:        8,
-//         MaxPasswordLength:        32,
-//         RequireEmailVerification: true,
-//       }),
-//       // ... other plugins
-//     },
-//   })
-
-//   // Start your Go application
-//   log.Fatal(http.ListenAndServe(":8080", auth.Handler()))
-// }
-// `.trim();
-
-// const tomlConfigCode = `
-// # Configure settings
-// app_name = "GoBetterAuth"
-// base_url = "http://localhost:8080"
-// base_path = "/auth"
-
-// [database]
-// provider = "postgres"
-
-// // and more to configure and customise...
-// `.trim();
-
-// const dockerDeployCode = `
-// docker run -itd -p 8080:8080 \\
-//   -v $(pwd)/config.toml:/home/appuser/config.toml \\
-//   -e GO_BETTER_AUTH_ADMIN_API_KEY=my-admin-api-key \\
-//   -e GO_BETTER_AUTH_BASE_URL=http://localhost:8080 \\
-//   -e GO_BETTER_AUTH_SECRET=my-app-secret \\
-//   -e GO_BETTER_AUTH_DATABASE_URL=<your_connection_string> \\
-//   ghcr.io/gobetterauth/go-better-auth:latest
-// `.trim();
 
 export default function HeroSection() {
   return (

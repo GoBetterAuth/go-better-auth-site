@@ -12,9 +12,9 @@ import (
 	"log"
 	"net/http"
 
-	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
-	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+	gobetterauth "github.com/GoBetterAuth/go-better-auth/v2"
+	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/v2/config"
+	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/v2/models"
 )
 
 func main() {
@@ -46,9 +46,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
-	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
-	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+	gobetterauth "github.com/GoBetterAuth/go-better-auth/v2"
+	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/v2/config"
+	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/v2/models"
 )
 
 func main() {
@@ -57,7 +57,7 @@ func main() {
 		Config:  config,
 		Plugins: []gobetterauth.Plugin{},
 	})
-	
+
 	r := chi.NewRouter()
 
 	// Add middleware
@@ -86,9 +86,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
-	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+	gobetterauth "github.com/GoBetterAuth/go-better-auth/v2"
+	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/v2/config"
+	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/v2/models"
 )
 
 func main() {
@@ -124,9 +124,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
-	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+	gobetterauth "github.com/GoBetterAuth/go-better-auth/v2"
+	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/v2/config"
+	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/v2/models"
 )
 
 func main() {
@@ -159,9 +159,9 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
-	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+	gobetterauth "github.com/GoBetterAuth/go-better-auth/v2"
+	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/v2/config"
+	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/v2/models"
 )
 
 func main() {
@@ -196,9 +196,9 @@ import (
 
 	"github.com/gorilla/mux"
 
-	gobetterauth "github.com/GoBetterAuth/go-better-auth"
-	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
-	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+	gobetterauth "github.com/GoBetterAuth/go-better-auth/v2"
+	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/v2/config"
+	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/v2/models"
 )
 
 func main() {

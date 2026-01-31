@@ -15,8 +15,8 @@ You can register custom routes using the `RegisterCustomRoute` method. Each rout
 import (
   "net/http"
 
-  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
-  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/v2/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/v2/models"
 )
 
 type Route struct {
@@ -47,9 +47,9 @@ import (
   "encoding/json"
   "net/http"
 
-  gobetterauth "github.com/GoBetterAuth/go-better-auth"
-  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
-  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+  gobetterauth "github.com/GoBetterAuth/go-better-auth/v2"
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/v2/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/v2/models"
 )
 
 config := gobetterauthconfig.NewConfig(/*...*/)
@@ -81,9 +81,9 @@ import (
   "encoding/json"
   "net/http"
 
-  gobetterauth "github.com/GoBetterAuth/go-better-auth"
-  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
-  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/models"
+  gobetterauth "github.com/GoBetterAuth/go-better-auth/v2"
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/v2/config"
+  gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/v2/models"
 )
 
 config := gobetterauthconfig.NewConfig(/*...*/)

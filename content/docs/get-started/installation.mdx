@@ -67,7 +67,7 @@ GO_BETTER_AUTH_DATABASE_URL=
 ### Run the server via Docker
 
 ```bash
-$ docker run -itd \ 
+$ docker run -itd \
   -p 8080:8080 \
   -v $(pwd)/config.toml:/home/appuser/config.toml \
   -e GO_BETTER_AUTH_ADMIN_API_KEY=my-admin-api-key \
@@ -110,7 +110,7 @@ GO_BETTER_AUTH_DATABASE_URL=
 ### Install the Package
 
 ```bash
-$ go get github.com/GoBetterAuth/go-better-auth@latest
+$ go get github.com/GoBetterAuth/go-better-auth/v2
 ```
 
 </Step>
@@ -121,8 +121,8 @@ $ go get github.com/GoBetterAuth/go-better-auth@latest
 
 ```go
 import (
-  gobetterauth "github.com/GoBetterAuth/go-better-auth"
-  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
+  gobetterauth "github.com/GoBetterAuth/go-better-auth/v2"
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/v2/config"
 )
 
 config := gobetterauthconfig.NewConfig(/*...*/)
@@ -214,10 +214,10 @@ Configure the authentication methods you want to use by choosing from the availa
 
 ```go
 import (
-  gobetterauth "github.com/GoBetterAuth/go-better-auth"
-  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/config"
-  emailpasswordplugin "github.com/GoBetterAuth/go-better-auth/plugins/email-password"
-  emailpasswordplugintypes "github.com/GoBetterAuth/go-better-auth/plugins/email-password/types"
+  gobetterauth "github.com/GoBetterAuth/go-better-auth/v2"
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/v2/config"
+  emailpasswordplugin "github.com/GoBetterAuth/go-better-auth/v2/plugins/email-password"
+  emailpasswordplugintypes "github.com/GoBetterAuth/go-better-auth/v2/plugins/email-password/types"
 )
 
 config := gobetterauthconfig.NewConfig(/*...*/)
