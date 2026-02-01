@@ -2,31 +2,60 @@
 title: Basic Usage
 ---
 
+# Email & Password Authentication + Sessions
 ```go title="main.go"
 package main
 
 import (
-	"os"
 	"log"
+	"net/http"
 
 	gobetterauth "github.com/GoBetterAuth/go-better-auth/v2"
 	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/v2/config"
 	gobetterauthmodels "github.com/GoBetterAuth/go-better-auth/v2/models"
+	emailplugin "github.com/GoBetterAuth/go-better-auth/v2/plugins/email"
 	emailpasswordplugin "github.com/GoBetterAuth/go-better-auth/v2/plugins/email-password"
 	emailpasswordplugintypes "github.com/GoBetterAuth/go-better-auth/v2/plugins/email-password/types"
+	emailplugintypes "github.com/GoBetterAuth/go-better-auth/v2/plugins/email/types"
+	sessionplugin "github.com/GoBetterAuth/go-better-auth/v2/plugins/session"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	_ = godotenv.Load(".env")
+
 	config := gobetterauthconfig.NewConfig(
 		gobetterauthconfig.WithAppName("YourAppName"),
 		gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
-			Provider:         "postgres",
-			ConnectionString: os.Getenv("DATABASE_URL"),
+			Provider: "sqlite",
+			URL:      "app.db",
 		}),
+		// Or for PostgreSQL
+		// gobetterauthconfig.WithDatabase(gobetterauthmodels.DatabaseConfig{
+		//		Provider:         "postgres",
+		//		ConnectionString: os.Getenv("DATABASE_URL"),
+		// }),
+		gobetterauthconfig.WithRouteMappings(
+			[]gobetterauthmodels.RouteMapping{
+				{
+					Path:    "/me",
+					Method:  "GET",
+					Plugins: []string{"session.auth"},
+				},
+			},
+		),
 	)
+	
 	auth := gobetterauth.New(&gobetterauth.AuthConfig{
-		Config:  config,
-		Plugins: [
+		Config: config,
+		Plugins: []gobetterauthmodels.Plugin{
+			emailplugin.New(emailplugintypes.EmailPluginConfig{
+				Enabled:     true,
+				Provider:    emailplugintypes.ProviderSMTP,
+				// Or for Resend
+				// Provider: emailplugintypes.ProviderResend,
+				FromAddress: "YourApp@YourDomain.com",
+			}),
 			emailpasswordplugin.New(emailpasswordplugintypes.EmailPasswordPluginConfig{
 				Enabled:                  true,
 				MinPasswordLength:        8,
@@ -36,13 +65,43 @@ func main() {
 				AutoSignIn:               true,
 				SendEmailOnSignUp:        true,
 			}),
-		],
+			sessionplugin.New(sessionplugin.SessionPluginConfig{
+				Enabled: true,
+			}),
+		},
 	})
 
 	// Start the server and mount the handler
 	log.Fatal(http.ListenAndServe(":8080", auth.Handler()))
 }
 ```
+
+<CodeBlockTabs defaultValue="smtp" groupId="mail-provider" persist>
+    <CodeBlockTabsList>
+      <CodeBlockTabsTrigger value="smtp">
+          SMTP
+      </CodeBlockTabsTrigger>
+
+      <CodeBlockTabsTrigger value="resend">
+      Resend
+      </CodeBlockTabsTrigger>
+    </CodeBlockTabsList>
+
+    <CodeBlockTab value="smtp">
+     ```bash title=".env"
+      SMTP_HOST="localhost"
+      SMTP_PORT="465"
+      SMTP_USER="YourUser@YourDomain.com"
+      SMTP_PASS="YourPassword"
+      ```
+    </CodeBlockTab>
+
+    <CodeBlockTab value="resend">
+      ```bash title=".env"
+      RESEND_API_KEY="re_xxxxxxxxxxxx"
+      ```
+    </CodeBlockTab>
+</CodeBlockTabs>
 
 ## Testing the Setup
 
