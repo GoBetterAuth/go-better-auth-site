@@ -46,10 +46,6 @@ provider = "postgres"
 # Path to your configuration file (e.g., ./config.toml) (optional)
 GO_BETTER_AUTH_CONFIG_PATH=
 
-# Gives admin access to update and manage the GoBetterAuth server. Only applicable if Config Manager plugin is enabled - by default it is.
-# Generate using `echo gba_sk_$(openssl rand -base64 50 | tr -dc 'A-Za-z0-9' | cut -c -35)`
-GO_BETTER_AUTH_ADMIN_API_KEY=
-
 # The base URL of your API
 GO_BETTER_AUTH_BASE_URL=
 
@@ -70,7 +66,6 @@ GO_BETTER_AUTH_DATABASE_URL=
 $ docker run -itd \
   -p 8080:8080 \
   -v $(pwd)/config.toml:/home/appuser/config.toml \
-  -e GO_BETTER_AUTH_ADMIN_API_KEY=my-admin-api-key \
   -e GO_BETTER_AUTH_BASE_URL=http://localhost:8080 \
   -e GO_BETTER_AUTH_SECRET=my-app-secret \
   -e GO_BETTER_AUTH_DATABASE_URL=<your_connection_string> \
