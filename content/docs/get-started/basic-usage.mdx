@@ -2,13 +2,71 @@
 title: Basic Usage
 ---
 
-# Email & Password Authentication + Sessions
+# Email & Password + Sessions
+
+## Standalone Mode
+
+```toml title="config.toml"
+# -- EMAIL PLUGIN --
+
+[plugins.email]
+enabled = true
+provider = "smtp"  # Options: "smtp", "resend"
+# If using Resend, make sure to set RESEND_API_KEY environment variable.
+# Can also be set via FROM_ADDRESS environment variable
+from_address = "noreply@example.com"
+
+# -- EMAIL & PASSWORD PLUGIN --
+
+[plugins.email_password]
+enabled = true
+min_password_length = 8
+max_password_length = 32
+disable_sign_up = false
+require_email_verification = true
+auto_sign_in = true
+send_email_on_sign_up = true
+
+# -- SESSION PLUGIN --
+
+[plugins.session]
+enabled = true
+
+# -- ROUTE MAPPINGS --
+
+[[route_mappings]]
+path = "/me"
+method = "GET"
+plugins = ["session.auth"]
+
+[[route_mappings]]
+path = "/sign-in"
+method = "POST"
+plugins = ["session.auth.optional"]
+
+[[route_mappings]]
+path = "/sign-up"
+method = "POST"
+plugins = ["session.auth.optional"]
+
+[[route_mappings]]
+path = "/sign-out"
+method = "POST"
+plugins = ["session.auth"]
+```
+
+---
+
+## Library Mode
+
 ```go title="main.go"
 package main
 
 import (
 	"log"
 	"net/http"
+
+	"github.com/joho/godotenv"
 
 	gobetterauth "github.com/GoBetterAuth/go-better-auth/v2"
 	gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/v2/config"
@@ -18,7 +76,6 @@ import (
 	emailpasswordplugintypes "github.com/GoBetterAuth/go-better-auth/v2/plugins/email-password/types"
 	emailplugintypes "github.com/GoBetterAuth/go-better-auth/v2/plugins/email/types"
 	sessionplugin "github.com/GoBetterAuth/go-better-auth/v2/plugins/session"
-	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -42,17 +99,22 @@ func main() {
 					Method:  "GET",
 					Plugins: []string{"session.auth"},
 				},
+				{
+					Path:    "/sign-out",
+					Method:  "POST",
+					Plugins: []string{"session.auth"},
+				},
 			},
 		),
 	)
-	
+
 	auth := gobetterauth.New(&gobetterauth.AuthConfig{
 		Config: config,
 		Plugins: []gobetterauthmodels.Plugin{
 			emailplugin.New(emailplugintypes.EmailPluginConfig{
 				Enabled:     true,
 				Provider:    emailplugintypes.ProviderSMTP,
-				// Or for Resend
+				// Or if using Resend, make sure to set RESEND_API_KEY environment variable.
 				// Provider: emailplugintypes.ProviderResend,
 				FromAddress: "YourApp@YourDomain.com",
 			}),
@@ -76,14 +138,16 @@ func main() {
 }
 ```
 
+---
+
 <CodeBlockTabs defaultValue="smtp" groupId="mail-provider" persist>
     <CodeBlockTabsList>
       <CodeBlockTabsTrigger value="smtp">
-          SMTP
+        SMTP
       </CodeBlockTabsTrigger>
 
       <CodeBlockTabsTrigger value="resend">
-      Resend
+      	Resend
       </CodeBlockTabsTrigger>
     </CodeBlockTabsList>
 
@@ -101,6 +165,7 @@ func main() {
       RESEND_API_KEY="re_xxxxxxxxxxxx"
       ```
     </CodeBlockTab>
+
 </CodeBlockTabs>
 
 ## Testing the Setup
