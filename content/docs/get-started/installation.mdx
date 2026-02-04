@@ -186,18 +186,9 @@ GoBetterAuth supports multiple database providers. You can select a database pro
 
 <Step>
 
-### Run database migrations
+### Database migrations
 
-GoBetterAuth runs all migrations (core & plugins) automatically when you create a new instance so all the relevant database tables are created for you without any additional steps. This is done via Bun ORM's migration system and migration files are embedded in the binary. But GoBetterAuth also provides migration files which you can run directly against your database of choice.
-
-```go
-// Create the config
-config := gobetterauthconfig.NewConfig(/*...*/)
-auth := gobetterauth.New(gobetterauth.AuthConfig{
-  Config:  config,
-  Plugins: [/*...*/],
-})
-```
+GoBetterAuth runs all migrations (core & plugins) automatically when you create a new instance of the library so all the relevant database tables are created for you without any additional steps. This is done via [dbmate](https://github.com/amacneil/dbmate) and migration files are embedded in the binary. But GoBetterAuth also provides migration files which you can run manually against your database which you can find within the `migrations/` directories within the repository.
 
 </Step>
 
