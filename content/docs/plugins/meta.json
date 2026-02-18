@@ -9,6 +9,7 @@
     "session",
     "jwt",
     "bearer",
-    "ratelimit"
+    "ratelimit",
+    "magic-link"
   ]
 }

@@ -1,0 +1,117 @@
+---
+title: Magic Link Plugin
+---
+
+The Magic Link plugin provides passwordless authentication using email-based magic links. Users receive a secure link via email that they can click to sign in without passwords.
+
+## Features
+
+- Passwordless authentication via email
+- Secure token-based verification
+- Configurable expiration time
+- Optional user registration on first sign-in
+- Custom email sending function support
+
+## Standalone Mode
+
+In standalone mode, configure the plugin in your `config.toml`:
+
+```toml
+[plugins.magic_link]
+enabled = true
+expires_in = "15m"  # Token expiration time
+disable_sign_up = false  # Allow new user registration
+```
+
+## Library Mode
+
+Embed the plugin in your Go application:
+
+```go
+import (
+  gobetterauth "github.com/GoBetterAuth/go-better-auth/v2"
+  gobetterauthconfig "github.com/GoBetterAuth/go-better-auth/v2/config"
+  magiclinkplugin "github.com/GoBetterAuth/go-better-auth/v2/plugins/magic-link"
+  magiclinkplugintypes "github.com/GoBetterAuth/go-better-auth/v2/plugins/magic-link/types"
+)
+
+config := gobetterauthconfig.NewConfig(/*...*/)
+auth := gobetterauth.New(gobetterauth.AuthConfig{
+  Config: config,
+  Plugins: []gobetterauthmodels.Plugin{
+    magiclinkplugin.New(magiclinkplugintypes.MagicLinkPluginConfig{
+      Enabled: true,
+      ExpiresIn: 15 * time.Minute,
+      DisableSignUp: false,
+      // Optional: Custom email sender function
+      // SendMagicLinkVerificationEmail func(email string, url string, token string) error {
+      //   // Implement your email sending logic here, e.g. using an email service provider
+      //   return nil
+      // }
+    }),
+  },
+})
+```
+
+## API Endpoints
+
+### Sign In
+
+Sends a magic link email to the user.
+
+**POST** `/magic-link/sign-in`
+
+Request body:
+
+```json
+{
+  "email": "user@example.com",
+  "name": "John Doe", // optional
+  "callback_url": "https://yourapp.com/callback" // optional
+}
+```
+
+### Verify
+
+Verifies the token from the email link. If `callback_url` is provided, redirects with the token. Otherwise returns the token in JSON.
+
+**GET** `/magic-link/verify?token=<token>&callback_url=<url>`
+
+### Exchange
+
+**POST** `/magic-link/exchange`
+
+Request body:
+
+```json
+{
+  "token": "<verification_token>"
+}
+```
+
+Exchanges the verified token for user session and authentication.
+
+## Usage Flow
+
+1. Client calls `/magic-link/sign-in` with user's email
+2. User receives email with link containing verification token
+3. User clicks link, which calls `/magic-link/verify` and the token is verified
+4. Client then receives another token to exchange with a session by calling `/magic-link/exchange`
+5. User is now signed in with session established
+
+## Client Plugin
+
+If you're using the [GoBetterAuth SDK](https://github.com/GoBetterAuth/go-better-auth-node-sdk). Add the plugin to the SDK like so:
+
+```typescript
+import { createClient } from "go-better-auth";
+import { MagicLinkPlugin } from "go-better-auth/plugins";
+
+export const goBetterAuthClient = createClient({
+  url: "http://localhost:8080/auth",
+  plugins: [
+    // other plugins...
+    new MagicLinkPlugin(),
+  ],
+});
+```
