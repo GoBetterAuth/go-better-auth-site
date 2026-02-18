@@ -19,7 +19,7 @@ const libraryModeFeatures = [
 const standaloneModeFeatures = [
   "Centralised auth service",
   "Works with any tech stack",
-  "Live config updates using a plugin",
+  "TOML-based configuration",
   "Scales independently",
   "Docker & K8s ready",
 ];

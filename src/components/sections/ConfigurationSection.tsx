@@ -47,16 +47,14 @@ export default function ConfigurationSection() {
             </div>
             <h3 className="text-xl font-bold mb-3">Standalone Configuration</h3>
             <p className="text-muted-foreground mb-6">
-              Configure your server with a simple TOML file, then continue with{" "}
-              <strong>Dynamic Configuration</strong> with all the settings
-              stored in your database and update them via the API in real-time.
+              Configure your server with a simple TOML file and change settings on the fly without recompiling. Perfect for dynamic environments.
             </p>
             <div className="flex gap-4 justify-center w-full">
               <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground bg-muted/50 px-3 py-2 rounded-lg">
-                <Database className="h-3 w-3" /> Database
+                <Database className="h-3 w-3" /> TOML-Based
               </div>
               <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground bg-muted/50 px-3 py-2 rounded-lg">
-                <Radio className="h-3 w-3" /> API Updates
+                <Radio className="h-3 w-3" /> Hot Reloading
               </div>
             </div>
           </div>
