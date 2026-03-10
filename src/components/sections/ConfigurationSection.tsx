@@ -27,18 +27,10 @@ export default function ConfigurationSection() {
               <Code2 className="h-8 w-8" />
             </div>
             <h3 className="text-xl font-bold mb-3">Library Configuration</h3>
-            <p className="text-muted-foreground mb-6">
-              Configure directly in Go using type-safe structs. Compile-time
+            <p className="text-muted-foreground">
+              Configure directly in Go. Compile-time
               checks ensures your config is always valid and consistent.
             </p>
-            <div className="flex gap-4 justify-center w-full">
-              <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground bg-muted/50 px-3 py-2 rounded-lg">
-                <Code className="h-3 w-3" /> Type-Safe
-              </div>
-              <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground bg-muted/50 px-3 py-2 rounded-lg">
-                <CheckCircle2 className="h-3 w-3" /> Full Control
-              </div>
-            </div>
           </div>
 
           <div className="flex flex-col items-center text-center p-8 rounded-xl border-2 bg-card hover:border-blue-500/30 transition-colors">
@@ -46,17 +38,9 @@ export default function ConfigurationSection() {
               <Settings2 className="h-8 w-8" />
             </div>
             <h3 className="text-xl font-bold mb-3">Standalone Configuration</h3>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground">
               Configure your server with a simple TOML file and change settings on the fly without recompiling. Perfect for dynamic environments.
             </p>
-            <div className="flex gap-4 justify-center w-full">
-              <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground bg-muted/50 px-3 py-2 rounded-lg">
-                <Database className="h-3 w-3" /> TOML-Based
-              </div>
-              <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground bg-muted/50 px-3 py-2 rounded-lg">
-                <Radio className="h-3 w-3" /> Hot Reloading
-              </div>
-            </div>
           </div>
         </div>
       </div>

@@ -9,11 +9,11 @@ import {
 import BorderIndicators from "@/components/shared/BorderIndicators";
 
 const libraryModeFeatures = [
-  "Flexible routing via built-in Chi router",
-  "Full programmatic access to internal APIs, Plugins and Service Registry",
-  "Compile and build your way",
-  "Customise via code",
-  "Integrate seamlessly with existing Go projects",
+  "Built-in Chi router for flexible request handling",
+  "Complete programmatic access to APIs, plugins, and service registry",
+  "Seamless integration with existing Go codebases",
+  "Customise compilation and build process",
+  "Unlock advanced capabilities unavailable in standalone mode"
 ];
 
 const standaloneModeFeatures = [
