@@ -36,7 +36,7 @@ const hookCapabilities = [
     title: "Deterministic Ordering",
     icon: Radio,
     description:
-      "Hooks execute in guaranteed order: by stage, plugin ID, then order value.",
+      "Hooks execute in guaranteed order: by stage, then order.",
   },
   {
     id: "errors",

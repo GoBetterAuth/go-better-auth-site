@@ -31,7 +31,7 @@ const features = [
   {
     title: "Multiple Databases",
     description:
-      "First-class support for PostgreSQL, MySQL, SQLite, and custom adapters with migration scripts.",
+      "First-class support for SQLite, PostgreSQL and MySQL.",
     icon: Database,
     className: "md:col-span-1",
     isPlugin: false,
