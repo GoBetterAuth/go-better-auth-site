@@ -1,0 +1,61 @@
+---
+title: Access Control Plugin
+---
+
+## Overview
+
+The **Access Control plugin** provides a comprehensive **Role-Based Access Control (RBAC)** system for managing authorization in your application. It enables you to define roles, assign permissions to those roles, and grant roles to users, creating a flexible and scalable authorization model.
+
+### What It Does
+
+- **Role Management** — Create, update, and delete roles that group related permissions
+- **Permission Management** — Define fine-grained permissions with unique keys
+- **Role-Permission Mapping** — Associate permissions with roles and manage bulk updates
+- **User Authorization** — Assign roles to users and query their effective permissions
+- **Audit Tracking** — Track who granted permissions and assigned roles
+
+The plugin uses a hierarchical model: Users → Roles → Permissions, allowing you to manage authorization at any level and simplifying policy changes across multiple users.
+
+---
+
+## API Reference
+
+### Roles Management
+
+| HTTP Method | Route Path                        | Description              |
+| ----------- | --------------------------------- | ------------------------ |
+| `POST`      | `/access-control/roles`           | Create a new role        |
+| `GET`       | `/access-control/roles`           | List all available roles |
+| `GET`       | `/access-control/roles/{role_id}` | Get a role by ID         |
+| `PATCH`     | `/access-control/roles/{role_id}` | Update a role            |
+| `DELETE`    | `/access-control/roles/{role_id}` | Delete a role            |
+
+### Permissions Management
+
+| HTTP Method | Route Path                                    | Description             |
+| ----------- | --------------------------------------------- | ----------------------- |
+| `POST`      | `/access-control/permissions`                 | Create a new permission |
+| `GET`       | `/access-control/permissions`                 | List all permissions    |
+| `PATCH`     | `/access-control/permissions/{permission_id}` | Update a permission     |
+| `DELETE`    | `/access-control/permissions/{permission_id}` | Delete a permission     |
+
+### Role-Permission Mapping
+
+| HTTP Method | Route Path                                                    | Description                                     |
+| ----------- | ------------------------------------------------------------- | ----------------------------------------------- |
+| `POST`      | `/access-control/roles/{role_id}/permissions`                 | Add a single permission to a role               |
+| `GET`       | `/access-control/roles/{role_id}/permissions`                 | Get all permissions assigned to a role          |
+| `PUT`       | `/access-control/roles/{role_id}/permissions`                 | Replace all permissions of a role (bulk update) |
+| `DELETE`    | `/access-control/roles/{role_id}/permissions/{permission_id}` | Remove a permission from a role                 |
+
+### User Access & Permissions
+
+| HTTP Method | Route Path                                        | Description                                                               |
+| ----------- | ------------------------------------------------- | ------------------------------------------------------------------------- |
+| `GET`       | `/access-control/users/{user_id}/roles`           | Get all roles assigned to a user                                          |
+| `POST`      | `/access-control/users/{user_id}/roles`           | Assign a role to a user                                                   |
+| `PUT`       | `/access-control/users/{user_id}/roles`           | Replace all roles of a user (bulk update)                                 |
+| `DELETE`    | `/access-control/users/{user_id}/roles/{role_id}` | Remove a role from a user                                                 |
+| `GET`       | `/access-control/users/{user_id}/permissions`     | Get all effective permissions for a user (merged from all assigned roles) |
+
+---

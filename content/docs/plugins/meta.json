@@ -1,5 +1,6 @@
 {
   "pages": [
+    "access-control",
     "admin",
     "bearer",
     "config-manager",
