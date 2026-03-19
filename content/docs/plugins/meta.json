@@ -12,6 +12,7 @@
     "oauth2",
     "ratelimit",
     "secondary-storage",
-    "session"
+    "session",
+    "totp"
   ]
 }
