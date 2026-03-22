@@ -6,7 +6,7 @@ import { CONSTANTS } from "@/constants/constants";
 function LogoImage() {
   return (
     <div className="h-full w-full flex flex-row items-center justify-start">
-      <Image src="/app-logo.png" alt="App Logo" width={50} height={50} />
+      <Image src="/app-logo.png" alt="App Logo" width={100} height={100} />
     </div>
   );
 }
