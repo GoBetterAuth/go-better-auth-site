@@ -196,11 +196,11 @@ Table: `totp`
 | -------------- | --------- | --- | ------------------------------------- |
 | `id`           | string    | PK  | Unique identifier for the TOTP record |
 | `user_id`      | string    | FK  | Reference to the user                 |
-| `secret`       | string    |     | Encrypted TOTP secret key             |
-| `backup_codes` | string    |     | Serialized hashed backup codes        |
-| `enabled`      | boolean   |     | Whether TOTP is enabled               |
-| `created_at`   | timestamp |     | Record creation time                  |
-| `updated_at`   | timestamp |     | Record last update time               |
+| `secret`       | string    | -   | Encrypted TOTP secret key             |
+| `backup_codes` | string    | -   | Serialized hashed backup codes        |
+| `enabled`      | boolean   | -   | Whether TOTP is enabled               |
+| `created_at`   | timestamp | -   | Record creation time                  |
+| `updated_at`   | timestamp | -   | Record last update time               |
 
 Table: `trusted_devices`
 
@@ -208,10 +208,10 @@ Table: `trusted_devices`
 | ------------ | --------- | --- | ---------------------------------------- |
 | `id`         | string    | PK  | Unique identifier for the trusted device |
 | `user_id`    | string    | FK  | Reference to the user                    |
-| `token`      | string    |     | Hashed device trust token                |
-| `user_agent` | string    |     | Device user agent                        |
-| `expires_at` | timestamp |     | When the device trust expires            |
-| `created_at` | timestamp |     | Record creation time                     |
+| `token`      | string    | -   | Hashed device trust token                |
+| `user_agent` | string    | -   | Device user agent                        |
+| `expires_at` | timestamp | -   | When the device trust expires            |
+| `created_at` | timestamp | -   | Record creation time                     |
 
 Migrations are automatically handled when the plugin is initialized.
 
