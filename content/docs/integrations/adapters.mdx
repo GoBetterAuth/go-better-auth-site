@@ -83,6 +83,15 @@ func main() {
 }
 ```
 
+If you instead want to mount the handler on a different router, you can do so like this:
+```go
+r := chi.NewRouter()
+// Replace /auth with your base path
+r.Handle("/auth/*", auth.Handler())
+
+log.Fatal(http.ListenAndServe(":8080", r))
+```
+
 ---
 
 ## Echo
