@@ -1,10 +1,20 @@
 ---
 title: Admin Plugin
+description: Administrative operations for managing users, accounts, sessions, and user impersonation
 ---
 
 ## Overview
 
-This plugin provides administrative operations for managing users, accounts, sessions, and user impersonation. It enables system administrators to perform CRUD operations on users and accounts, manage user and session states (banning, revoking sessions), control impersonation activities and more.
+The Admin plugin provides administrative operations for managing users, accounts, sessions, and user impersonation. It enables system administrators to perform CRUD operations on users and accounts, manage user and session states (banning, revoking sessions), control impersonation activities, and maintain comprehensive audit trails.
+
+### Features
+
+- **User Management** — Create, read, update, and delete users with full lifecycle support
+- **Account Management** — Manage linked provider accounts for users
+- **User State Management** — Ban and unban users with optional expiration and reason tracking
+- **Session State Management** — Revoke sessions with audit trail and reason tracking
+- **User Impersonation** — Admin impersonation of users with time-limited sessions and audit logging
+- **Audit Trail** — Comprehensive tracking of all administrative actions
 
 ---
 
@@ -22,115 +32,166 @@ impersonation_max_expires_in = "15m"
 
 ```go
 import (
-  adminplugin "github.com/Authula/authula/plugins/admin"
-  adminplugintypes "github.com/Authula/authula/plugins/admin/types"
+	adminplugin "github.com/Authula/authula/plugins/admin"
+	adminplugintypes "github.com/Authula/authula/plugins/admin/types"
 )
 
 adminplugin.New(adminplugintypes.AdminPluginConfig{
-  Enabled: true,
-  ImpersonationMaxExpiresIn: 15 * time.Minute,
+	Enabled:                     true,
+	ImpersonationMaxExpiresIn:   15 * time.Minute,
 }),
 ```
 
 ---
 
-## Database Schema
-
-### admin_impersonations Table
-
-| Column                   | Type      |
-| ------------------------ | --------- |
-| id                       | string    |
-| actor_user_id            | string    |
-| target_user_id           | string    |
-| actor_session_id         | string    |
-| impersonation_session_id | string    |
-| reason                   | string    |
-| started_at               | timestamp |
-| expires_at               | timestamp |
-| ended_at                 | timestamp |
-| ended_by_user_id         | string    |
-| created_at               | timestamp |
-| updated_at               | timestamp |
-
-### admin_user_states Table
-
-| Column            | Type      |
-| ----------------- | --------- |
-| user_id           | string    |
-| banned            | boolean   |
-| banned_at         | timestamp |
-| banned_until      | timestamp |
-| banned_reason     | string    |
-| banned_by_user_id | string    |
-| created_at        | timestamp |
-| updated_at        | timestamp |
-
-### admin_session_states Table
-
-| Column                   | Type      |
-| ------------------------ | --------- |
-| session_id               | string    |
-| revoked_at               | timestamp |
-| revoked_reason           | string    |
-| revoked_by_user_id       | string    |
-| impersonator_user_id     | string    |
-| impersonation_reason     | string    |
-| impersonation_expires_at | timestamp |
-| created_at               | timestamp |
-| updated_at               | timestamp |
-
 ## API Reference
 
 ### User Management
 
-| Method        | Endpoint                        | Description                                      |
-| ------------- | ------------------------------- | ------------------------------------------------ |
-| `CreateUser`  | `POST /admin/users`             | Create a new user.                               |
-| `GetAllUsers` | `GET /admin/users`              | Retrieve all users with cursor-based pagination. |
-| `GetUserByID` | `GET /admin/users/{user_id}`    | Fetch a specific user by ID.                     |
-| `UpdateUser`  | `PATCH /admin/users/{user_id}`  | Update user.                                     |
-| `DeleteUser`  | `DELETE /admin/users/{user_id}` | Delete a user.                                   |
+| Method   | Endpoint                 | Description                                 |
+| -------- | ------------------------ | ------------------------------------------- |
+| `POST`   | `/admin/users`           | Create a new user                           |
+| `GET`    | `/admin/users`           | List all users with cursor-based pagination |
+| `GET`    | `/admin/users/{user_id}` | Get a specific user by ID                   |
+| `PATCH`  | `/admin/users/{user_id}` | Update user details                         |
+| `DELETE` | `/admin/users/{user_id}` | Delete a user                               |
 
 ### Account Management
 
-| Method            | Endpoint                               | Description                                        |
-| ----------------- | -------------------------------------- | -------------------------------------------------- |
-| `CreateAccount`   | `POST /admin/users/{user_id}/accounts` | Create a new linked provider account for a user.   |
-| `GetUserAccounts` | `GET /admin/users/{user_id}/accounts`  | Retrieve all accounts associated with a user.      |
-| `GetAccountByID`  | `GET /admin/accounts/{id}`             | Fetch a specific account by ID.                    |
-| `UpdateAccount`   | `PATCH /admin/accounts/{id}`           | Update account details.                            |
-| `DeleteAccount`   | `DELETE /admin/accounts/{id}`          | Delete a user account and remove provider linkage. |
+| Method   | Endpoint                          | Description                                       |
+| -------- | --------------------------------- | ------------------------------------------------- |
+| `POST`   | `/admin/users/{user_id}/accounts` | Create a linked provider account for a user       |
+| `GET`    | `/admin/users/{user_id}/accounts` | List all accounts associated with a user          |
+| `GET`    | `/admin/accounts/{id}`            | Get a specific account by ID                      |
+| `PATCH`  | `/admin/accounts/{id}`            | Update account details                            |
+| `DELETE` | `/admin/accounts/{id}`            | Delete a user account and remove provider linkage |
 
 ### User State Management
 
-| Method                | Endpoint                              | Description                                                  |
-| --------------------- | ------------------------------------- | ------------------------------------------------------------ |
-| `GetUserState`        | `GET /admin/users/{user_id}/state`    | Retrieve user state including banned status and ban details. |
-| `CreateUserState`     | `POST /admin/users/{user_id}/state`   | Create user state.                                           |
-| `UpdateUserState`     | `PATCH /admin/users/{user_id}/state`  | Update user state.                                           |
-| `DeleteUserState`     | `DELETE /admin/users/{user_id}/state` | Delete user state record.                                    |
-| `GetBannedUserStates` | `GET /admin/users/states/banned`      | Retrieve all banned users.                                   |
-| `BanUser`             | `POST /admin/users/{user_id}/ban`     | Ban a user with optional expiration time and reason.         |
-| `UnbanUser`           | `POST /admin/users/{user_id}/unban`   | Remove ban from a user.                                      |
+| Method   | Endpoint                       | Description                                            |
+| -------- | ------------------------------ | ------------------------------------------------------ |
+| `GET`    | `/admin/users/{user_id}/state` | Get user state including banned status and ban details |
+| `POST`   | `/admin/users/{user_id}/state` | Create user state record                               |
+| `PATCH`  | `/admin/users/{user_id}/state` | Update user state                                      |
+| `DELETE` | `/admin/users/{user_id}/state` | Delete user state record                               |
+| `GET`    | `/admin/users/states/banned`   | List all banned users                                  |
+| `POST`   | `/admin/users/{user_id}/ban`   | Ban a user with optional expiration and reason         |
+| `POST`   | `/admin/users/{user_id}/unban` | Remove ban from a user                                 |
 
 ### Session State Management
 
-| Method                    | Endpoint                                    | Description                                          |
-| ------------------------- | ------------------------------------------- | ---------------------------------------------------- |
-| `GetSessionState`         | `GET /admin/sessions/{session_id}/state`    | Retrieve session state including revocation status.  |
-| `CreateSessionState`      | `POST /admin/sessions/{session_id}/state`   | Create session state.                                |
-| `UpdateSessionState`      | `PATCH /admin/sessions/{session_id}/state`  | Update session state.                                |
-| `DeleteSessionState`      | `DELETE /admin/sessions/{session_id}/state` | Delete session state record.                         |
-| `RevokeSession`           | `POST /admin/sessions/{session_id}/revoke`  | Revoke a session with optional reason.               |
-| `GetRevokedSessionStates` | `GET /admin/sessions/states/revoked`        | Retrieve all revoked sessions with session state.    |
-| `GetUserAdminSessions`    | `GET /admin/users/{user_id}/sessions`       | Retrieve all sessions with session state for a user. |
+| Method   | Endpoint                              | Description                                     |
+| -------- | ------------------------------------- | ----------------------------------------------- |
+| `GET`    | `/admin/sessions/{session_id}/state`  | Get session state including revocation status   |
+| `POST`   | `/admin/sessions/{session_id}/state`  | Create session state record                     |
+| `PATCH`  | `/admin/sessions/{session_id}/state`  | Update session state                            |
+| `DELETE` | `/admin/sessions/{session_id}/state`  | Delete session state record                     |
+| `POST`   | `/admin/sessions/{session_id}/revoke` | Revoke a session with optional reason           |
+| `GET`    | `/admin/sessions/states/revoked`      | List all revoked sessions with session state    |
+| `GET`    | `/admin/users/{user_id}/sessions`     | List all sessions with session state for a user |
 
 ### Impersonation Management
 
-| Method                 | Endpoint                                             | Description                                              |
-| ---------------------- | ---------------------------------------------------- | -------------------------------------------------------- |
-| `GetAllImpersonations` | `GET /admin/impersonations`                          | Retrieve all active impersonations.                      |
-| `GetImpersonationByID` | `GET /admin/impersonations/{impersonation_id}`       | Fetch a specific impersonation.                          |
-| `StartImpersonation`   | `POST /admin/impersonations`                         | Begin impersonating a user as an admin with audit trail. |
-| `StopImpersonation`    | `POST /admin/impersonations/{impersonation_id}/stop` | End impersonation and restore original admin session.    |
+| Method | Endpoint                                        | Description                                          |
+| ------ | ----------------------------------------------- | ---------------------------------------------------- |
+| `GET`  | `/admin/impersonations`                         | List all active impersonations                       |
+| `GET`  | `/admin/impersonations/{impersonation_id}`      | Get a specific impersonation by ID                   |
+| `POST` | `/admin/impersonations`                         | Start impersonating a user with audit trail          |
+| `POST` | `/admin/impersonations/{impersonation_id}/stop` | End impersonation and restore original admin session |
+
+---
+
+## Database Schema
+
+### Table: `admin_impersonations`
+
+| Field                      | Type       | Key | Description                                          |
+| -------------------------- | ---------- | --- | ---------------------------------------------------- |
+| `id`                       | string     | PK  | Unique identifier for the impersonation record       |
+| `actor_user_id`            | string     | FK  | Reference to the admin user initiating impersonation |
+| `target_user_id`           | string     | FK  | Reference to the user being impersonated             |
+| `actor_session_id`         | string?    | FK  | Reference to the admin's original session            |
+| `impersonation_session_id` | string?    | FK  | Reference to the impersonation session               |
+| `reason`                   | string     | -   | Reason for impersonation                             |
+| `started_at`               | timestamp  | -   | When impersonation began                             |
+| `expires_at`               | timestamp  | -   | When impersonation expires                           |
+| `ended_at`                 | timestamp? | -   | When impersonation ended                             |
+| `ended_by_user_id`         | string?    | FK  | Reference to the user who ended impersonation        |
+| `created_at`               | timestamp  | -   | Record creation time                                 |
+| `updated_at`               | timestamp  | -   | Record last update time                              |
+
+### Table: `admin_user_states`
+
+| Field               | Type       | Key | Description                               |
+| ------------------- | ---------- | --- | ----------------------------------------- |
+| `user_id`           | string     | PK  | Reference to the user                     |
+| `banned`            | boolean    | -   | Whether the user is currently banned      |
+| `banned_at`         | timestamp? | -   | When the ban was issued                   |
+| `banned_until`      | timestamp? | -   | When the ban expires (if temporary)       |
+| `banned_reason`     | string?    | -   | Reason for the ban                        |
+| `banned_by_user_id` | string?    | FK  | Reference to the admin who issued the ban |
+| `created_at`        | timestamp  | -   | Record creation time                      |
+| `updated_at`        | timestamp  | -   | Record last update time                   |
+
+### Table: `admin_session_states`
+
+| Field                      | Type       | Key | Description                                          |
+| -------------------------- | ---------- | --- | ---------------------------------------------------- |
+| `session_id`               | string     | PK  | Reference to the session                             |
+| `revoked_at`               | timestamp? | -   | When the session was revoked                         |
+| `revoked_reason`           | string?    | -   | Reason for revocation                                |
+| `revoked_by_user_id`       | string?    | FK  | Reference to the admin who revoked the session       |
+| `impersonator_user_id`     | string?    | FK  | Reference to the impersonating admin (if applicable) |
+| `impersonation_reason`     | string?    | -   | Reason for impersonation (if applicable)             |
+| `impersonation_expires_at` | timestamp? | -   | When impersonation expires (if applicable)           |
+| `created_at`               | timestamp  | -   | Record creation time                                 |
+| `updated_at`               | timestamp  | -   | Record last update time                              |
+
+> Migrations are automatically handled when the plugin is initialized.
+
+---
+
+## Plugin Capabilities
+
+The Admin plugin provides the following capabilities:
+
+- **User CRUD Operations** — Full lifecycle management for user accounts
+- **Account Linking** — Manage external provider account associations
+- **User Banning** — Temporary or permanent user suspension with reason tracking
+- **Session Revocation** — Invalidate sessions with audit trail
+- **User Impersonation** — Admin impersonation with time-limited sessions and comprehensive logging
+- **Audit Logging** — All administrative actions are tracked for compliance and debugging
+
+### Impersonation Lifecycle
+
+```
+┌─────────────┐     ┌──────────────┐     ┌─────────────┐
+│   Start     │────▶│ Impersonation│────▶│   Active    │
+│ Impersonation│    │   Created    │     │  Session    │
+└─────────────┘     └──────────────┘     └──────┬──────┘
+                                                │
+                      ┌─────────────────────────┼──────────────────────┐
+                      │                         │                      │
+                      ▼                         ▼                      ▼
+              ┌──────────────┐          ┌─────────────┐        ┌─────────────┐
+              │   Expiration │          │   Manual    │        │   Target    │
+              │   (Timeout)  │          │    Stop     │        │   Deleted   │
+              └──────┬───────┘          └──────┬──────┘        └──────┬──────┘
+                     │                         │                      │
+                     ▼                         ▼                      ▼
+              ┌──────────────┐          ┌─────────────┐        ┌─────────────┐
+              │   Session    │          │   Session   │        │   Session   │
+              │   Ended      │          │   Ended     │        │   Ended     │
+              └──────────────┘          └─────────────┘        └─────────────┘
+```
+
+---
+
+## Security Recommendations
+
+- **Access Control** — All admin endpoints should be protected by appropriate authentication and authorization ideally using the Access Control plugin alongside this plugin to restrict access to authorized administrators only.
+- **Impersonation Limits** — Set reasonable `impersonation_max_expires_in` values to limit exposure window
+- **Audit Review** — Regularly review impersonation and ban logs for compliance and security auditing
+- **Least Privilege** — Only grant access to routes for users who absolutely require it
+- **Reason Tracking** — Always document reasons for bans and session revocations for audit purposes
+- **Session Security** — Impersonation sessions should be treated with the same security considerations as regular sessions
