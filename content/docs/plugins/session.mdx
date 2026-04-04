@@ -1,126 +1,128 @@
 ---
 title: Session Plugin
+description: Cookie-based session authentication with automatic renewal and secure cookie management.
 ---
 
-The Session Plugin provides cookie-based session authentication with automatic renewal and secure cookie management.
+## Overview
 
-## Features
+The Session plugin provides cookie-based session authentication with automatic renewal and secure cookie management for your application. Whilst the main authentication configuration already configures the session and any properties to do with it, the Session plugin provides the actual implementation of cookie-based sessions, including issuing cookies, validating them on each request, and automatically renewing them as they approach expiration.
 
-- **Cookie-Based Sessions**: Secure HTTP-only cookies for session tracking
-- **Sliding Window Renewal**: Sessions automatically renew when approaching expiration
-- **Dual Authentication Modes**: Required authentication (returns 401) or optional authentication (silent)
-- **Secure Cookie Attributes**: Configurable HttpOnly, Secure, and SameSite settings
-- **Cooperative Authentication**: Works alongside other auth plugins without conflicts
-- **Automatic Cleanup**: Expired sessions are automatically purged
+### Features
 
-## Standalone Mode
+- **Cookie-Based Sessions** — Secure HTTP-only cookies for session tracking
+- **Sliding Window Renewal** — Sessions automatically renew when approaching expiration
+- **Secure Cookie Attributes** — Configurable HttpOnly, Secure, and SameSite settings
+- **Automatic Cleanup** — Optionally, expired sessions are automatically purged
+- **Cooperative Authentication** — Works seamlessly with other auth plugins (e.g., JWT) without conflicts
 
-### Plugin Configuration
+---
+
+## Configuration
+
+`Standalone Mode:`
 
 ```toml
+# Global Session Configuration
+[session]
+cookie_name = "authula.session_token"
+expires_in = "30m"
+update_age = "5m"
+cookie_max_age = "24h"
+secure = false
+http_only = true
+same_site = "lax"  # Options: "lax", "strict", "none"
+auto_cleanup = false # Flag to automatically clean up expired sessions and enforce max sessions per user
+cleanup_interval = "1m" # Interval for automatic cleanup of expired sessions
+max_sessions_per_user = 5 # Maximum number of concurrent sessions per user (0 = unlimited)
+
+# Enable the Session plugin
 [plugins.session]
 enabled = true
 ```
 
-### Global Session Settings
-
-```toml
-[session]
-cookie_name = "authula.session_token"
-expires_in = "168h"        # 7 days - session duration (sliding window)
-update_age = "84h"         # 3.5 days - renew when <50% life remains
-cookie_max_age = "720h"    # 30 days - absolute max cookie age
-secure = true              # Requires HTTPS
-http_only = true           # Prevents JavaScript access
-same_site = "lax"          # Options: strict, lax, none
-```
-
-## Library Mode
-
-To use the plugin programmatically, instantiate it as part of the plugins array when creating a new Authula instance:
+`Library Mode:`
 
 ```go
-sessionplugin.New(sessionplugin.SessionPluginConfig{
-	Enabled: true,
-}),
+import (
+  sessionplugin "github.com/Authula/authula/plugins/session"
+  sessionplugintypes "github.com/Authula/authula/plugins/session/types"
+)
+
+sessionplugin.New(sessionplugintypes.SessionPluginConfig{
+  Enabled: true,
+})
 ```
 
-## Available Hooks
+---
 
-| Hook ID                 | Stage  | Purpose                                                                  |
-| ----------------------- | ------ | ------------------------------------------------------------------------ |
-| `session.auth`          | Before | Validates session cookie; returns 401 Unauthorized if invalid or missing |
-| `session.auth.optional` | Before | Validates session if present; silently continues if invalid or missing   |
-| _(auto-issued)_         | After  | Automatically sets session cookie after successful authentication        |
-| _(auto-cleared)_        | After  | Automatically clears session cookie on sign-out                          |
+## API Reference
 
-## Session Lifecycle
+The Session plugin doesn't expose any HTTP endpoints.
 
-```
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│   Login     │────▶│   Session    │────▶│   Active    │
-│   Success   │     │   Created    │     │   Session   │
-└─────────────┘     └──────────────┘     └──────┬──────┘
-                                                │
-                      ┌─────────────────────────┼──────────────────────┐
-                      │                         │                      │
-                      ▼                         ▼                      ▼
-              ┌──────────────┐          ┌─────────────┐        ┌─────────────┐
-              │   Renewal    │          │   Expired   │        │   Sign Out  │
-              │   (<50%)     │          │   (Timeout) │        │   (Manual)  │
-              └──────┬───────┘          └──────┬──────┘        └──────┬──────┘
-                     │                         │                      │
-                     ▼                         ▼                      ▼
-              ┌──────────────┐          ┌─────────────┐        ┌─────────────┐
-              │   Session    │          │   Session   │        │   Cookie    │
-              │   Extended   │          │   Deleted   │        │   Cleared   │
-              └──────────────┘          └─────────────┘        └─────────────┘
-```
+---
 
-### Lifecycle Phases
+## Database Schema
 
-**1. Session Creation**: Triggered after successful authentication. The plugin automatically issues a session cookie via the post-authentication hook.
+The Session plugin doesn't create any database tables.
 
-**2. Active Session**: Each request validates the session cookie. Sessions are checked for expiration on every request.
+---
 
-**3. Renewal**: When a session has less than 50% of its lifetime remaining (based on `update_age`), it automatically renews extending the expiration.
+## Plugin Capabilities
 
-**4. Expiration**: Sessions past their expiration are automatically deleted from the database and return 401 on subsequent requests.
+The Session plugin provides the following hooks and capabilities:
 
-**5. Sign Out**: When a sign-out action is detected, the session cookie is immediately cleared.
+- Global hook to issue session cookie after successful authentication
+- Global hook to remove session cookie on sign-out
+- `session.auth` - Validates session cookie; returns 401 Unauthorized if invalid or missing
+- `session.auth.optional` - Validates session if present; silently continues if invalid or missing
 
-## How to Use
+### Usage
 
-Enable session authentication on routes by adding the appropriate hook ID to route metadata:
-
-**Required Authentication (returns 401 if not logged in):**
+`Standalone Mode:`
 
 ```toml
 [[route_mappings]]
-path = "/auth/me"
 method = "GET"
+path = "/some/path"
 plugins = ["session.auth"]
-```
 
-**Optional Authentication (works whether logged in or not):**
-
-```toml
 [[route_mappings]]
-path = "/api/public"
 method = "GET"
+path = "/some/other/path"
 plugins = ["session.auth.optional"]
 ```
 
-## Security Features
+`Library Mode:`
 
-- **Token Hashing**: Session tokens are hashed before storage in the database
-- **HttpOnly Cookies**: Prevents XSS attacks by restricting JavaScript access
-- **Secure Flag**: Ensures cookies are only transmitted over HTTPS
-- **SameSite Protection**: Defends against CSRF attacks (strict, lax, or none modes)
-- **Automatic Expiration**: Sessions cannot be used beyond their expiration time
+```go
+import (
+  authulaconfig "github.com/Authula/authula/config"
+  sessionplugin "github.com/Authula/authula/plugins/session"
+)
 
-## Cooperative Authentication
+authulaconfig.NewConfig(
+  authulaconfig.WithRouteMappings([]authulamodels.RouteMapping{
+    {
+      Method:  "GET",
+      Path:    "/some/path",
+      Plugins: []string{sessionplugin.HookIDSessionAuth.String()},
+    },
+    {
+      Method:  "GET",
+      Path:    "/some/other/path",
+      Plugins: []string{sessionplugin.HookIDSessionAuthOptional.String()},
+    },
+  }),
+)
+```
 
-The session plugin implements cooperative authentication - if a request already has a `UserID` set by another authentication plugin (e.g., JWT), the session plugin will skip its validation. This allows multiple auth methods to work together seamlessly.
+---
 
-NOTE: there is no automatic removal of expired sessions from the database. You are responsible for implementing cleanup logic on your end via a scheduled job or as appropriate for your use case.
+## Security Recommendations
+
+- **Token Hashing** — Session tokens are hashed before storage in the database.
+- **HttpOnly Cookies** — Prevents XSS attacks by restricting JavaScript access.
+- **Secure Flag** — Ensures cookies are only transmitted over HTTPS. Set `secure = true` in production.
+- **SameSite Protection** — Defends against CSRF attacks. Use `strict` for maximum security, `lax` for typical web apps.
+- **Automatic Expiration** — Sessions cannot be used beyond their expiration time. Configure `expires_in` and `update_age` based on your security requirements.
+- **Session Cleanup** — Enable `auto_cleanup` to automatically remove expired sessions from the database.
