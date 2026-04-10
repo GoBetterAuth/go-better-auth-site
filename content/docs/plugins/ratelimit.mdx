@@ -49,17 +49,16 @@ cleanup_interval = "1m"    # How often to clean expired entries (default: 1 minu
 
 ```go
 import (
-  ratelimitplugin "github.com/Authula/authula/plugins/ratelimit"
-  ratelimitplugintypes "github.com/Authula/authula/plugins/ratelimit/types"
+  ratelimitplugin "github.com/Authula/authula/plugins/rate-limit"
 )
 
-ratelimitplugin.New(ratelimitplugintypes.RateLimitPluginConfig{
+ratelimitplugin.New(ratelimitplugin.RateLimitPluginConfig{
   Enabled:  true,
   Provider: ratelimitplugin.RateLimitProviderRedis,
   Window:   time.Minute,
   Max:      100,
   Prefix:   "ratelimit:",
-  CustomRules: map[string]ratelimitplugintypes.RateLimitRule{
+  CustomRules: map[string]ratelimitplugin.RateLimitRule{
     "/some/path": {
       Disabled: true,
     },
