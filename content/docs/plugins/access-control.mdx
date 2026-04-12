@@ -188,7 +188,7 @@ config := authulaconfig.NewConfig(
 
 - System-managed roles and permissions are protected from modification or deletion to ensure critical access controls remain intact.
 - Role weights allow you to establish a hierarchy, where higher-weighted roles take precedence over lower-weighted ones. This is very useful for scenarios where users may have multiple roles, and you want to determine which role is of higher priority. Also this is important to take into consideration as a user can only grant roles with equal or lower weight than their highest role, preventing privilege escalation.
-  - An example of this is an "Admin" role with weight 100, "Editor" role with weight 50, and "Viewer" role with weight 25. An Admin can assign any of these roles, while an Editor can only assign the "Viewer" role.
+  - An example of this is an `Admin` role with weight `100`, `Editor` role with weight `50`, and `Viewer` role with weight `25`. An `Admin` can assign any of these roles, while an `Editor` can only assign the `Viewer` role.
 
 ---
 
