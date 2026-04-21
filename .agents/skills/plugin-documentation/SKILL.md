@@ -43,10 +43,12 @@ The Authula plugin documentation follows a **7-section pattern**:
 
 ## Configuration
 
-`Standalone Mode:`
+### Standalone Mode
+
 ...
 
-`Library Mode:`
+### Library Mode
+
 ...
 
 ---
@@ -117,32 +119,24 @@ The [Plugin Name] plugin provides [brief description of functionality].
 
 Shows TOML configuration for running Authula as a flat-file backed service.
 
-```markdown
-`Standalone Mode:`
-
-\`\`\`toml
+```toml
 [plugin-name]
 enabled = true
 
 # other configuration options
 
 key = "value"
-\`\`\`
 ```
 
 #### Library Mode
 
 Shows Go code with the plugin Config struct, typically including optional hooks.
 
-```markdown
-`Library Mode:`
-
-\`\`\`go
+```go
 pluginname.New(&types.PluginNamePluginConfig{
-Enabled: true,
-// ... other fields including any library mode specific config such as database hooks etc.
+  Enabled: true,
+  // ... other fields including any library mode specific config such as database hooks etc.
 })
-\`\`\`
 ```
 
 **Tips**:
@@ -206,7 +200,7 @@ Enabled: true,
 | `title`               | string    | -   | Title of the todo                 |
 | `description`         | string    | -   | Description of the todo           |
 | `is_complete`         | boolean   | -   | Indicates if the todo is complete |
-| `some_optional_field` | string?   | -   | Some optional field               |
+| `some_optional_field` | string    | ?   | Some optional field               |
 | `created_at`          | timestamp | -   | Record creation time              |
 | `updated_at`          | timestamp | -   | Record last update time           |
 ```
@@ -215,7 +209,7 @@ Enabled: true,
 
 - **Field**: Column name (use backticks)
 - **Type**: Data type (UUID, string, int, boolean, timestamp, JSON, etc.)
-- **Key**: PK (Primary Key), FK (Foreign Key), or `-` (none)
+- **Key**: PK (Primary Key), FK (Foreign Key), `-` (none), `?` (optional)
 - **Description**: What the field represents, including references for foreign keys (e.g., "Reference to the user")
 
 **Tips**:
@@ -236,7 +230,6 @@ Enabled: true,
 | `updated_at` | timestamp | - | Record last update time |
 ```
 
-```markdown
 ### Database Hooks
 
 [Plugin Name] plugin supports the following database hooks:
@@ -250,25 +243,24 @@ Enabled: true,
 
 NOTE: Database Hooks are only supported in Library mode.
 
-\`Library mode:\`
+Library mode:
 
-\`\`\`go
+```go
 import (
-pluginpkg "github.com/Authula/authula/plugins/pluginname"
+  pluginpkg "github.com/Authula/authula/plugins/pluginname"
 )
 
-func customBeforeCreateTodo(ctx context.Context, todo \*models.Todo) error {
-// Your custom logic
-return nil
+func customBeforeCreateTodo(ctx context.Context, todo *models.Todo) error {
+  // Your custom logic
+  return nil
 }
 
 plugin := pluginpkg.New(&types.PluginNamePluginConfig{
-Enabled: true,
-DatabaseHooks: &types.PluginNameDatabaseHooksConfig{
-BeforeCreateTodo: customBeforeCreateTodo,
-},
+  Enabled: true,
+  DatabaseHooks: &types.PluginNameDatabaseHooksConfig{
+    BeforeCreateTodo: customBeforeCreateTodo,
+  },
 })
-\`\`\`
 ```
 
 ---
@@ -294,37 +286,34 @@ The [Plugin Name] plugin provides the following capabilities:
 
 #### Example Usage
 
-\`Standalone Mode:\`
+##### Standalone Mode
 
-\`\`\`toml
+```toml
 [[route_mappings]]
-method = "GET"
-path = "/some/path"
+paths = ["GET:/some/path"]
 plugins = ["plugin.capability"]
-\`\`\`
+```
 
-\`Library mode:\`
+##### Library mode
 
-\`\`\`go
+```go
 import (
-authula "github.com/Authula/authula"
-authulaconfig "github.com/Authula/authula/config"
-pluginname "github.com/Authula/authula/plugins/pluginname"
+  authula "github.com/Authula/authula"
+  authulaconfig "github.com/Authula/authula/config"
+  pluginname "github.com/Authula/authula/plugins/pluginname"
 )
 
 config := authulaconfig.NewConfig(
-authulaconfig.WithRouteMappings([]authulamodels.RouteMapping{
-{
-Method: "GET",
-Path: "/some/path",
-Plugins: []string{
-pluginname.HookIDHookName.String(),
-},
-},
-},
-),
+  authulaconfig.WithRouteMappings([]authulamodels.RouteMapping{
+    {
+      Paths: []string{"GET:/some/path"},
+      Plugins: []string{
+        pluginname.HookIDHookName.String(),
+      },
+    },
+  }),
 )
-\`\`\`
+```
 
 **Tips**:
 
