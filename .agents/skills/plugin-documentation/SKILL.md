@@ -200,7 +200,7 @@ pluginname.New(&types.PluginNamePluginConfig{
 | `title`               | string    | -   | Title of the todo                 |
 | `description`         | string    | -   | Description of the todo           |
 | `is_complete`         | boolean   | -   | Indicates if the todo is complete |
-| `some_optional_field` | string    | ?   | Some optional field               |
+| `some_optional_field` | string?   | -   | Some optional field               |
 | `created_at`          | timestamp | -   | Record creation time              |
 | `updated_at`          | timestamp | -   | Record last update time           |
 ```
