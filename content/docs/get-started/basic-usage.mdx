@@ -71,9 +71,10 @@ max_age = "24h"
 # -----------------------------------
 
 [event_bus]
-provider = "gochannel"
 prefix = ""
 max_concurrent_handlers = 100
+context_timeout = "5s"
+provider = "gochannel"
 
 [event_bus.go_channel]
 buffer_size = 100

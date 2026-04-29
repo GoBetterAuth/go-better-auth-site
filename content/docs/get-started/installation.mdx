@@ -86,7 +86,7 @@ cleanup_interval = "1m" # Interval for automatic cleanup of expired verification
 trusted_origins = ["http://localhost:3000"]
 trusted_headers = [] # e.g., ["X-Real-IP", "CF-Connecting-IP" (cloudflare), ...]
 trusted_proxies = []
-# IMPORTANT CORS NOTE: If using the session plugin, the CORS plugin must specify exact allowed_origins.
+# IMPORTANT CORS NOTE: If using the session plugin, the CORS config below must specify exact allowed_origins.
 # Setting allowed_origins = ["*"] with allow_credentials = true is NOT allowed by browsers and will fail.
 # Example CORS configuration when using sessions:
 # allow_credentials = true
