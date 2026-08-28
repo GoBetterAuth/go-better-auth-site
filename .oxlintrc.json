@@ -1,0 +1,7 @@
+{
+  "ignorePatterns": [".output/**", "src/components/ui/**"],
+  "plugins": ["react"],
+  "rules": {
+    "react/no-children-prop": "off"
+  }
+}

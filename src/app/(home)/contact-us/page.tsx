@@ -1,11 +1,12 @@
-import { Bug, Mail, MessageCircle } from "lucide-react";
 import Link from "next/link";
 
+import { Bug, Mail } from "lucide-react";
+
 import ContactUsForm from "@/components/sections/ContactUsForm";
+import DiscordIcon from "@/components/shared/icons/DiscordIcon";
 import GitHubIcon from "@/components/shared/icons/GitHubIcon";
 import { CONSTANTS } from "@/constants/constants";
 import { ENV_CONFIG } from "@/constants/env-config";
-import DiscordIcon from "@/components/shared/icons/DiscordIcon";
 
 export default function ContactUsPage() {
   return (
@@ -16,12 +17,9 @@ export default function ContactUsPage() {
         <div className="custom-container relative border-x border-dashed border-sky-950">
           <div className="mx-auto max-w-5xl">
             <div className="mb-16 text-center">
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-                Contact Us
-              </h1>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Contact Us</h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Have a question, feedback, or want to contribute? We&apos;d love
-                to hear from you.
+                Have a question, feedback, or want to contribute? We&apos;d love to hear from you.
               </p>
             </div>
 

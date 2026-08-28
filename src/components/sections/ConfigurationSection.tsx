@@ -1,11 +1,4 @@
-import {
-  Code2,
-  Settings2,
-  Database,
-  Radio,
-  Code,
-  CheckCircle2,
-} from "lucide-react";
+import { Code2, Settings2 } from "lucide-react";
 
 export default function ConfigurationSection() {
   return (
@@ -15,12 +8,10 @@ export default function ConfigurationSection() {
 
       <div className="custom-container relative border-x border-dashed border-sky-950">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Flexible Configuration
-          </h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Flexible Configuration</h2>
           <p className="text-muted-foreground text-lg">
-            Whether you're embedding as a library or running as a server,
-            Authula gives you full control over your authentication logic.
+            Whether you're embedding as a library or running as a server, Authula gives you full
+            control over your authentication logic.
           </p>
         </div>
 
@@ -31,8 +22,8 @@ export default function ConfigurationSection() {
             </div>
             <h3 className="text-xl font-bold mb-3">Library Configuration</h3>
             <p className="text-muted-foreground">
-              Configure directly in Go. Compile-time checks ensures your config
-              is always valid and consistent.
+              Configure directly in Go. Compile-time checks ensures your config is always valid and
+              consistent.
             </p>
           </div>
 
@@ -42,8 +33,8 @@ export default function ConfigurationSection() {
             </div>
             <h3 className="text-xl font-bold mb-3">Standalone Configuration</h3>
             <p className="text-muted-foreground">
-              Configure your server with a simple TOML file and change settings
-              on the fly without recompiling. Perfect for dynamic environments.
+              Configure your server with a simple TOML file and change settings on the fly without
+              recompiling. Perfect for dynamic environments.
             </p>
           </div>
         </div>

@@ -1,9 +1,11 @@
-import { BookOpen, Mail } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import BorderIndicators from "@/components/shared/BorderIndicators";
+
+import { BookOpen, Mail } from "lucide-react";
+
 import GitHubIcon from "@/components/shared/icons/GitHubIcon";
 import { CONSTANTS } from "@/constants/constants";
+
 import DiscordIcon from "../shared/icons/DiscordIcon";
 
 type LinkItem = {
@@ -43,12 +45,7 @@ export default function Footer() {
       <div className="custom-container relative border-x border-dashed border-sky-950 p-4! md:p-6!">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-3">
-            <Image
-              src="/app-logo.png"
-              alt="Authula Logo"
-              width={100}
-              height={100}
-            />
+            <Image src="/app-logo.png" alt="Authula Logo" width={100} height={100} />
           </div>
 
           <div className="flex items-center gap-6">

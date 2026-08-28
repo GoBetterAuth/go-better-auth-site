@@ -1,7 +1,8 @@
 import Link from "next/link";
 
+import { ArrowUpRight } from "lucide-react";
+
 import { ENV_CONFIG } from "@/constants/env-config";
-import { ArrowUpRight, MoveUpRight } from "lucide-react";
 
 export default function AnnouncementBanner() {
   return (

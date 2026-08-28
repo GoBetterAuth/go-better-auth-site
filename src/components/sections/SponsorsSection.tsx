@@ -4,9 +4,8 @@ import Link from "next/link";
 import BorderIndicators from "@/components/shared/BorderIndicators";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ShineBorder } from "@/components/ui/shine-border";
-import sponsorsData from "@/data/sponsors.json";
 import { ENV_CONFIG } from "@/constants/env-config";
+import sponsorsData from "@/data/sponsors.json";
 import { cn } from "@/lib/utils";
 
 type SponsorEntry = {
@@ -41,12 +40,9 @@ const tierConfig: Record<SponsorTierKey, SponsorTierConfig> = {
   corporate: {
     title: "Corporate",
     icon: "🏢",
-    cardClassName:
-      "border-sky-500/40 bg-linear-to-br from-sky-500/12 via-card/90 to-card",
-    badgeClassName:
-      "border-sky-500/25 bg-sky-500/10 text-sky-100 shadow-sm shadow-sky-500/10",
-    avatarClassName:
-      "h-28 w-28 md:h-30 md:w-30 border-sky-400/35 bg-sky-500/10",
+    cardClassName: "border-sky-500/40 bg-linear-to-br from-sky-500/12 via-card/90 to-card",
+    badgeClassName: "border-sky-500/25 bg-sky-500/10 text-sky-100 shadow-sm shadow-sky-500/10",
+    avatarClassName: "h-28 w-28 md:h-30 md:w-30 border-sky-400/35 bg-sky-500/10",
     avatarLetterClassName: "text-4xl md:text-5xl text-sky-50",
     placeholderAvatarClassName:
       "h-28 w-28 md:h-30 md:w-30 border-sky-400/35 bg-sky-500/10 text-sky-50",
@@ -57,12 +53,10 @@ const tierConfig: Record<SponsorTierKey, SponsorTierConfig> = {
   gold: {
     title: "Gold Sponsor",
     icon: "🥇",
-    cardClassName:
-      "border-amber-500/35 bg-linear-to-br from-amber-500/12 via-card/90 to-card",
+    cardClassName: "border-amber-500/35 bg-linear-to-br from-amber-500/12 via-card/90 to-card",
     badgeClassName:
       "border-amber-500/20 bg-amber-500/10 text-amber-100 shadow-sm shadow-amber-500/10",
-    avatarClassName:
-      "h-20 w-20 md:h-24 md:w-24 border-amber-500/25 bg-amber-500/10",
+    avatarClassName: "h-20 w-20 md:h-24 md:w-24 border-amber-500/25 bg-amber-500/10",
     avatarLetterClassName: "text-3xl md:text-4xl text-amber-50",
     placeholderAvatarClassName:
       "h-20 w-20 md:h-24 md:w-24 border-amber-500/25 bg-amber-500/10 text-amber-50",
@@ -72,12 +66,10 @@ const tierConfig: Record<SponsorTierKey, SponsorTierConfig> = {
   silver: {
     title: "Silver Sponsor",
     icon: "🥈",
-    cardClassName:
-      "border-slate-400/25 bg-linear-to-br from-slate-400/10 via-card/90 to-card",
+    cardClassName: "border-slate-400/25 bg-linear-to-br from-slate-400/10 via-card/90 to-card",
     badgeClassName:
       "border-slate-400/20 bg-slate-400/10 text-slate-100 shadow-sm shadow-slate-400/10",
-    avatarClassName:
-      "h-14 w-14 md:h-16 md:w-16 border-slate-300/25 bg-slate-400/10",
+    avatarClassName: "h-14 w-14 md:h-16 md:w-16 border-slate-300/25 bg-slate-400/10",
     avatarLetterClassName: "text-2xl md:text-3xl text-slate-50",
     placeholderAvatarClassName:
       "h-14 w-14 md:h-16 md:w-16 border-slate-300/25 bg-slate-400/10 text-slate-50",
@@ -87,12 +79,10 @@ const tierConfig: Record<SponsorTierKey, SponsorTierConfig> = {
   bronze: {
     title: "Bronze Sponsor",
     icon: "🥉",
-    cardClassName:
-      "border-amber-700/25 bg-linear-to-br from-amber-700/8 via-card/90 to-card",
+    cardClassName: "border-amber-700/25 bg-linear-to-br from-amber-700/8 via-card/90 to-card",
     badgeClassName:
       "border-amber-700/20 bg-amber-700/10 text-amber-50 shadow-sm shadow-amber-700/10",
-    avatarClassName:
-      "h-10 w-10 md:h-12 md:w-12 border-amber-700/20 bg-amber-700/10",
+    avatarClassName: "h-10 w-10 md:h-12 md:w-12 border-amber-700/20 bg-amber-700/10",
     avatarLetterClassName: "text-lg md:text-xl text-amber-50",
     placeholderAvatarClassName:
       "h-10 w-10 md:h-12 md:w-12 border-amber-700/20 bg-amber-700/10 text-amber-50",
@@ -156,9 +146,7 @@ function SponsorAvatarCard({
 
   return sponsor.linkUrl ? (
     <Link href={sponsor.linkUrl} target="_blank" className="group block">
-      <div className="transition-transform duration-200 group-hover:-translate-y-0.5">
-        {avatar}
-      </div>
+      <div className="transition-transform duration-200 group-hover:-translate-y-0.5">{avatar}</div>
     </Link>
   ) : (
     avatar
@@ -196,10 +184,7 @@ type TierRowProps = {
 
 function TierRow({ tier, config }: TierRowProps) {
   const renderedSponsors = tier.sponsors.slice(0, config.maxSlots);
-  const placeholdersNeeded = Math.max(
-    0,
-    config.maxSlots - renderedSponsors.length,
-  );
+  const placeholdersNeeded = Math.max(0, config.maxSlots - renderedSponsors.length);
 
   return (
     <article
@@ -215,23 +200,15 @@ function TierRow({ tier, config }: TierRowProps) {
               <span className="text-xl md:text-2xl">{config.icon}</span>
             </div>
             <div>
-              <h3 className="text-xl md:text-2xl font-bold tracking-tight">
-                {config.title}
-              </h3>
-              <Badge
-                variant="outline"
-                className={cn(`mt-2`, config.badgeClassName)}
-              >
+              <h3 className="text-xl md:text-2xl font-bold tracking-tight">{config.title}</h3>
+              <Badge variant="outline" className={cn(`mt-2`, config.badgeClassName)}>
                 {tier.sponsors.length} sponsors
               </Badge>
             </div>
           </div>
 
           {config.featured ? (
-            <Badge
-              variant="outline"
-              className="border-sky-500/30 bg-sky-500/10 text-sky-100"
-            >
+            <Badge variant="outline" className="border-sky-500/30 bg-sky-500/10 text-sky-100">
               Featured
             </Badge>
           ) : null}
@@ -239,10 +216,7 @@ function TierRow({ tier, config }: TierRowProps) {
 
         <div className={`grid gap-4 ${config.gridClassName}`}>
           {renderedSponsors.map((sponsor) => (
-            <div
-              key={sponsor.username}
-              className="flex flex-col items-center gap-2 text-center"
-            >
+            <div key={sponsor.username} className="flex flex-col items-center gap-2 text-center">
               <SponsorAvatarCard
                 sponsor={sponsor}
                 avatarClassName={config.avatarClassName}
@@ -261,9 +235,7 @@ function TierRow({ tier, config }: TierRowProps) {
               key={`${tier.key}-placeholder-${index}`}
               className="flex flex-col items-center gap-2 text-center"
             >
-              <PlaceholderAvatar
-                className={config.placeholderAvatarClassName}
-              />
+              <PlaceholderAvatar className={config.placeholderAvatarClassName} />
             </div>
           ))}
         </div>
@@ -286,21 +258,17 @@ export default function SponsorsSection() {
 
         <div className="flex flex-col gap-10">
           <div className="max-w-2xl">
-            <Badge
-              variant="outline"
-              className="mb-4 border-blue-500/30 text-blue-500"
-            >
+            <Badge variant="outline" className="mb-4 border-blue-500/30 text-blue-500">
               Supporters
             </Badge>
 
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
-              Sponsors That Help <span className="text-blue-500">Power</span>{" "}
-              Authula
+              Sponsors That Help <span className="text-blue-500">Power</span> Authula
             </h2>
 
             <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
-              Thank you to every sponsor helping keep Authula moving forward.
-              Your support means so much to us.
+              Thank you to every sponsor helping keep Authula moving forward. Your support means so
+              much to us.
             </p>
 
             <div className="mt-8 flex flex-row items-center gap-3">
